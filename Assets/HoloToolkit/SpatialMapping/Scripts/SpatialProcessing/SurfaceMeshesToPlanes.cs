@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using HoloToolkit.Unity.InputModule;
 
 #if !UNITY_EDITOR && UNITY_METRO
 using System.Threading;
@@ -257,6 +258,7 @@ namespace HoloToolkit.Unity.SpatialMapping
                 {
                     destPlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     destPlane.AddComponent<SurfacePlane>();
+                    destPlane.AddComponent<HandDraggable>();
                     destPlane.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 }
 

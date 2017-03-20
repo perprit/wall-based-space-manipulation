@@ -49,7 +49,7 @@ namespace HoloToolkit.Unity.InputModule
         /// <summary>
         /// Maximum distance at which the gaze can collide with an object.
         /// </summary>
-        public float MaxGazeCollisionDistance = 10.0f;
+        public float MaxGazeCollisionDistance = 30.0f;
 
         /// <summary>
         /// The LayerMasks, in prioritized order, that are used to determine the HitObject when raycasting.
