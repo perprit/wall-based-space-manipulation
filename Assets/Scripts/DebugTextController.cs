@@ -24,6 +24,11 @@ namespace ManipulateWalls
             text.text = message;
         }
 
+        public void SetMessage(float messageFloat, LogType type = LogType.Log)
+        {
+            text.text = messageFloat.ToString("F4");
+        }
+
         public void AddMessage(string message, LogType type = LogType.Log)
         {
             text.text += "\n" + message;

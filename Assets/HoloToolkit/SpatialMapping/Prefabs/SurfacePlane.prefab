@@ -131,3 +131,5 @@ MonoBehaviour:
   IsKeepUpright: 0
   IsOrientTowardsUser: 0
   IsDraggingEnabled: 1
+  MinimumArmLength: 0
+  MaximumArmLength: 1
