@@ -173,7 +173,7 @@ namespace HoloToolkit.Unity.InputModule
         /// <summary>
         /// Update the position of the object being dragged.
         /// </summary>
-        private virtual void UpdateDragging()
+        private void UpdateDragging()
         {
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
