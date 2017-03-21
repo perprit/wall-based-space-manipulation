@@ -3,6 +3,7 @@
 
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Collections.Generic;
 
 namespace HoloToolkit.Unity.SpatialMapping
 {

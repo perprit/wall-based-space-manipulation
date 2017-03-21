@@ -301,5 +301,24 @@ namespace HoloToolkit.Unity.SpatialMapping
                 }
             }
         }
+
+        public void EnableSurfaceMeshes(bool enable)
+        {
+            for (int index = 0; index < Source.SurfaceObjects.Count; index++)
+            {
+                SpatialMappingSource.SurfaceObject surfaceObject = Source.SurfaceObjects[index];
+
+                // Unity tribal knowledge indicates that to change the mesh assigned to a
+                // mesh collider, the mesh must first be set to null.  Presumably there
+                // is a side effect in the setter when setting the shared mesh to null.
+                surfaceObject.Object.GetComponent<MeshCollider>().sharedMesh = null;
+                surfaceObject.Renderer.enabled = enable;
+                if (enable)
+                {
+                    surfaceObject.Object.GetComponent<MeshCollider>().sharedMesh =
+                        surfaceObject.Object.GetComponent<MeshFilter>().sharedMesh;
+                }
+            }
+        }
     }
 }

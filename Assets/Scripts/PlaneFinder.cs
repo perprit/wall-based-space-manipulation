@@ -118,18 +118,16 @@ public class PlaneFinder : Singleton<PlaneFinder>
         if (horizontal.Count >= minimumFloors && vertical.Count >= minimumWalls)
         {
             // We have enough floors and walls to place our holograms on...
-
+            SpatialMappingManager.Instance.EnableSurfaceMeshes(false);
             // 3.a: Let's reduce our triangle count by removing triangles
             // from SpatialMapping meshes that intersect with our active planes.
             // Call RemoveVertices().
-            // Pass in all activePlanes found by SurfaceMeshesToPlanes.Instance.
-            RemoveVertices(SurfaceMeshesToPlanes.Instance.ActivePlanes);
+            //RemoveVertices(SurfaceMeshesToPlanes.Instance.ActivePlanes);
 
             // 3.a: We can indicate to the user that scanning is over by
             // changing the material applied to the Spatial Mapping meshes.
             // Call SpatialMappingManager.Instance.SetSurfaceMaterial().
-            // Pass in the secondaryMaterial.
-            SpatialMappingManager.Instance.SetSurfaceMaterial(secondaryMaterial);
+            //SpatialMappingManager.Instance.SetSurfaceMaterial(secondaryMaterial);
 
             // 3.a: We are all done processing the mesh, so we can now
             // initialize a collection of Placeable holograms in the world
