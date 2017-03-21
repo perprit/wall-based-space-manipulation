@@ -258,7 +258,7 @@ namespace HoloToolkit.Unity.SpatialMapping
                 {
                     destPlane = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     destPlane.AddComponent<SurfacePlane>();
-                    destPlane.AddComponent<HandDraggable>();
+                    destPlane.AddComponent<HandDraggableWall>();
                     destPlane.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 }
 
