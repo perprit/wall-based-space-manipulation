@@ -89,9 +89,7 @@ namespace HoloToolkit.Unity.InputModule
             bool control = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
             bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
             bool alt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
-            // TODO temporarily changed space to keypadplus
-            //bool space = Input.GetKey(KeyCode.Space);
-            bool space = Input.GetKey(KeyCode.KeypadPlus);
+            bool space = Input.GetKey(KeyCode.Space);
             switch (buttonType)
             {
                 case ButtonType.Left:
