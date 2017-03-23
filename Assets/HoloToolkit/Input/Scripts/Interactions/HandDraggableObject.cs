@@ -51,8 +51,8 @@ namespace HoloToolkit.Unity.InputModule
         //private float handRefDistance;
         //private Vector3 objRefGrabPoint;
 
-        private Vector3 initialHandPosition;
         private Transform initialCameraTransform;
+        private Vector3 initialHandPosition;
         private Vector3 initialObjPosition;
 
         //private Vector3 initialPivotPosition;

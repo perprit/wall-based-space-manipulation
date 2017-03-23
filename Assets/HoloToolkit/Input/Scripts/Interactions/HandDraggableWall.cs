@@ -59,6 +59,9 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 initialHostTransformPosition;
         private Quaternion initialHostTransformRotation;
 
+        private Vector3 initialHandPosition;
+        private Vector3 initialObjPosition;
+
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
 
@@ -120,6 +123,7 @@ namespace HoloToolkit.Unity.InputModule
 
             Vector3 gazeHitPosition = GazeManager.Instance.HitInfo.point;
             Vector3 handPosition;
+            currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
 
             Vector3 pivotPosition = GetHandPivotPosition();
@@ -155,6 +159,7 @@ namespace HoloToolkit.Unity.InputModule
 
             initialHostTransformPosition = HostTransform.position;
             initialHostTransformRotation = HostTransform.rotation;
+            initialObjPosition = HostTransform.position;
 
             StartedDragging.RaiseEvent();
         }
@@ -196,6 +201,9 @@ namespace HoloToolkit.Unity.InputModule
             // current hand position
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
+
+            Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
+            float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
 
             // pivot: my neck
             Vector3 pivotPosition = GetHandPivotPosition();
@@ -242,11 +250,14 @@ namespace HoloToolkit.Unity.InputModule
             float dragMagnitude = Vector3.Magnitude(dragDirection);
             dragDirection = Vector3.Normalize(dragDirection);
             dragDirection = HostTransform.transform.TransformDirection(dragDirection);  // to world coord
-            HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
-            
-            //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
 
+            //HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
+            //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
             //HostTransform.rotation = draggingRotation;
+            handMoveDirection = HostTransform.transform.InverseTransformDirection(handMoveDirection);
+            handMoveDirection = Vector3.Normalize(Vector3.Scale(handMoveDirection, Vector3.forward));
+            handMoveDirection = HostTransform.transform.TransformDirection(handMoveDirection);
+            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
 
             if (IsKeepUpright)
             {
