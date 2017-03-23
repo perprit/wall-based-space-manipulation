@@ -109,6 +109,10 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
+            RepositionManager.Instance.SetInputSource(currentInputSource, currentInputSourceId, DraggableType.Item);
+            RepositionManager.Instance.SetCurrentObject(gameObject, DraggableType.Item);
+            RepositionManager.Instance.SetDraggingStatus(true, DraggableType.Item);
+
             // Add self as a modal input handler, to get all inputs during the manipulation
             //InputManager.Instance.PushModalInputHandler(gameObject);
             InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
@@ -262,7 +266,8 @@ namespace HoloToolkit.Unity.InputModule
 
             isDragging = false;
             currentInputSource = null;
-            RepositionManager.Instance.SetInputSource(null, uint.MaxValue, RepositionManager.DraggableType.Item);
+
+            RepositionManager.Instance.SetDraggingStatus(false, DraggableType.Item);
             StoppedDragging.RaiseEvent();
         }
 
@@ -323,8 +328,6 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSourceId = eventData.SourceId;
 
             //Debug.Log("OnInputDown/HandDraggableObject, SourceId: " + currentInputSourceId);
-
-            RepositionManager.Instance.SetInputSource(currentInputSource, currentInputSourceId, RepositionManager.DraggableType.Item);
             StartDragging();
         }
 
