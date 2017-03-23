@@ -9,14 +9,14 @@ namespace HoloToolkit.Unity.InputModule
     {
         public enum DraggableType
         {
-            Wall, Object
+            Wall, Item
         }
 
         private IInputSource wallInputSource = null;
         private uint wallInputSourceId;
 
-        private IInputSource objectInputSource = null;
-        private uint objectInputSourceId;
+        private IInputSource itemInputSource = null;
+        private uint itemInputSourceId;
 
         // Use this for initialization
         void Start()
@@ -38,10 +38,10 @@ namespace HoloToolkit.Unity.InputModule
                 wallInputSourceId = sourceId;
             }
             
-            if (type == DraggableType.Wall)
+            if (type == DraggableType.Item)
             {
-                objectInputSource = source;
-                objectInputSourceId = sourceId;
+                itemInputSource = source;
+                itemInputSourceId = sourceId;
             }
         }
     }
