@@ -207,8 +207,8 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
 
-            Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
-            float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
+            //Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
+            //float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
 
             // pivot: my neck
             Vector3 pivotPosition = GetHandPivotPosition();
@@ -259,8 +259,12 @@ namespace HoloToolkit.Unity.InputModule
             //HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
             //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
             //HostTransform.rotation = draggingRotation;
+
+            Vector3 handMoveDirection = newHandPosition - initialHandPosition;
             handMoveDirection = HostTransform.transform.InverseTransformDirection(handMoveDirection);
-            handMoveDirection = Vector3.Normalize(Vector3.Scale(handMoveDirection, Vector3.forward));
+            handMoveDirection = Vector3.Scale(handMoveDirection, Vector3.forward);
+            float handMoveMagnitude = Vector3.Magnitude(handMoveDirection);
+            handMoveDirection = Vector3.Normalize(handMoveDirection);
             handMoveDirection = HostTransform.transform.TransformDirection(handMoveDirection);
             HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
 
