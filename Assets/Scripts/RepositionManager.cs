@@ -48,7 +48,8 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (isDraggingWall)
             {
-
+                // TODO initialWallTransform needs deep copy
+                // TODO calculate shortest distance between camera and wall, then rescale distance between every objects on the range of (1 ~ distance)
             }
         }
 
