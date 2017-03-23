@@ -20,6 +20,8 @@ namespace HoloToolkit.Unity.InputModule
         private readonly Stack<GameObject> modalInputStack = new Stack<GameObject>();
         private readonly Stack<GameObject> fallbackInputStack = new Stack<GameObject>();
 
+        private readonly Dictionary<uint, GameObject> MultiModalInputDictionary = new Dictionary<uint, GameObject>();
+
         /// <summary>
         /// Global listeners listen to all events and ignore the fact that other components might have consumed them.
         /// </summary>
@@ -72,6 +74,22 @@ namespace HoloToolkit.Unity.InputModule
         public void ClearModalInputStack()
         {
             modalInputStack.Clear();
+        }
+
+        // for control multi modal input
+        public void AddMultiModalInputHandler(uint sourceId, GameObject inputHandler)
+        {
+            MultiModalInputDictionary.Add(sourceId, inputHandler);
+        }
+
+        public void RemoveMultiModalInputHandler(uint sourceId)
+        {
+            MultiModalInputDictionary.Remove(sourceId);
+        }
+
+        public void ClearMultiModalInputHandler()
+        {
+            MultiModalInputDictionary.Clear();
         }
 
         /// <summary>
@@ -251,8 +269,7 @@ namespace HoloToolkit.Unity.InputModule
         {
             UnregisterGazeManager();
         }
-
-        private void HandleEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler)
+        private void HandleBaseEvent<T>(BaseEventData eventData, ExecuteEvents.EventFunction<T> eventHandler)
             where T : IEventSystemHandler
         {
             if (disabledRefCount > 0)
@@ -293,6 +310,79 @@ namespace HoloToolkit.Unity.InputModule
                 }
             }
 
+            // If event was not handled by modal, pass it on to the current focused object
+            if (GazeManager.Instance.HitObject != null)
+            {
+                bool eventHandled = ExecuteEvents.ExecuteHierarchy(GazeManager.Instance.HitObject, eventData, eventHandler);
+                if (eventHandled)
+                {
+                    return;
+                }
+            }
+
+            // If event was not handled by the focused object, pass it on to any fallback handlers
+            if (fallbackInputStack.Count > 0)
+            {
+                GameObject fallbackInput = fallbackInputStack.Peek();
+                ExecuteEvents.ExecuteHierarchy(fallbackInput, eventData, eventHandler);
+            }
+        }
+
+        private void HandleEvent<T>(BaseInputEventData eventData, ExecuteEvents.EventFunction<T> eventHandler)
+            where T : IEventSystemHandler
+        {
+            if (disabledRefCount > 0)
+            {
+                return;
+            }
+
+            // Send the event to global listeners
+            for (int i = 0; i < globalListeners.Count; i++)
+            {
+                // Global listeners should only get events on themselves, as opposed to their hierarchy
+                ExecuteEvents.Execute(globalListeners[i], eventData, eventHandler);
+            }
+            
+            if (MultiModalInputDictionary.Count > 0 && MultiModalInputDictionary.ContainsKey(eventData.SourceId))
+            {
+                //Debug.Log("sourceId: " + eventData.SourceId + " / count: " + MultiModalInputDictionary.Count);
+                GameObject modalInput = MultiModalInputDictionary[eventData.SourceId];
+                if (eventData.InputSource != null && modalInput != null)
+                {
+                    if (ExecuteEvents.ExecuteHierarchy(modalInput, eventData, eventHandler))
+                    {
+                        return;
+                    }
+                }
+            }
+            
+            /*
+            // Handle modal input if one exists
+            if (modalInputStack.Count > 0)
+            {
+                GameObject modalInput = modalInputStack.Peek();
+
+                // If there is a focused object in the hierarchy of the modal handler, start the event
+                // bubble there
+                GameObject focusedObject = GazeManager.Instance.HitObject;
+                if (focusedObject != null && focusedObject.transform.IsChildOf(modalInput.transform))
+                {
+
+                    if (ExecuteEvents.ExecuteHierarchy(focusedObject, eventData, eventHandler))
+                    {
+                        return;
+                    }
+                }
+                // Otherwise, just invoke the event on the modal handler itself
+                else
+                {
+                    if (ExecuteEvents.ExecuteHierarchy(modalInput, eventData, eventHandler))
+                    {
+                        return;
+                    }
+                }
+            }
+            */
             // If event was not handled by modal, pass it on to the current focused object
             if (GazeManager.Instance.HitObject != null)
             {
@@ -392,7 +482,7 @@ namespace HoloToolkit.Unity.InputModule
             if (ShouldSendUnityUiEvents)
             {
                 PointerEventData unityUIPointerEvent = GazeManager.Instance.UnityUIPointerEvent;
-                HandleEvent(unityUIPointerEvent, ExecuteEvents.pointerClickHandler);
+                HandleBaseEvent(unityUIPointerEvent, ExecuteEvents.pointerClickHandler);
             }
         }
 
@@ -415,7 +505,7 @@ namespace HoloToolkit.Unity.InputModule
             if (ShouldSendUnityUiEvents)
             {
                 PointerEventData unityUIPointerEvent = GazeManager.Instance.UnityUIPointerEvent;
-                HandleEvent(unityUIPointerEvent, ExecuteEvents.pointerUpHandler);
+                HandleBaseEvent(unityUIPointerEvent, ExecuteEvents.pointerUpHandler);
             }
         }
 
@@ -446,7 +536,7 @@ namespace HoloToolkit.Unity.InputModule
                 unityUiPointerEvent.pressPosition = unityUiPointerEvent.position;
                 unityUiPointerEvent.pointerPressRaycast = unityUiPointerEvent.pointerCurrentRaycast;
 
-                HandleEvent(unityUiPointerEvent, ExecuteEvents.pointerDownHandler);
+                HandleBaseEvent(unityUiPointerEvent, ExecuteEvents.pointerDownHandler);
             }
         }
 

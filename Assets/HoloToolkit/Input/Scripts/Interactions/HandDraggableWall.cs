@@ -115,7 +115,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Add self as a modal input handler, to get all inputs during the manipulation
-            InputManager.Instance.PushModalInputHandler(gameObject);
+            //InputManager.Instance.PushModalInputHandler(gameObject);
+            InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
 
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
@@ -277,7 +278,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Remove self as a modal input handler
-            InputManager.Instance.PopModalInputHandler();
+            //InputManager.Instance.PopModalInputHandler();
+            InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
 
             isDragging = false;
             currentInputSource = null;
