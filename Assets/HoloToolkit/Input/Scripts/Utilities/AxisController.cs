@@ -470,7 +470,9 @@ namespace HoloToolkit.Unity.InputModule
             }
             else if (this.buttonType == ButtonController.ButtonType.Space)
             {
-                return Input.GetKey(KeyCode.Space);
+                // TODO temporarily changed space to keypadplus
+                //return Input.GetKey(KeyCode.Space);
+                return Input.GetKey(KeyCode.KeypadPlus);
             }
             else if (this.buttonType == ButtonController.ButtonType.Return)
             {

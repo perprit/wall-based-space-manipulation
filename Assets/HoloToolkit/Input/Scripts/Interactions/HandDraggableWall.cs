@@ -215,7 +215,7 @@ namespace HoloToolkit.Unity.InputModule
             float distanceOffset = distanceRatio > 0 ? (distanceRatio - 1f) * DistanceScale : 0;
             float targetDistance = objRefDistance + distanceOffset;
 
-            DebugTextController.Instance.SetMessage(currenthandDistance.ToString("F4") + " / " + handRefDistance.ToString("F4"));
+            //DebugTextController.Instance.SetMessage(currenthandDistance.ToString("F4") + " / " + handRefDistance.ToString("F4"));
 
             draggingPosition = pivotPosition + targetDirection * targetDistance;
             
@@ -242,7 +242,7 @@ namespace HoloToolkit.Unity.InputModule
             float dragMagnitude = Vector3.Magnitude(dragDirection);
             dragDirection = Vector3.Normalize(dragDirection);
             dragDirection = HostTransform.transform.TransformDirection(dragDirection);  // to world coord
-            HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.05f;
+            HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
             
             //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
 
@@ -331,6 +331,7 @@ namespace HoloToolkit.Unity.InputModule
 
             currentInputSource = eventData.InputSource;
             currentInputSourceId = eventData.SourceId;
+            RepositionManager.Instance.SetInputSource(currentInputSource, currentInputSourceId, RepositionManager.DraggableType.Wall);
             StartDragging();
         }
 

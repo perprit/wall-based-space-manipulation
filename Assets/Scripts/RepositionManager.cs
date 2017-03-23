@@ -32,7 +32,17 @@ namespace HoloToolkit.Unity.InputModule
 
         public void SetInputSource(IInputSource source, uint sourceId, DraggableType type)
         {
-
+            if(type == DraggableType.Wall)
+            {
+                wallInputSource = source;
+                wallInputSourceId = sourceId;
+            }
+            
+            if (type == DraggableType.Wall)
+            {
+                objectInputSource = source;
+                objectInputSourceId = sourceId;
+            }
         }
     }
 }
