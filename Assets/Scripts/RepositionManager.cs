@@ -69,7 +69,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (isDraggingWall)
                 {
-                    Debug.Log("Is dragging a wall already, StartReposition()/RepositionManager");
+                    Debug.Log("Is dragging a wall already, just pass over the call. StartReposition()/RepositionManager");
                     return;
                 }
 
@@ -93,7 +93,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (isDraggingItem)
                 {
-                    Debug.Log("Is dragging an item already, StartReposition()/RepositionManager");
+                    Debug.Log("Is dragging an item already, just pass over the call. StartReposition()/RepositionManager");
                     return;
                 }
 
@@ -106,14 +106,14 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
-        public void StopReposition(DraggableType type)
+        public void StopReposition(uint sourceId, DraggableType type)
         {
-            if (type == DraggableType.Wall)
+            if (sourceId == wallInputSourceId && type == DraggableType.Wall)
             {
                 isDraggingWall = false;
             }
 
-            if (type == DraggableType.Item)
+            if (sourceId == itemInputSourceId && type == DraggableType.Item)
             {
                 isDraggingItem = false;
             }

@@ -286,7 +286,7 @@ namespace HoloToolkit.Unity.InputModule
             // Remove self as a modal input handler
             //InputManager.Instance.PopModalInputHandler();
             InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
-            RepositionManager.Instance.StopReposition(DraggableType.Wall);
+            RepositionManager.Instance.StopReposition(currentInputSourceId, DraggableType.Wall);
 
             isDragging = false;
             currentInputSource = null;

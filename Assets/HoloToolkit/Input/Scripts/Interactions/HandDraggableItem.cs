@@ -265,7 +265,7 @@ namespace HoloToolkit.Unity.InputModule
             isDragging = false;
             currentInputSource = null;
 
-            RepositionManager.Instance.StopReposition(DraggableType.Item);
+            RepositionManager.Instance.StopReposition(currentInputSourceId, DraggableType.Item);
             StoppedDragging.RaiseEvent();
         }
 
