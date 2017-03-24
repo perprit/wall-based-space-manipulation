@@ -14,17 +14,18 @@ namespace HoloToolkit.Unity.InputModule
     /// <summary>
     /// Component that manages every aspects of movement of objects (which means, wall and object) with hands.
     /// Assumes that the user manipulates a wall in one hand and an virutal object in the other hand (irrelevant to hand dominance)
-    /// TODO every logic on position changes of objects needs to be migrated from HandDraggable classes.
+    /// TODO Every logic on position changes of objects needs to be migrated from HandDraggableWall and HandDraggableItem classes.
     /// </summary>
     public class RepositionManager : Singleton<RepositionManager>
     {
         // the range of the hand position that is recognizable
-        public float MinimumArmLength = 0.3f;
+        public float MinimumArmLength = 0.4f;
         public float MaximumArmLength = 0.8f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 1f;
-        public float DefaultDistanceScale = 2f;
+        public float DefaultMovementScale = 2f;
 
         public bool GenerateInitialWallObject = true;
+        public bool GlobalRepositionEveryObject = true;
 
         // variables for wall objects currently being dragged
         private IInputSource wallInputSource = null;
@@ -32,8 +33,7 @@ namespace HoloToolkit.Unity.InputModule
         private GameObject currentWallObject = null;
         private GameObject initialWallObject = null;
         private bool isDraggingWall = false;
-        private float currentDistanceToWall = 10f;
-        private float currentDistanceScale = 2f;
+        private float wallMovementScale;
 
         // variables for items (virtual objects) currently being dragged
         private IInputSource itemInputSource = null;
@@ -42,36 +42,74 @@ namespace HoloToolkit.Unity.InputModule
         private bool isDraggingItem = false;
 
         private Camera mainCamera;
-        private List<Transform> itemsTransforms;
 
-        // Use this for initialization
+        // TODO these 3 lists below that deal with items (virtual objects) should be encapsulated later
+        // * For this time, we assume that items are NOT newly added or removed during the runtime
+        private List<Transform> currentItemsTransforms;
+        List<Vector3> initialItemsPositions = new List<Vector3>();  // item's initial status
+        List<float> initialItemsDistances = new List<float>();
+
         void Start()
         {
             mainCamera = Camera.main;
-            itemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
+            wallMovementScale = DefaultMovementScale;
+            currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
         }
-
-        // Update is called once per frame
+        
         void Update()
         {
-            if (isDraggingWall)
-            {
-                Vector3 wallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                wallRefCameraPosition = Vector3.Scale(wallRefCameraPosition, new Vector3(1, 1, 0));
-                wallRefCameraPosition = initialWallObject.transform.TransformPoint(wallRefCameraPosition);
-                float wallCameraDistance = Vector3.Magnitude(wallRefCameraPosition - mainCamera.transform.position);
-                currentDistanceToWall = wallCameraDistance;
-
-                currentDistanceScale = currentDistanceToWall > MinimumDistanceToWall ?
-                                (currentDistanceToWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
-                                : DefaultDistanceScale;
-
-                DebugTextController.Instance.SetMessage(currentDistanceScale);
-            }
-
+            // destroy initialWallObject if not dragging now
             if (!isDraggingWall && initialWallObject != null)
             {
                 Destroy(initialWallObject);
+            }
+
+            if (isDraggingWall && initialWallObject != null)
+            {
+                // calculate initialDistanceToWall and wallMovementScale
+                Vector3 initialWallProjectedCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                initialWallProjectedCameraPosition = Vector3.Scale(initialWallProjectedCameraPosition, new Vector3(1, 1, 0));
+                initialWallProjectedCameraPosition = initialWallObject.transform.TransformPoint(initialWallProjectedCameraPosition);
+                float cameraDistanceToInitialWall = Vector3.Magnitude(initialWallProjectedCameraPosition - mainCamera.transform.position);
+
+                wallMovementScale = cameraDistanceToInitialWall > MinimumDistanceToWall ?
+                                (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
+                                : DefaultMovementScale;
+
+                // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
+                Vector3 wallProjectedCameraPosition = currentWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
+                wallProjectedCameraPosition = currentWallObject.transform.TransformPoint(wallProjectedCameraPosition);
+                float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+                float distanceScale = cameraDistanceToWall / cameraDistanceToInitialWall;    // TODO needs error handling for zero divide or something?
+
+                if(GlobalRepositionEveryObject)
+                {
+                    currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
+                    for (int i=0; i<currentItemsTransforms.Count; i++)
+                    {
+                        // items currently being dragged must be ignored in the global reposition
+                        if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
+                        {
+                            continue;
+                        }
+
+                        // the items not between the camera and the wall must not be affected
+                        if (cameraDistanceToWall < initialItemsDistances[i])
+                        {
+                            continue;
+                        }
+
+                        // TODO a bug exists in calculation
+                        Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
+                        Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                        Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
+                        cameraToItemDirection *= distanceScale;
+                        initialWallRefItemPosition = initialWallRefCameraPosition - cameraToItemDirection;
+                        initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
+                        currentItemsTransforms[i].position = initialWallRefItemPosition;
+                    }
+                }
             }
         }
 
@@ -85,17 +123,41 @@ namespace HoloToolkit.Unity.InputModule
                     return;
                 }
 
+                if (MaximumArmLength < MinimumArmLength)
+                {
+                    Debug.Log("MaximumArmLength < MinimumArmLength, just pass over the call. StartReposition()/RepositionManager");
+                    return;
+                }
+
                 wallInputSource = source;
                 wallInputSourceId = sourceId;
 
+                // initialize currentWallObject
                 currentWallObject = obj;
-                // for indicating and saving initial wall position
+
+                // for indicating initial wall position
                 initialWallObject = Instantiate(currentWallObject);
 
                 if (!GenerateInitialWallObject)
                 {
                     initialWallObject.GetComponent<MeshRenderer>().enabled = false;
                     initialWallObject.GetComponent<MeshCollider>().sharedMesh = null;
+                }
+
+                // save items initial positions and distances to the wall (which would be used for retoration)
+                // TODO encapsulate position and distance
+                initialItemsPositions = VirtualItemsManager.Instance.GetAllObjectPositions();
+                initialItemsDistances.Clear();
+
+                for (int i = 0; i < initialItemsPositions.Count; i++)
+                {
+                    // calculate initial distance to wall, by projecting the item's position into the wall in wall's z-axis
+                    Vector3 wallProjectedItemPosition = currentWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
+                    wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
+                    wallProjectedItemPosition = currentWallObject.transform.TransformPoint(wallProjectedItemPosition);
+                    float itemDistanceToWall = Vector3.Magnitude(wallProjectedItemPosition - initialItemsPositions[i]);
+
+                    initialItemsDistances.Add(itemDistanceToWall);
                 }
 
                 isDraggingWall = true;
@@ -123,7 +185,13 @@ namespace HoloToolkit.Unity.InputModule
             if (sourceId == wallInputSourceId && type == DraggableType.Wall)
             {
                 isDraggingWall = false;
-                currentDistanceToWall = DefaultDistanceScale;
+                wallMovementScale = DefaultMovementScale;
+
+                // restore items' position
+                for (int i=0; i<currentItemsTransforms.Count; i++)
+                {
+                    currentItemsTransforms[i].position = initialItemsPositions[i];
+                }
             }
 
             if (sourceId == itemInputSourceId && type == DraggableType.Item)
@@ -131,10 +199,11 @@ namespace HoloToolkit.Unity.InputModule
                 isDraggingItem = false;
             }
         }
-        
-        public float GetDistanceScale()
+
+        // TODO would be deprecated since reposition logic would be migrated to this class
+        public float GetWallMovementScale()
         {
-            return currentDistanceScale;
+            return wallMovementScale;
         }
     }
 }

@@ -396,8 +396,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -181, y: 201.7}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -102.8, y: 201.7}
+  m_SizeDelta: {x: 320, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &478432642
 MonoBehaviour:
@@ -734,7 +734,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7442cf77f6a195449943156fc4aee8df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childTransforms: []
 --- !u!1 &1440709413
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,9 +837,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c027af866f6f99478a1356d49e52035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallInitialPosition: {x: 0, y: 0, z: 0}
   MinimumArmLength: 0
   MaximumArmLength: 1
+  MinimumDistanceToWall: 1
+  DefaultDistanceScale: 2
+  GenerateInitialWallObject: 1
 --- !u!1001 &1654055036
 Prefab:
   m_ObjectHideFlags: 0

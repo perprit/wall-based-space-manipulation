@@ -9,7 +9,7 @@ namespace ManipulateWalls
     {
 
         private List<Transform> childTransforms = new List<Transform>();
-        
+
         void Start()
         {
             Transform[] transforms = gameObject.GetComponentsInChildren<Transform>();
@@ -31,6 +31,16 @@ namespace ManipulateWalls
         public List<Transform> GetAllObjectTransforms()
         {
             return childTransforms;
+        }
+
+        public List<Vector3> GetAllObjectPositions()
+        {
+            List<Vector3> positions = new List<Vector3>();
+            for(int i=0; i<childTransforms.Count; i++)
+            {
+                positions.Add(childTransforms[i].position);
+            }
+            return positions;
         }
     }
 }
