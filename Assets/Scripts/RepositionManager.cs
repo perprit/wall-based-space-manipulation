@@ -13,27 +13,27 @@ namespace HoloToolkit.Unity.InputModule
 
     public class RepositionManager : Singleton<RepositionManager>
     {
+        // the range of the hand position that is recognizable
+        public float MinimumArmLength = 0.3f;
+        public float MaximumArmLength = 0.7f;
 
+        public bool GenerateInitialWallObject = true;
+
+        // variables for wall objects currently being dragged
         private IInputSource wallInputSource = null;
         private uint wallInputSourceId;
-        private GameObject currentWallObject;
+        private GameObject currentWallObject = null;
+        private GameObject initialWallObject = null;
         private bool isDraggingWall = false;
-        private Transform initialWallTransform; 
 
+        // variables for items (virtual objects) currently being dragged
         private IInputSource itemInputSource = null;
         private uint itemInputSourceId;
-        private GameObject currentItemObject;
+        private GameObject currentItemObject = null;
         private bool isDraggingItem = false;
 
         private Camera mainCamera;
-
-        public Vector3 wallInitialPosition;
-
-        public float MinimumArmLength = 0f;
-        public float MaximumArmLength = 1f;
-
         private float MinimumDistanceToWall = 1f;
-
         private List<Transform> itemsTransforms;
 
         // Use this for initialization
@@ -48,50 +48,74 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (isDraggingWall)
             {
-                // TODO initialWallTransform needs deep copy
+                Vector3 wallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                wallRefCameraPosition = Vector3.Scale(wallRefCameraPosition, new Vector3(1, 1, 0));
+                wallRefCameraPosition = initialWallObject.transform.TransformPoint(wallRefCameraPosition);
+                float wallCameraDistance = Vector3.Magnitude(wallRefCameraPosition - mainCamera.transform.position);
+                DebugTextController.Instance.SetMessage(wallCameraDistance);
+                //Vector3 wallRefCameraPosition = 
                 // TODO calculate shortest distance between camera and wall, then rescale distance between every objects on the range of (1 ~ distance)
             }
+
+            if (!isDraggingWall && initialWallObject != null)
+            {
+                Destroy(initialWallObject);
+            }
         }
 
-        public void SetInputSource(IInputSource source, uint sourceId, DraggableType type)
+        public void StartReposition(IInputSource source, uint sourceId, GameObject obj, DraggableType type)
         {
-            if(type == DraggableType.Wall)
+            if (type == DraggableType.Wall)
             {
+                if (isDraggingWall)
+                {
+                    Debug.Log("Is dragging a wall already, StartReposition()/RepositionManager");
+                    return;
+                }
+
                 wallInputSource = source;
                 wallInputSourceId = sourceId;
+
+                currentWallObject = obj;
+                // for indicating and saving initial wall position
+                initialWallObject = Instantiate(currentWallObject);
+
+                if (!GenerateInitialWallObject)
+                {
+                    initialWallObject.GetComponent<MeshRenderer>().enabled = false;
+                    initialWallObject.GetComponent<MeshCollider>().sharedMesh = null;
+                }
+
+                isDraggingWall = true;
             }
-            
+
             if (type == DraggableType.Item)
             {
+                if (isDraggingItem)
+                {
+                    Debug.Log("Is dragging an item already, StartReposition()/RepositionManager");
+                    return;
+                }
+
                 itemInputSource = source;
                 itemInputSourceId = sourceId;
-            }
-        }
 
-        public void SetDraggingStatus(bool isDragging, DraggableType type)
-        {
-            if (type == DraggableType.Wall)
-            {
-                isDraggingWall = isDragging;
-            }
-
-            if (type == DraggableType.Item)
-            {
-                isDraggingItem = isDragging;
-            }
-        }
-
-        public void SetCurrentObject(GameObject obj, DraggableType type)
-        {
-            if (type == DraggableType.Wall)
-            {
-                currentWallObject = obj;
-                initialWallTransform = obj.transform;
-            }
-
-            if (type == DraggableType.Item)
-            {
                 currentItemObject = obj;
+
+                isDraggingItem = true;
+            }
+        }
+
+        public void StopReposition(DraggableType type)
+        {
+            if (type == DraggableType.Wall)
+            {
+                isDraggingWall = false;
+            }
+
+            if (type == DraggableType.Item)
+            {
+                isDraggingItem = false;
             }
         }
     }
