@@ -30,8 +30,8 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-        [Tooltip("Scale by which hand movement in z is multipled to move the dragged object.")]
-        public float DistanceScale = 2f;
+        //[Tooltip("Scale by which hand movement in z is multipled to move the dragged object.")]
+        //public float DistanceScale = 2f;
 
         [Tooltip("Should the object be kept upright as it is being dragged?")]
         public bool IsKeepUpright = false;
@@ -40,11 +40,6 @@ namespace HoloToolkit.Unity.InputModule
         public bool IsOrientTowardsUser = true;
 
         public bool IsDraggingEnabled = true;
-        
-        public float MinimumArmLength = 0f;
-        public float MaximumArmLength = 1f;
-
-        private float MinimumDistanceToWall = 1f;
 
         private Camera mainCamera;
         private bool isDragging;
@@ -214,6 +209,7 @@ namespace HoloToolkit.Unity.InputModule
             // pivot -> hand direction (in world coord)
             Vector3 newHandDirection = Vector3.Normalize(newHandPosition - pivotPosition);
 
+            /*
             newHandDirection = mainCamera.transform.InverseTransformDirection(newHandDirection); // in camera space
             Vector3 targetDirection = Vector3.Normalize(gazeAngularOffset * newHandDirection);
             targetDirection = mainCamera.transform.TransformDirection(targetDirection); // back to world space
@@ -240,6 +236,7 @@ namespace HoloToolkit.Unity.InputModule
                 Vector3 objForward = mainCamera.transform.TransformDirection(objRefForward); // in world space
                 draggingRotation = Quaternion.LookRotation(objForward);
             }
+            
 
             // Apply Final Position
             // transition through z-axis of target object 
@@ -257,6 +254,7 @@ namespace HoloToolkit.Unity.InputModule
             //HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
             //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
             //HostTransform.rotation = draggingRotation;
+            */
 
             Vector3 handMoveDirection = newHandPosition - initialHandPosition;
             handMoveDirection = HostTransform.transform.InverseTransformDirection(handMoveDirection);
@@ -264,7 +262,8 @@ namespace HoloToolkit.Unity.InputModule
             float handMoveMagnitude = Vector3.Magnitude(handMoveDirection);
             handMoveDirection = Vector3.Normalize(handMoveDirection);
             handMoveDirection = HostTransform.transform.TransformDirection(handMoveDirection);
-            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
+            //HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
+            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetDistanceScale();
 
             if (IsKeepUpright)
             {

@@ -11,11 +11,18 @@ namespace HoloToolkit.Unity.InputModule
         Wall, Item
     }
 
+    /// <summary>
+    /// Component that manages every aspects of movement of objects (which means, wall and object) with hands.
+    /// Assumes that the user manipulates a wall in one hand and an virutal object in the other hand (irrelevant to hand dominance)
+    /// TODO every logic on position changes of objects needs to be migrated from HandDraggable classes.
+    /// </summary>
     public class RepositionManager : Singleton<RepositionManager>
     {
         // the range of the hand position that is recognizable
         public float MinimumArmLength = 0.3f;
-        public float MaximumArmLength = 0.7f;
+        public float MaximumArmLength = 0.8f;   // MaximumArmLength must be bigger than MinimumArmLength!
+        public float MinimumDistanceToWall = 1f;
+        public float DefaultDistanceScale = 2f;
 
         public bool GenerateInitialWallObject = true;
 
@@ -25,6 +32,8 @@ namespace HoloToolkit.Unity.InputModule
         private GameObject currentWallObject = null;
         private GameObject initialWallObject = null;
         private bool isDraggingWall = false;
+        private float currentDistanceToWall = 10f;
+        private float currentDistanceScale = 2f;
 
         // variables for items (virtual objects) currently being dragged
         private IInputSource itemInputSource = null;
@@ -33,7 +42,6 @@ namespace HoloToolkit.Unity.InputModule
         private bool isDraggingItem = false;
 
         private Camera mainCamera;
-        private float MinimumDistanceToWall = 1f;
         private List<Transform> itemsTransforms;
 
         // Use this for initialization
@@ -52,9 +60,13 @@ namespace HoloToolkit.Unity.InputModule
                 wallRefCameraPosition = Vector3.Scale(wallRefCameraPosition, new Vector3(1, 1, 0));
                 wallRefCameraPosition = initialWallObject.transform.TransformPoint(wallRefCameraPosition);
                 float wallCameraDistance = Vector3.Magnitude(wallRefCameraPosition - mainCamera.transform.position);
-                DebugTextController.Instance.SetMessage(wallCameraDistance);
-                //Vector3 wallRefCameraPosition = 
-                // TODO calculate shortest distance between camera and wall, then rescale distance between every objects on the range of (1 ~ distance)
+                currentDistanceToWall = wallCameraDistance;
+
+                currentDistanceScale = currentDistanceToWall > MinimumDistanceToWall ?
+                                (currentDistanceToWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
+                                : DefaultDistanceScale;
+
+                DebugTextController.Instance.SetMessage(currentDistanceScale);
             }
 
             if (!isDraggingWall && initialWallObject != null)
@@ -111,12 +123,18 @@ namespace HoloToolkit.Unity.InputModule
             if (sourceId == wallInputSourceId && type == DraggableType.Wall)
             {
                 isDraggingWall = false;
+                currentDistanceToWall = DefaultDistanceScale;
             }
 
             if (sourceId == itemInputSourceId && type == DraggableType.Item)
             {
                 isDraggingItem = false;
             }
+        }
+        
+        public float GetDistanceScale()
+        {
+            return currentDistanceScale;
         }
     }
 }
