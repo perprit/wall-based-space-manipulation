@@ -886,7 +886,7 @@ MonoBehaviour:
   MaximumArmLength: 1
   MinimumDistanceToWall: 1
   DefaultMovementScale: 2
-  GenerateInitialWallObject: 1
+  GenerateInitialWallObject: 0
   GlobalRepositionEveryObject: 1
 --- !u!1001 &1654055036
 Prefab:

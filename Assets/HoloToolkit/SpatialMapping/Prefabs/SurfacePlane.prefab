@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 23000010797497162}
   - component: {fileID: 114000011287056714}
   - component: {fileID: 114625774774322064}
+  - component: {fileID: 64902941885299936}
   m_Layer: 0
   m_Name: SurfacePlane
   m_TagString: Untagged
@@ -82,6 +83,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000010593991404}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!64 &64902941885299936
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000010593991404}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 0
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!65 &65000010549037612
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -127,9 +142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
-  DistanceScale: 2
   IsKeepUpright: 0
   IsOrientTowardsUser: 0
   IsDraggingEnabled: 1
-  MinimumArmLength: 0
-  MaximumArmLength: 1
