@@ -45,7 +45,7 @@ namespace HoloToolkit.Unity.InputModule
 
         // TODO these 3 lists below that deal with items (virtual objects) should be encapsulated later
         // * For this time, we assume that items are NOT newly added or removed during the runtime
-        private List<Transform> currentItemsTransforms;
+        private List<Transform> currentItemsTransforms; // WARNING changes on Transform would be applied to the the objects
         List<Vector3> initialItemsPositions = new List<Vector3>();  // item's initial status
         List<float> initialItemsDistances = new List<float>();
 
@@ -81,6 +81,7 @@ namespace HoloToolkit.Unity.InputModule
                 wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
                 wallProjectedCameraPosition = currentWallObject.transform.TransformPoint(wallProjectedCameraPosition);
                 float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+
                 float distanceScale = cameraDistanceToWall / cameraDistanceToInitialWall;    // TODO needs error handling for zero divide or something?
 
                 if(GlobalRepositionEveryObject)
@@ -88,24 +89,23 @@ namespace HoloToolkit.Unity.InputModule
                     currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
                     for (int i=0; i<currentItemsTransforms.Count; i++)
                     {
-                        // items currently being dragged must be ignored in the global reposition
+                        // the item currently being dragged must be ignored in the global reposition
                         if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
                         {
                             continue;
                         }
 
-                        // the items not between the camera and the wall must not be affected
-                        if (cameraDistanceToWall < initialItemsDistances[i])
+                        // the items not between the camera and the initial wall must not be affected
+                        if (cameraDistanceToInitialWall < initialItemsDistances[i])
                         {
                             continue;
                         }
-
-                        // TODO a bug exists in calculation
+                        
                         Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
                         Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
                         Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
-                        cameraToItemDirection *= distanceScale;
-                        initialWallRefItemPosition = initialWallRefCameraPosition - cameraToItemDirection;
+                        cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
+                        initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
                         initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
                         currentItemsTransforms[i].position = initialWallRefItemPosition;
                     }

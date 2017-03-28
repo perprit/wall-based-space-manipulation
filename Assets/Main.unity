@@ -355,6 +355,11 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114000012864906760, guid: 3eddd1c29199313478dd3f912bfab2ab,
+        type: 2}
+      propertyPath: UseRailsNavigation
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3eddd1c29199313478dd3f912bfab2ab, type: 2}
   m_IsPrefabParent: 0
@@ -840,8 +845,9 @@ MonoBehaviour:
   MinimumArmLength: 0
   MaximumArmLength: 1
   MinimumDistanceToWall: 1
-  DefaultDistanceScale: 2
+  DefaultMovementScale: 2
   GenerateInitialWallObject: 1
+  GlobalRepositionEveryObject: 1
 --- !u!1001 &1654055036
 Prefab:
   m_ObjectHideFlags: 0
