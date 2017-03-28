@@ -30,9 +30,6 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-        //[Tooltip("Scale by which hand movement in z is multipled to move the dragged object.")]
-        //public float DistanceScale = 2f;
-
         [Tooltip("Should the object be kept upright as it is being dragged?")]
         public bool IsKeepUpright = false;
 

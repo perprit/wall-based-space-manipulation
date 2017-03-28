@@ -19,10 +19,10 @@ namespace HoloToolkit.Unity.InputModule
     public class RepositionManager : Singleton<RepositionManager>
     {
         // the range of the hand position that is recognizable
-        public float MinimumArmLength = 0.4f;
-        public float MaximumArmLength = 0.8f;   // MaximumArmLength must be bigger than MinimumArmLength!
+        public float MinimumArmLength = 0.3f;
+        public float MaximumArmLength = 0.6f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 1f;
-        public float DefaultMovementScale = 2f;
+        public float DefaultMovementScale = 5f;
 
         public bool GenerateInitialWallObject = true;
         public bool GlobalRepositionEveryObject = true;
@@ -40,6 +40,7 @@ namespace HoloToolkit.Unity.InputModule
         private uint itemInputSourceId;
         private GameObject currentItemObject = null;
         private bool isDraggingItem = false;
+        private float itemMovementScale = 5f;
 
         private Camera mainCamera;
 
@@ -75,6 +76,8 @@ namespace HoloToolkit.Unity.InputModule
                 wallMovementScale = cameraDistanceToInitialWall > MinimumDistanceToWall ?
                                 (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
                                 : DefaultMovementScale;
+
+                //DebugTextController.Instance.SetMessage(wallMovementScale);
 
                 // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
                 Vector3 wallProjectedCameraPosition = currentWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
@@ -204,6 +207,13 @@ namespace HoloToolkit.Unity.InputModule
         public float GetWallMovementScale()
         {
             return wallMovementScale;
+        }
+
+
+        // TODO would be deprecated since reposition logic would be migrated to this class
+        public float GetItemMovementScale()
+        {
+            return itemMovementScale;
         }
     }
 }

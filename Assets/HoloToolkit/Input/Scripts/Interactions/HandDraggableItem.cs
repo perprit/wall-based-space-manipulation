@@ -30,8 +30,6 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-        [Tooltip("Scale by which hand movement in z is multipled to move the dragged object.")]
-        public float DistanceScale = 3f;
 
         [Tooltip("Should the object be kept upright as it is being dragged?")]
         public bool IsKeepUpright = false;
@@ -197,8 +195,6 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
 
-            DebugTextController.Instance.SetMessage(newHandPosition.ToString());
-
             Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
             float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
 
@@ -238,7 +234,7 @@ namespace HoloToolkit.Unity.InputModule
             // Apply Final Position
             //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
             //HostTransform.position = draggingPosition + initialCameraTransform.TransformDirection(objRefGrabPoint);
-            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
+            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetItemMovementScale();
             //HostTransform.rotation = draggingRotation;
 
             if (IsKeepUpright)
