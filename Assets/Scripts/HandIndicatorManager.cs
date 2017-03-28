@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using HoloToolkit.Unity;
 using HoloToolkit.Unity.InputModule;
 
 namespace ManipulateWalls
 {
-    public class HandIndicatorManager : MonoBehaviour, ISourceStateHandler
+    public class HandIndicatorManager : Singleton<HandIndicatorManager>, ISourceStateHandler
     {
         class Hand
         {
@@ -37,6 +38,7 @@ namespace ManipulateWalls
         
         void Update()
         {
+            // update every position of indicators in handDictionary
             foreach(KeyValuePair<uint, Hand> entry in handDictionary)
             {
                 Hand hand = entry.Value;
