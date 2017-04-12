@@ -343,9 +343,10 @@ namespace HoloToolkit.Unity.InputModule
                 ExecuteEvents.Execute(globalListeners[i], eventData, eventHandler);
             }
             
+            // Handle a multiple of modal inputs
+            /*
             if (MultiModalInputDictionary.Count > 0 && MultiModalInputDictionary.ContainsKey(eventData.SourceId))
             {
-                //Debug.Log("sourceId: " + eventData.SourceId + " / count: " + MultiModalInputDictionary.Count);
                 GameObject modalInput = MultiModalInputDictionary[eventData.SourceId];
                 if (eventData.InputSource != null && modalInput != null)
                 {
@@ -355,9 +356,9 @@ namespace HoloToolkit.Unity.InputModule
                     }
                 }
             }
+            */
             
-            /*
-            // Handle modal input if one exists
+            // Handle only one modal input if one exists
             if (modalInputStack.Count > 0)
             {
                 GameObject modalInput = modalInputStack.Peek();
@@ -382,7 +383,7 @@ namespace HoloToolkit.Unity.InputModule
                     }
                 }
             }
-            */
+
             // If event was not handled by modal, pass it on to the current focused object
             if (GazeManager.Instance.HitObject != null)
             {

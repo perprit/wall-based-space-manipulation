@@ -42,18 +42,10 @@ namespace HoloToolkit.Unity.InputModule
         private Camera mainCamera;
         private bool isDragging;
         private bool isGazed;
-        //private Vector3 objRefForward;
-        //private Vector3 objRefUp;
-        //private float objRefDistance;
-        //private Quaternion gazeAngularOffset;
-        //private float handRefDistance;
-        //private Vector3 objRefGrabPoint;
 
         private Transform initialCameraTransform;
         private Vector3 initialHandPosition;
         private Vector3 initialObjPosition;
-
-        //private Vector3 initialPivotPosition;
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
@@ -110,8 +102,8 @@ namespace HoloToolkit.Unity.InputModule
             RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Item);
 
             // Add self as a modal input handler, to get all inputs during the manipulation
-            //InputManager.Instance.PushModalInputHandler(gameObject);
-            InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
+            InputManager.Instance.PushModalInputHandler(gameObject);
+            //InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
 
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
@@ -253,8 +245,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Remove self as a modal input handler
-            //InputManager.Instance.PopModalInputHandler();
-            InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
+            InputManager.Instance.PopModalInputHandler();
+            //InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
 
             isDragging = false;
             currentInputSource = null;
