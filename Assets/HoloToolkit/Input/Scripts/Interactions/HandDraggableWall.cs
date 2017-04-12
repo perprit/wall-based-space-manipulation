@@ -197,61 +197,11 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
 
-            //Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
-            //float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
-
             // pivot: my neck
             Vector3 pivotPosition = GetHandPivotPosition();
 
             // pivot -> hand direction (in world coord)
             Vector3 newHandDirection = Vector3.Normalize(newHandPosition - pivotPosition);
-
-            /*
-            newHandDirection = mainCamera.transform.InverseTransformDirection(newHandDirection); // in camera space
-            Vector3 targetDirection = Vector3.Normalize(gazeAngularOffset * newHandDirection);
-            targetDirection = mainCamera.transform.TransformDirection(targetDirection); // back to world space
-
-            // pivot -> hand magnitude
-            
-            float currenthandDistance = Vector3.Magnitude(newHandPosition - pivotPosition);
-
-            float distanceRatio = currenthandDistance / handRefDistance;
-            float distanceOffset = distanceRatio > 0 ? (distanceRatio - 1f) * DistanceScale : 0;
-            float targetDistance = objRefDistance + distanceOffset;
-
-            //DebugTextController.Instance.SetMessage(currenthandDistance.ToString("F4") + " / " + handRefDistance.ToString("F4"));
-
-            draggingPosition = pivotPosition + targetDirection * targetDistance;
-            
-
-            if (IsOrientTowardsUser)
-            {
-                draggingRotation = Quaternion.LookRotation(HostTransform.position - pivotPosition);
-            }
-            else
-            {
-                Vector3 objForward = mainCamera.transform.TransformDirection(objRefForward); // in world space
-                draggingRotation = Quaternion.LookRotation(objForward);
-            }
-            
-
-            // Apply Final Position
-            // transition through z-axis of target object 
-            
-            Vector3 newPosition = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
-            Vector3 dragFrom = HostTransform.transform.InverseTransformPoint(initialHostTransformPosition);
-            Vector3 dragTo = HostTransform.transform.InverseTransformPoint(newPosition);
-            Vector3 dragDirection = dragTo - dragFrom;
-            //dragDirection = HostTransform.transform.InverseTransformDirection(dragDirection);
-            dragDirection = Vector3.Scale(dragDirection, Vector3.forward);
-            float dragMagnitude = Vector3.Magnitude(dragDirection);
-            dragDirection = Vector3.Normalize(dragDirection);
-            dragDirection = HostTransform.transform.TransformDirection(dragDirection);  // to world coord
-
-            //HostTransform.position = initialHostTransformPosition + dragDirection * dragMagnitude * 0.02f;
-            //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
-            //HostTransform.rotation = draggingRotation;
-            */
 
             Vector3 handMoveDirection = newHandPosition - initialHandPosition;
             handMoveDirection = HostTransform.transform.InverseTransformDirection(handMoveDirection);
