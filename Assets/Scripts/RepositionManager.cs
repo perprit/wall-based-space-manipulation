@@ -21,7 +21,7 @@ namespace HoloToolkit.Unity.InputModule
         // the range of the hand position that is recognizable
         public float MinimumArmLength = 0.35f;
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
-        public float MinimumDistanceToWall = 1f;
+        public float MinimumDistanceToWall = 0.5f;
         public float DefaultMovementScale = 5f;
 
         public bool GenerateInitialWallObject = true;
@@ -45,7 +45,7 @@ namespace HoloToolkit.Unity.InputModule
         private Camera mainCamera;
 
         // TODO these 3 lists below that deal with items (virtual objects) should be encapsulated later
-        // * For this time, we assume that items are NOT newly added or removed during the runtime
+        // * For now, we assume that items are NOT newly added or removed during the runtime
         private List<Transform> currentItemsTransforms; // WARNING changes on Transform would be applied to the the objects
         List<Vector3> initialItemsPositions = new List<Vector3>();  // item's initial status
         List<float> initialItemsDistances = new List<float>();
