@@ -43,9 +43,11 @@ namespace HoloToolkit.Unity.InputModule
         private bool isDragging;
         private bool isGazed;
 
-        private Transform initialCameraTransform;
+        private Vector3 initialCameraPosition;
         private Vector3 initialHandPosition;
         private Vector3 initialObjPosition;
+
+        private Vector3 initialHandVector;
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
@@ -111,7 +113,8 @@ namespace HoloToolkit.Unity.InputModule
             
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
 
-            initialCameraTransform = mainCamera.transform;
+            initialHandVector = initialHandPosition - mainCamera.transform.position;
+            initialCameraPosition = mainCamera.transform.position;
             initialObjPosition = HostTransform.position;
 
             StartedDragging.RaiseEvent();
@@ -144,10 +147,18 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 newHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
 
+            /*
             Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
             float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
             
             HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetItemMovementScale();
+            */
+
+            Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
+            Vector3 newHandVector = newHandPosition - mainCamera.transform.position;
+            Vector3 handMovement = newHandVector - initialHandVector;
+
+            HostTransform.position = initialObjPosition + headMovement + handMovement * RepositionManager.Instance.GetItemMovementScale();
 
             if (IsKeepUpright)
             {
