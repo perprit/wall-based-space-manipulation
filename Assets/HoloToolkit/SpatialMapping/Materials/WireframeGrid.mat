@@ -6,17 +6,23 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Wireframe
-  m_Shader: {fileID: 4800000, guid: 0d08dd59087697b44a68a02cc9a7c3a2, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 5
-  m_CustomRenderQueue: 2000
+  m_Name: WireframeGrid
+  m_Shader: {fileID: 4800000, guid: 2cc80a2e0cc717a4cb2b92114fbe5def, type: 3}
+  m_ShaderKeywords: _EMISSION
+  m_LightmapFlags: 1
+  m_CustomRenderQueue: -1
   stringTagMap: {}
   m_SavedProperties:
     serializedVersion: 2
     m_TexEnvs:
     - first:
         name: _BumpMap
+      second:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - first:
+        name: _Cube
       second:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -71,6 +77,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - first:
+        name: _Alpha
+      second: 1
+    - first:
+        name: _Brightness
+      second: 1
+    - first:
         name: _BumpScale
       second: 1
     - first:
@@ -92,6 +104,21 @@ Material:
         name: _GlossyReflections
       second: 1
     - first:
+        name: _GridSpacing
+      second: 0.02
+    - first:
+        name: _GridThickness
+      second: 0.01
+    - first:
+        name: _Iridecence
+      second: 0.02
+    - first:
+        name: _LineScale
+      second: 0.02
+    - first:
+        name: _LinesPerMeter
+      second: 4
+    - first:
         name: _Metallic
       second: 0
     - first:
@@ -103,6 +130,15 @@ Material:
     - first:
         name: _Parallax
       second: 0.02
+    - first:
+        name: _ReflectionAmount
+      second: 0.5
+    - first:
+        name: _ReflectionBlur
+      second: 0
+    - first:
+        name: _Side_Brightness
+      second: 1
     - first:
         name: _SmoothnessTextureChannel
       second: 0
@@ -117,7 +153,7 @@ Material:
       second: 0
     - first:
         name: _WireThickness
-      second: 200
+      second: 100
     - first:
         name: _ZWrite
       second: 1
@@ -126,11 +162,26 @@ Material:
         name: _BaseColor
       second: {r: 0, g: 0, b: 0, a: 1}
     - first:
+        name: _BaseColour
+      second: {r: 0, g: 0, b: 0, a: 0}
+    - first:
         name: _Color
       second: {r: 1, g: 1, b: 1, a: 1}
     - first:
         name: _EmissionColor
       second: {r: 0, g: 0, b: 0, a: 1}
+    - first:
+        name: _GridColour
+      second: {r: 1, g: 1, b: 1, a: 1}
+    - first:
+        name: _Light_Dir
+      second: {r: 0.5, g: -1, b: 0, a: 10}
+    - first:
+        name: _Material_Color
+      second: {r: 0, g: 0.5, b: 1, a: 1}
+    - first:
+        name: _Reflection_Tint
+      second: {r: 1, g: 1, b: 1, a: 1}
     - first:
         name: _WireColor
       second: {r: 1, g: 1, b: 1, a: 1}

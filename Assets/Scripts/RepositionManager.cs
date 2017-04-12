@@ -19,8 +19,8 @@ namespace HoloToolkit.Unity.InputModule
     public class RepositionManager : Singleton<RepositionManager>
     {
         // the range of the hand position that is recognizable
-        public float MinimumArmLength = 0.3f;
-        public float MaximumArmLength = 0.6f;   // MaximumArmLength must be bigger than MinimumArmLength!
+        public float MinimumArmLength = 0.35f;
+        public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 1f;
         public float DefaultMovementScale = 5f;
 
@@ -90,27 +90,36 @@ namespace HoloToolkit.Unity.InputModule
                 if(GlobalRepositionEveryObject)
                 {
                     currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
-                    for (int i=0; i<currentItemsTransforms.Count; i++)
+                    for (int i = 0; i < currentItemsTransforms.Count; i++)
                     {
-                        // the item currently being dragged must be ignored in the global reposition
-                        if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
-                        {
-                            continue;
-                        }
-
                         // the items not between the camera and the initial wall must not be affected
                         if (cameraDistanceToInitialWall < initialItemsDistances[i])
                         {
                             continue;
                         }
-                        
-                        Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
-                        Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                        Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
-                        cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
-                        initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
-                        initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
-                        currentItemsTransforms[i].position = initialWallRefItemPosition;
+
+                        // the item currently being dragged
+                        if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
+                        {
+                            Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(currentItemsTransforms[i].position);
+                            Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
+                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1/distanceScale));
+                            initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
+                            initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
+                            initialItemsPositions[i] = initialWallRefItemPosition;
+                        }
+                        // otherwise..
+                        else
+                        {
+                            Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
+                            Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
+                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
+                            initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
+                            initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
+                            currentItemsTransforms[i].position = initialWallRefItemPosition;
+                        }
                     }
                 }
             }
@@ -122,13 +131,13 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (isDraggingWall)
                 {
-                    Debug.Log("Is dragging a wall already, just pass over the call. StartReposition()/RepositionManager");
+                    Debug.Log("Is dragging a wall already. StartReposition()/RepositionManager");
                     return;
                 }
 
                 if (MaximumArmLength < MinimumArmLength)
                 {
-                    Debug.Log("MaximumArmLength < MinimumArmLength, just pass over the call. StartReposition()/RepositionManager");
+                    Debug.Log("MaximumArmLength < MinimumArmLength. StartReposition()/RepositionManager");
                     return;
                 }
 
@@ -170,7 +179,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (isDraggingItem)
                 {
-                    Debug.Log("Is dragging an item already, just pass over the call. StartReposition()/RepositionManager");
+                    Debug.Log("Is dragging an item already. StartReposition()/RepositionManager");
                     return;
                 }
 

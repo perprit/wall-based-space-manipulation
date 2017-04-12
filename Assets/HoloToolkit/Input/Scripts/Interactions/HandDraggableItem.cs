@@ -112,7 +112,6 @@ namespace HoloToolkit.Unity.InputModule
             // Add self as a modal input handler, to get all inputs during the manipulation
             //InputManager.Instance.PushModalInputHandler(gameObject);
             InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
-            //Debug.Log("StartDragging, InputSourceId: " + currentInputSourceId);
 
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
@@ -232,8 +231,7 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Apply Final Position
-            //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);
-            //HostTransform.position = draggingPosition + initialCameraTransform.TransformDirection(objRefGrabPoint);
+            //HostTransform.position = draggingPosition + mainCamera.transform.TransformDirection(objRefGrabPoint);\
             HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetItemMovementScale();
             //HostTransform.rotation = draggingRotation;
 
@@ -320,8 +318,7 @@ namespace HoloToolkit.Unity.InputModule
 
             currentInputSource = eventData.InputSource;
             currentInputSourceId = eventData.SourceId;
-
-            //Debug.Log("OnInputDown/HandDraggableObject, SourceId: " + currentInputSourceId);
+            
             StartDragging();
         }
 
