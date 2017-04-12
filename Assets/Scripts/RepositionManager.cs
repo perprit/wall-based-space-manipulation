@@ -40,7 +40,7 @@ namespace HoloToolkit.Unity.InputModule
         private uint itemInputSourceId;
         private GameObject currentItemObject = null;
         private bool isDraggingItem = false;
-        private float itemMovementScale = 5f;
+        private float itemMovementScale;
 
         private Camera mainCamera;
 
@@ -54,6 +54,7 @@ namespace HoloToolkit.Unity.InputModule
         {
             mainCamera = Camera.main;
             wallMovementScale = DefaultMovementScale;
+            itemMovementScale = DefaultMovementScale;
             currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
         }
         
@@ -75,7 +76,7 @@ namespace HoloToolkit.Unity.InputModule
 
                 wallMovementScale = cameraDistanceToInitialWall > MinimumDistanceToWall ?
                                 (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
-                                : DefaultMovementScale;
+                                : 0;
 
                 //DebugTextController.Instance.SetMessage(wallMovementScale);
 

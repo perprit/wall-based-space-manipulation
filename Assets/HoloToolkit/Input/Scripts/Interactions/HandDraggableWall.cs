@@ -211,7 +211,7 @@ namespace HoloToolkit.Unity.InputModule
             handMoveDirection = HostTransform.transform.TransformDirection(handMoveDirection);
             //HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * DistanceScale;
             // TODO scaling method is not mathematically correct
-            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetWallMovementScale() * 2.5f;
+            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetWallMovementScale();
 
             if (IsKeepUpright)
             {

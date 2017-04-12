@@ -882,10 +882,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c027af866f6f99478a1356d49e52035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MinimumArmLength: 0
-  MaximumArmLength: 1
-  MinimumDistanceToWall: 1
-  DefaultMovementScale: 2
+  MinimumArmLength: 0.3
+  MaximumArmLength: 0.55
+  MinimumDistanceToWall: 0.5
+  DefaultMovementScale: 5
   GenerateInitialWallObject: 0
   GlobalRepositionEveryObject: 1
 --- !u!1 &1597151798
