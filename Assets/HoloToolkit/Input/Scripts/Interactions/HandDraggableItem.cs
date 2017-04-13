@@ -165,7 +165,6 @@ namespace HoloToolkit.Unity.InputModule
             float distRatio = cameraToHandDist != 0 ? cameraToObjDist / cameraToHandDist : 1;
             
             HostTransform.position = initialObjPosition + headMovement + handMovement * distRatio;
-            //HostTransform.position = initialObjPosition + headMovement + handMovement * RepositionManager.Instance.GetItemMovementScale();
 
             /*
             if (IsKeepUpright)

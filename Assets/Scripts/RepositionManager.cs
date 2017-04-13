@@ -19,7 +19,7 @@ namespace HoloToolkit.Unity.InputModule
     public class RepositionManager : Singleton<RepositionManager>
     {
         // the range of the hand position that is recognizable
-        public float MinimumArmLength = 0.35f;
+        public float MinimumArmLength = 0.3f;
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 0.5f;
         public float DefaultMovementScale = 5f;
@@ -99,7 +99,7 @@ namespace HoloToolkit.Unity.InputModule
                             continue;
                         }
 
-                        // the item currently being dragged
+                        // initial position of the item currently being dragged is recalculated in real time
                         if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
                         {
                             Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(currentItemsTransforms[i].position);
