@@ -48,7 +48,7 @@ namespace HoloToolkit.Unity.InputModule
 
         private Vector3 initialHandVector;
         // for smoothing movement
-        private Vector3 prevHandVector;
+        private Vector3 prevHandPosition;
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
@@ -117,7 +117,7 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
 
             initialHandVector = initialHandPosition - mainCamera.transform.position;
-            prevHandVector = initialHandVector;
+            prevHandPosition = initialHandPosition;
             initialCameraPosition = mainCamera.transform.position;
             initialObjPosition = HostTransform.position;
 
@@ -148,30 +148,34 @@ namespace HoloToolkit.Unity.InputModule
         /// </summary>
         private void UpdateDragging()
         {
-            Vector3 newHandPosition;
-            currentInputSource.TryGetPosition(currentInputSourceId, out newHandPosition);
-
-            /*
-            Vector3 handMoveDirection = Vector3.Normalize(newHandPosition - initialHandPosition);
-            float handMoveMagnitude = Vector3.Magnitude(newHandPosition - initialHandPosition);
+            Vector3 handPosition;
+            currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
             
-            HostTransform.position = initialObjPosition + handMoveDirection * handMoveMagnitude * RepositionManager.Instance.GetItemMovementScale();
-            */
+            // hand position after smoothing
+            handPosition = handPosition * 0.5f + prevHandPosition * 0.5f;
 
             Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
-            Vector3 newHandVector = newHandPosition - mainCamera.transform.position;
-            Vector3 handMovement = newHandVector - initialHandVector;
-            Vector3 prevHandMovement = prevHandVector - initialHandVector;
+
+            Vector3 handVector = handPosition - mainCamera.transform.position;
+            Vector3 handMovement = handVector - initialHandVector;
+
+            float cameraToObjDist= Vector3.Magnitude(HostTransform.position - mainCamera.transform.position);
+            float cameraToHandDist = Vector3.Magnitude(handPosition - mainCamera.transform.position);
+
+            float distRatio = cameraToHandDist != 0 ? cameraToObjDist / cameraToHandDist : 1;
             
-            HostTransform.position = initialObjPosition + headMovement + (handMovement * 0.5f + prevHandMovement * 0.5f) * RepositionManager.Instance.GetItemMovementScale();
+            HostTransform.position = initialObjPosition + headMovement + handMovement * distRatio;
             //HostTransform.position = initialObjPosition + headMovement + handMovement * RepositionManager.Instance.GetItemMovementScale();
 
+            /*
             if (IsKeepUpright)
             {
                 Quaternion upRotation = Quaternion.FromToRotation(HostTransform.up, Vector3.up);
                 HostTransform.rotation = upRotation * HostTransform.rotation;
             }
-            prevHandVector = newHandVector;
+            */
+
+            prevHandPosition = handPosition;
         }
 
         /// <summary>
