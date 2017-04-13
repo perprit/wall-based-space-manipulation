@@ -44,10 +44,11 @@ namespace HoloToolkit.Unity.InputModule
         private bool isGazed;
 
         private Vector3 initialCameraPosition;
-        private Vector3 initialHandPosition;
         private Vector3 initialObjPosition;
 
         private Vector3 initialHandVector;
+        // for smoothing movement
+        private Vector3 prevHandVector;
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
@@ -110,10 +111,13 @@ namespace HoloToolkit.Unity.InputModule
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
             //GazeCursor.Instance.SetTargetObject(HostTransform);
+
+            Vector3 initialHandPosition;
             
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
 
             initialHandVector = initialHandPosition - mainCamera.transform.position;
+            prevHandVector = initialHandVector;
             initialCameraPosition = mainCamera.transform.position;
             initialObjPosition = HostTransform.position;
 
@@ -157,14 +161,17 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
             Vector3 newHandVector = newHandPosition - mainCamera.transform.position;
             Vector3 handMovement = newHandVector - initialHandVector;
-
-            HostTransform.position = initialObjPosition + headMovement + handMovement * RepositionManager.Instance.GetItemMovementScale();
+            Vector3 prevHandMovement = prevHandVector - initialHandVector;
+            
+            HostTransform.position = initialObjPosition + headMovement + (handMovement * 0.5f + prevHandMovement * 0.5f) * RepositionManager.Instance.GetItemMovementScale();
+            //HostTransform.position = initialObjPosition + headMovement + handMovement * RepositionManager.Instance.GetItemMovementScale();
 
             if (IsKeepUpright)
             {
                 Quaternion upRotation = Quaternion.FromToRotation(HostTransform.up, Vector3.up);
                 HostTransform.rotation = upRotation * HostTransform.rotation;
             }
+            prevHandVector = newHandVector;
         }
 
         /// <summary>

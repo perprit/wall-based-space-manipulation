@@ -44,8 +44,8 @@ namespace ManipulateWalls
                 Hand hand = entry.Value;
                 Vector3 indicatorPosition;
                 hand.inputSource.TryGetPosition(entry.Key, out indicatorPosition);
-                DebugTextController.Instance.SetMessage("Camera: " + Camera.main.transform.position.ToString("F3"));
-                DebugTextController.Instance.AddMessage("Source: " + Camera.main.transform.InverseTransformPoint(indicatorPosition).ToString("F3"));
+                //DebugTextController.Instance.SetMessage("Camera: " + Camera.main.transform.position.ToString("F3"));
+                //DebugTextController.Instance.AddMessage("Source: " + Camera.main.transform.InverseTransformPoint(indicatorPosition).ToString("F3"));
                 // indicator must be farther than 0.85m in z-axis (near clipping plane) to be able to be seen
                 indicatorPosition = Camera.main.transform.InverseTransformPoint(indicatorPosition);
                 indicatorPosition += new Vector3(0, 0, 0.85f);
