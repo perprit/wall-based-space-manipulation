@@ -342,8 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebd2420bb2caaa84cb4afa5d0ef67c0c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HandIndicatorPrefab: {fileID: 1795024963089666, guid: d472c2980d3a26c4cb154c2a16eb41d5,
-    type: 2}
+  HandIndicatorPrefab: {fileID: 173238, guid: 63b112b193820c9458f19fe4f0cc625a, type: 2}
 --- !u!1001 &287348020
 Prefab:
   m_ObjectHideFlags: 0
