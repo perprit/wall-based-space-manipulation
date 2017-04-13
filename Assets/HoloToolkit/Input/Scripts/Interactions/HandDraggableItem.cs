@@ -39,6 +39,8 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool IsDraggingEnabled = true;
 
+        public float SmoothingRatio = 0.5f;
+
         private Camera mainCamera;
         private bool isDragging;
         private bool isGazed;
@@ -47,8 +49,7 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 initialObjPosition;
 
         private Vector3 initialHandVector;
-        // for smoothing movement
-        private Vector3 prevHandPosition;
+        private Vector3 prevHandPosition;   // for smoothing
 
         private Vector3 draggingPosition;
         private Quaternion draggingRotation;
@@ -150,9 +151,9 @@ namespace HoloToolkit.Unity.InputModule
         {
             Vector3 handPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
-            
+
             // hand position after smoothing
-            handPosition = handPosition * 0.5f + prevHandPosition * 0.5f;
+            handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
 
             Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
 
