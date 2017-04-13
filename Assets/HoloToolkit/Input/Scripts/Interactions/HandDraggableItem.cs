@@ -116,7 +116,6 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 initialHandPosition;
             
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
-
             initialHandVector = initialHandPosition - mainCamera.transform.position;
             prevHandPosition = initialHandPosition;
             initialCameraPosition = mainCamera.transform.position;
@@ -151,19 +150,18 @@ namespace HoloToolkit.Unity.InputModule
         {
             Vector3 handPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
-
+            
             // hand position after smoothing
             handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
 
             Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
-
             Vector3 handVector = handPosition - mainCamera.transform.position;
             Vector3 handMovement = handVector - initialHandVector;
 
             float cameraToObjDist= Vector3.Magnitude(HostTransform.position - mainCamera.transform.position);
             float cameraToHandDist = Vector3.Magnitude(handPosition - mainCamera.transform.position);
 
-            float distRatio = cameraToHandDist != 0 ? cameraToObjDist / cameraToHandDist : 1;
+            float distRatio = cameraToHandDist > 0.1f && cameraToObjDist > 0.1f ? cameraToObjDist / cameraToHandDist : 1f;
             
             HostTransform.position = initialObjPosition + headMovement + handMovement * distRatio;
 

@@ -21,7 +21,7 @@ namespace HoloToolkit.Unity.InputModule
         // the range of the hand position that is recognizable
         public float MinimumArmLength = 0.3f;
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
-        public float MinimumDistanceToWall = 0.5f;
+        public float MinimumDistanceToWall = 1.5f;
         public float DefaultMovementScale = 5f;
 
         public bool GenerateInitialWallObject = true;
@@ -33,6 +33,7 @@ namespace HoloToolkit.Unity.InputModule
         private GameObject currentWallObject = null;
         private GameObject initialWallObject = null;
         private bool isDraggingWall = false;
+        private bool isLocked = false;
         private float wallMovementScale;
 
         // variables for items (virtual objects) currently being dragged
@@ -40,7 +41,6 @@ namespace HoloToolkit.Unity.InputModule
         private uint itemInputSourceId;
         private GameObject currentItemObject = null;
         private bool isDraggingItem = false;
-        private float itemMovementScale;
 
         private Camera mainCamera;
 
@@ -54,7 +54,6 @@ namespace HoloToolkit.Unity.InputModule
         {
             mainCamera = Camera.main;
             wallMovementScale = DefaultMovementScale;
-            itemMovementScale = DefaultMovementScale;
             currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
         }
         
@@ -74,17 +73,14 @@ namespace HoloToolkit.Unity.InputModule
                 initialWallProjectedCameraPosition = initialWallObject.transform.TransformPoint(initialWallProjectedCameraPosition);
                 float cameraDistanceToInitialWall = Vector3.Magnitude(initialWallProjectedCameraPosition - mainCamera.transform.position);
 
-                wallMovementScale = cameraDistanceToInitialWall > MinimumDistanceToWall ?
-                                (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength)
-                                : 0;
-
-                //DebugTextController.Instance.SetMessage(wallMovementScale);
-
                 // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
                 Vector3 wallProjectedCameraPosition = currentWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
                 wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
                 wallProjectedCameraPosition = currentWallObject.transform.TransformPoint(wallProjectedCameraPosition);
                 float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+
+                wallMovementScale = cameraDistanceToWall > MinimumDistanceToWall ?
+                                (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength) : 0;
 
                 float distanceScale = cameraDistanceToWall / cameraDistanceToInitialWall;    // TODO needs error handling for zero divide or something?
 
@@ -217,13 +213,6 @@ namespace HoloToolkit.Unity.InputModule
         public float GetWallMovementScale()
         {
             return wallMovementScale;
-        }
-
-
-        // TODO would be deprecated since reposition logic would be migrated to this class
-        public float GetItemMovementScale()
-        {
-            return itemMovementScale;
         }
     }
 }

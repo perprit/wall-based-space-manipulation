@@ -44,10 +44,9 @@ namespace HoloToolkit.Unity.InputModule
         private bool isDragging;
         private bool isGazed;
 
-        private Vector3 initialPosition;
-        private Quaternion initialRotation;
+        private Vector3 initialObjPosition;
 
-        private Vector3 initialHandPosition;
+        private Vector3 initialHandVector;
         private Vector3 prevHandPosition;       // for smoothing
 
         private IInputSource currentInputSource = null;
@@ -108,12 +107,13 @@ namespace HoloToolkit.Unity.InputModule
             isDragging = true;
             //GazeCursor.Instance.SetState(GazeCursor.State.Move);
             //GazeCursor.Instance.SetTargetObject(HostTransform);
-            
+
+            Vector3 initialHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
+            initialHandVector = initialHandPosition - mainCamera.transform.position;
             prevHandPosition = initialHandPosition;
 
-            initialPosition = HostTransform.position;
-            initialRotation = HostTransform.rotation;
+            initialObjPosition = HostTransform.position;
 
             StartedDragging.RaiseEvent();
         }
@@ -148,14 +148,16 @@ namespace HoloToolkit.Unity.InputModule
 
             // smoothing hand position
             handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
-
-            Vector3 handMovement = handPosition - initialHandPosition;
+            
+            Vector3 handVector = handPosition - mainCamera.transform.position;
+            Vector3 handMovement = handVector - initialHandVector;
 
             // calculate hand movement along the normal of the wall object
             handMovement = HostTransform.transform.InverseTransformDirection(handMovement);
             handMovement = Vector3.Scale(handMovement, Vector3.forward);
             handMovement = HostTransform.transform.TransformDirection(handMovement);
-            HostTransform.position = initialPosition + handMovement * RepositionManager.Instance.GetWallMovementScale();
+
+            HostTransform.position = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale();
 
             /*
             if (IsKeepUpright)
@@ -186,8 +188,7 @@ namespace HoloToolkit.Unity.InputModule
             isDragging = false;
             currentInputSource = null;
 
-            HostTransform.position = initialPosition;
-            HostTransform.rotation = initialRotation;
+            HostTransform.position = initialObjPosition;
             StoppedDragging.RaiseEvent();
         }
 

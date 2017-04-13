@@ -640,6 +640,7 @@ MonoBehaviour:
   IsKeepUpright: 0
   IsOrientTowardsUser: 0
   IsDraggingEnabled: 1
+  SmoothingRatio: 0.5
 --- !u!1 &1005049748
 GameObject:
   m_ObjectHideFlags: 0
@@ -737,6 +738,7 @@ MonoBehaviour:
   IsKeepUpright: 0
   IsOrientTowardsUser: 0
   IsDraggingEnabled: 1
+  SmoothingRatio: 0.5
 --- !u!1 &1161758571
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,7 +887,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinimumArmLength: 0.3
   MaximumArmLength: 0.55
-  MinimumDistanceToWall: 0.5
+  MinimumDistanceToWall: 1.5
   DefaultMovementScale: 5
   GenerateInitialWallObject: 0
   GlobalRepositionEveryObject: 1
