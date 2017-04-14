@@ -45,10 +45,10 @@ namespace HoloToolkit.Unity.InputModule
         private bool isDragging;
         private bool isGazed;
 
-        private Vector3 initialCameraPosition;
-        private Vector3 initialObjPosition;
+        private Vector3 initCameraPosition;
+        private Vector3 initObjPosition;
 
-        private Vector3 initialHandVector;
+        private Vector3 initHandPosition;
         private Vector3 prevHandPosition;   // for smoothing
 
         private Vector3 draggingPosition;
@@ -106,20 +106,15 @@ namespace HoloToolkit.Unity.InputModule
             RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Item);
 
             // Add self as a modal input handler, to get all inputs during the manipulation
-            InputManager.Instance.PushModalInputHandler(gameObject);
-            //InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
+            //InputManager.Instance.PushModalInputHandler(gameObject);
+            InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
 
             isDragging = true;
-            //GazeCursor.Instance.SetState(GazeCursor.State.Move);
-            //GazeCursor.Instance.SetTargetObject(HostTransform);
-
-            Vector3 initialHandPosition;
             
-            currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
-            initialHandVector = initialHandPosition - mainCamera.transform.position;
-            prevHandPosition = initialHandPosition;
-            initialCameraPosition = mainCamera.transform.position;
-            initialObjPosition = HostTransform.position;
+            currentInputSource.TryGetPosition(currentInputSourceId, out initHandPosition);
+            prevHandPosition = initHandPosition;
+            initCameraPosition = mainCamera.transform.position;
+            initObjPosition = HostTransform.position;
 
             StartedDragging.RaiseEvent();
         }
@@ -154,24 +149,20 @@ namespace HoloToolkit.Unity.InputModule
             // hand position after smoothing
             handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
 
-            Vector3 headMovement = mainCamera.transform.position - initialCameraPosition;
+            Vector3 headMovement = mainCamera.transform.position - initCameraPosition;
+
+            Vector3 initHandVector = initHandPosition - initCameraPosition;
             Vector3 handVector = handPosition - mainCamera.transform.position;
-            Vector3 handMovement = handVector - initialHandVector;
+            float handDist = Vector3.Magnitude(handVector);
 
-            float cameraToObjDist= Vector3.Magnitude(HostTransform.position - mainCamera.transform.position);
-            float cameraToHandDist = Vector3.Magnitude(handPosition - mainCamera.transform.position);
+            Vector3 handMovement = handVector - initHandVector;
+            float handMovementDist = Vector3.Magnitude(handMovement);
 
-            float distRatio = cameraToHandDist > 0.1f && cameraToObjDist > 0.1f ? cameraToObjDist / cameraToHandDist : 1f;
-            
-            HostTransform.position = initialObjPosition + headMovement + handMovement * distRatio;
+            Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
+            Vector3 newObjVector = newObjPosition - mainCamera.transform.position;
+            float newObjDist = Vector3.Magnitude(newObjVector);
 
-            /*
-            if (IsKeepUpright)
-            {
-                Quaternion upRotation = Quaternion.FromToRotation(HostTransform.up, Vector3.up);
-                HostTransform.rotation = upRotation * HostTransform.rotation;
-            }
-            */
+            HostTransform.position = initObjPosition + headMovement + handMovement * newObjDist * 2f;
 
             prevHandPosition = handPosition;
         }
@@ -187,8 +178,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Remove self as a modal input handler
-            InputManager.Instance.PopModalInputHandler();
-            //InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
+            //InputManager.Instance.PopModalInputHandler();
+            InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
 
             isDragging = false;
             currentInputSource = null;

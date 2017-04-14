@@ -101,12 +101,10 @@ namespace HoloToolkit.Unity.InputModule
             RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Wall);
 
             // Add self as a modal input handler, to get all inputs during the manipulation
-            InputManager.Instance.PushModalInputHandler(gameObject);
-            //InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
+            //InputManager.Instance.PushModalInputHandler(gameObject);
+            InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
 
             isDragging = true;
-            //GazeCursor.Instance.SetState(GazeCursor.State.Move);
-            //GazeCursor.Instance.SetTargetObject(HostTransform);
 
             Vector3 initialHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
@@ -159,14 +157,6 @@ namespace HoloToolkit.Unity.InputModule
 
             HostTransform.position = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale();
 
-            /*
-            if (IsKeepUpright)
-            {
-                Quaternion upRotation = Quaternion.FromToRotation(HostTransform.up, Vector3.up);
-                HostTransform.rotation = upRotation * HostTransform.rotation;
-            }
-            */
-
             prevHandPosition = handPosition;
         }
 
@@ -181,8 +171,8 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             // Remove self as a modal input handler
-            InputManager.Instance.PopModalInputHandler();
-            //InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
+            //InputManager.Instance.PopModalInputHandler();
+            InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
             RepositionManager.Instance.StopReposition(currentInputSourceId, DraggableType.Wall);
 
             isDragging = false;
