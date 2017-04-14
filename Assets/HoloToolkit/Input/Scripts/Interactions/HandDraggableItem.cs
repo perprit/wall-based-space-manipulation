@@ -39,16 +39,14 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool IsDraggingEnabled = true;
 
-        public float SmoothingRatio = 0.5f;
-
         private Camera mainCamera;
         private bool isDragging;
-        private bool isGazed;
 
         private Vector3 initCameraPosition;
         private Vector3 initObjPosition;
 
         private Vector3 initHandPosition;
+        private Vector3 initHandVector;
         private Vector3 prevHandPosition;   // for smoothing
 
         private Vector3 draggingPosition;
@@ -56,6 +54,8 @@ namespace HoloToolkit.Unity.InputModule
 
         private IInputSource currentInputSource = null;
         private uint currentInputSourceId;
+
+        private float smoothingRatio;
 
         private void Start()
         {
@@ -65,6 +65,7 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
+            smoothingRatio = RepositionManager.Instance.SmoothingRatio;
         }
 
         private void OnDestroy()
@@ -72,11 +73,6 @@ namespace HoloToolkit.Unity.InputModule
             if (isDragging)
             {
                 StopDragging();
-            }
-
-            if (isGazed)
-            {
-                OnFocusExit();
             }
         }
 
@@ -113,6 +109,7 @@ namespace HoloToolkit.Unity.InputModule
             
             currentInputSource.TryGetPosition(currentInputSourceId, out initHandPosition);
             prevHandPosition = initHandPosition;
+            initHandVector = initHandPosition - mainCamera.transform.position;
             initCameraPosition = mainCamera.transform.position;
             initObjPosition = HostTransform.position;
 
@@ -147,16 +144,12 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
             
             // hand position after smoothing
-            handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
+            handPosition = handPosition * smoothingRatio + prevHandPosition * (1 - smoothingRatio);
 
             Vector3 headMovement = mainCamera.transform.position - initCameraPosition;
 
-            Vector3 initHandVector = initHandPosition - initCameraPosition;
             Vector3 handVector = handPosition - mainCamera.transform.position;
-            float handDist = Vector3.Magnitude(handVector);
-
             Vector3 handMovement = handVector - initHandVector;
-            float handMovementDist = Vector3.Magnitude(handMovement);
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
             Vector3 newObjVector = newObjPosition - mainCamera.transform.position;
@@ -194,13 +187,6 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
-            if (isGazed)
-            {
-                return;
-            }
-
-            isGazed = true;
         }
 
         public void OnFocusExit()
@@ -209,13 +195,6 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
-            if (!isGazed)
-            {
-                return;
-            }
-
-            isGazed = false;
         }
 
         public void OnInputUp(InputEventData eventData)

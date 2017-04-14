@@ -23,6 +23,7 @@ namespace HoloToolkit.Unity.InputModule
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 1.5f;
         public float DefaultMovementScale = 5f;
+        public float SmoothingRatio = 0.5f;
 
         public bool GenerateInitialWallObject = true;
         public bool GlobalRepositionEveryObject = true;
@@ -79,8 +80,7 @@ namespace HoloToolkit.Unity.InputModule
                 wallProjectedCameraPosition = currentWallObject.transform.TransformPoint(wallProjectedCameraPosition);
                 float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
 
-                wallMovementScale = cameraDistanceToWall > MinimumDistanceToWall ?
-                                (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength) : 0;
+                wallMovementScale = (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
 
                 float distanceScale = cameraDistanceToWall / cameraDistanceToInitialWall;    // TODO needs error handling for zero divide or something?
 

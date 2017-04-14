@@ -38,11 +38,10 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool IsDraggingEnabled = true;
 
-        public float SmoothingRatio = 0.5f;
-
         private Camera mainCamera;
         private bool isDragging;
-        private bool isGazed;
+
+        private float smoothingRatio;
 
         private Vector3 initialObjPosition;
 
@@ -60,6 +59,7 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
+            smoothingRatio = RepositionManager.Instance.SmoothingRatio;
         }
 
         private void OnDestroy()
@@ -67,11 +67,6 @@ namespace HoloToolkit.Unity.InputModule
             if (isDragging)
             {
                 StopDragging();
-            }
-
-            if (isGazed)
-            {
-                OnFocusExit();
             }
         }
 
@@ -145,7 +140,7 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
 
             // smoothing hand position
-            handPosition = handPosition * SmoothingRatio + prevHandPosition * (1 - SmoothingRatio);
+            handPosition = handPosition * smoothingRatio + prevHandPosition * (1 - smoothingRatio);
             
             Vector3 handVector = handPosition - mainCamera.transform.position;
             Vector3 handMovement = handVector - initialHandVector;
@@ -188,13 +183,6 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
-            if (isGazed)
-            {
-                return;
-            }
-
-            isGazed = true;
         }
 
         public void OnFocusExit()
@@ -203,13 +191,6 @@ namespace HoloToolkit.Unity.InputModule
             {
                 return;
             }
-
-            if (!isGazed)
-            {
-                return;
-            }
-
-            isGazed = false;
         }
 
         public void OnInputUp(InputEventData eventData)
