@@ -34,7 +34,6 @@ namespace HoloToolkit.Unity.InputModule
         private GameObject currentWallObject = null;
         private GameObject initialWallObject = null;
         private bool isDraggingWall = false;
-        private bool isLocked = false;
         private float wallMovementScale;
 
         // variables for items (virtual objects) currently being dragged

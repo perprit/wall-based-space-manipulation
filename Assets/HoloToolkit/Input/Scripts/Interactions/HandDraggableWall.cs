@@ -30,12 +30,6 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-        [Tooltip("Should the object be kept upright as it is being dragged?")]
-        public bool IsKeepUpright = false;
-
-        [Tooltip("Should the object be oriented towards the user as it is being dragged?")]
-        public bool IsOrientTowardsUser = true;
-
         public bool IsDraggingEnabled = true;
 
         private Camera mainCamera;
@@ -93,20 +87,19 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
-            RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Wall);
+            Vector3 initialHandPosition;
+            currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
+
+            // set member variables
+            isDragging = true;
+            initialHandVector = initialHandPosition - mainCamera.transform.position;
+            prevHandPosition = initialHandPosition;
+            initialObjPosition = HostTransform.position;
 
             // Add self as a modal input handler, to get all inputs during the manipulation
             //InputManager.Instance.PushModalInputHandler(gameObject);
             InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
-
-            isDragging = true;
-
-            Vector3 initialHandPosition;
-            currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
-            initialHandVector = initialHandPosition - mainCamera.transform.position;
-            prevHandPosition = initialHandPosition;
-
-            initialObjPosition = HostTransform.position;
+            RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Wall);
 
             StartedDragging.RaiseEvent();
         }

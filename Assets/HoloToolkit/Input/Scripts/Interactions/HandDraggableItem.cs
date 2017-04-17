@@ -30,13 +30,6 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-
-        [Tooltip("Should the object be kept upright as it is being dragged?")]
-        public bool IsKeepUpright = false;
-
-        [Tooltip("Should the object be oriented towards the user as it is being dragged?")]
-        public bool IsOrientTowardsUser = true;
-
         public bool IsDraggingEnabled = true;
 
         private Camera mainCamera;
