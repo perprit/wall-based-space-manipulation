@@ -1,5 +1,5 @@
 ﻿
-Shader "Custom/WireframeGrid"
+Shader "Custom/GridSelected"
 {
 	Properties
 	{

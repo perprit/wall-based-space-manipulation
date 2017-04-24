@@ -142,6 +142,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
-  IsKeepUpright: 0
-  IsOrientTowardsUser: 0
   IsDraggingEnabled: 1

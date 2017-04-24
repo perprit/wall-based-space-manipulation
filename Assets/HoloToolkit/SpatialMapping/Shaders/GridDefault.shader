@@ -1,5 +1,5 @@
 ﻿
-Shader "Custom/WireframeTest"
+Shader "Custom/GridDefault"
 {
 	Properties
 	{
