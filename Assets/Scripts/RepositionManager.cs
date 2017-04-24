@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using HoloToolkit.Unity;
+using HoloToolkit.Unity.SpatialMapping;
 using ManipulateWalls;
 
 namespace HoloToolkit.Unity.InputModule
 {
     public enum DraggableType
     {
-        Wall, Item
+        WALL, ITEM
     }
 
     /// <summary>
@@ -25,194 +26,228 @@ namespace HoloToolkit.Unity.InputModule
         public float DefaultMovementScale = 5f;
         public float SmoothingRatio = 0.5f;
 
-        public bool GenerateInitialWallObject = true;
+        public bool ShowInitialWallObject = false;
         public bool GlobalRepositionEveryObject = true;
-
-        // variables for wall objects currently being dragged
-        private IInputSource wallInputSource = null;
-        private uint wallInputSourceId;
-        private GameObject currentWallObject = null;
-        private GameObject initialWallObject = null;
-        private bool isDraggingWall = false;
-        private float wallMovementScale;
-
-        // variables for items (virtual objects) currently being dragged
-        private IInputSource itemInputSource = null;
-        private uint itemInputSourceId;
-        private GameObject currentItemObject = null;
-        private bool isDraggingItem = false;
 
         private Camera mainCamera;
 
-        // TODO these 3 lists below that deal with items (virtual objects) should be encapsulated later
-        // * For now, we assume that items are NOT newly added or removed during the runtime
-        private List<Transform> currentItemsTransforms; // WARNING changes on Transform would be applied to the the objects
-        List<Vector3> initialItemsPositions = new List<Vector3>();  // item's initial status
-        List<float> initialItemsDistances = new List<float>();
+        private Dictionary<int, WallStatus> wallStatusDic = new Dictionary<int, WallStatus>();
+        private bool isWallAvailable = false;
+
+        // variables for items (virtual objects) currently being dragged
+        private GameObject currentItemObject = null;
+        private bool isMovingItem = false;
+        private Dictionary<int, ItemStatus> itemStatusDic = new Dictionary<int, ItemStatus>();
 
         void Start()
         {
             mainCamera = Camera.main;
-            wallMovementScale = DefaultMovementScale;
-            currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
+            //currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
+            SurfaceMeshesToPlanes.Instance.MakePlanesComplete += SurfaceMeshesToPlanes_MakePlanesComplete;
         }
         
         void Update()
         {
-            // destroy initialWallObject if not dragging now
-            if (!isDraggingWall && initialWallObject != null)
+            // just pass by update logics if planes are not detected yet
+            if (!isWallAvailable)
             {
-                Destroy(initialWallObject);
+                return;
             }
 
-            if (isDraggingWall && initialWallObject != null)
+            // init wallStatusKeys with WallStatus objects that are dragging or locked
+            List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
+
+            foreach (int wallStatusId in wallStatusKeys)
             {
-                // calculate initialDistanceToWall and wallMovementScale
-                Vector3 initialWallProjectedCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                initialWallProjectedCameraPosition = Vector3.Scale(initialWallProjectedCameraPosition, new Vector3(1, 1, 0));
-                initialWallProjectedCameraPosition = initialWallObject.transform.TransformPoint(initialWallProjectedCameraPosition);
-                float cameraDistanceToInitialWall = Vector3.Magnitude(initialWallProjectedCameraPosition - mainCamera.transform.position);
+                WallStatus wallStatus = wallStatusDic[wallStatusId];
 
-                // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
-                Vector3 wallProjectedCameraPosition = currentWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
-                wallProjectedCameraPosition = currentWallObject.transform.TransformPoint(wallProjectedCameraPosition);
-                float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
-
-                wallMovementScale = (cameraDistanceToInitialWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
-
-                float distanceScale = cameraDistanceToWall / cameraDistanceToInitialWall;    // TODO needs error handling for zero divide or something?
-
-                if(GlobalRepositionEveryObject)
+                if (wallStatus.mode == RepositionModes.IDLE)
                 {
-                    currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
-                    for (int i = 0; i < currentItemsTransforms.Count; i++)
-                    {
-                        // the items not between the camera and the initial wall must not be affected
-                        if (cameraDistanceToInitialWall < initialItemsDistances[i])
-                        {
-                            continue;
-                        }
+                    continue;
+                }
+                
+                if ((wallStatus.mode == RepositionModes.DRAGGING || wallStatus.mode == RepositionModes.LOCKED) && wallStatus.initObj != null)
+                {
+                    // calculate initialDistanceToWall and wallMovementScale
+                    Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                    initWallProjectedCameraPos = Vector3.Scale(initWallProjectedCameraPos, new Vector3(1, 1, 0));
+                    initWallProjectedCameraPos = wallStatus.initObj.transform.TransformPoint(initWallProjectedCameraPos);
+                    float cameraDistanceToInitWall = Vector3.Magnitude(initWallProjectedCameraPos - mainCamera.transform.position);
 
-                        // initial position of the item currently being dragged is recalculated in real time
-                        if (isDraggingItem && currentItemObject != null && currentItemsTransforms[i].GetInstanceID() == currentItemObject.transform.GetInstanceID())
+                    // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
+                    Vector3 wallProjectedCameraPosition = wallStatus.obj.transform.InverseTransformPoint(mainCamera.transform.position);
+                    wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
+                    wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
+                    float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+
+                    // the scale of wall movement 
+                    wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
+
+                    if (GlobalRepositionEveryObject)
+                    {
+                        // the scale between initial wall and current wall
+                        float distanceScale = cameraDistanceToWall / cameraDistanceToInitWall;    // TODO needs error handling for zero divide or something?
+
+                        // reposition every items
+                        List<int> itemStatusKeys = new List<int>(itemStatusDic.Keys);
+                        foreach (int itemStatusId in itemStatusKeys)
                         {
-                            Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(currentItemsTransforms[i].position);
-                            Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                            Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
-                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1/distanceScale));
-                            initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
-                            initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
-                            initialItemsPositions[i] = initialWallRefItemPosition;
-                        }
-                        // otherwise..
-                        else
-                        {
-                            Vector3 initialWallRefItemPosition = initialWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
-                            Vector3 initialWallRefCameraPosition = initialWallObject.transform.InverseTransformPoint(mainCamera.transform.position);
-                            Vector3 cameraToItemDirection = initialWallRefItemPosition - initialWallRefCameraPosition;
-                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
-                            initialWallRefItemPosition = initialWallRefCameraPosition + cameraToItemDirection;
-                            initialWallRefItemPosition = initialWallObject.transform.TransformPoint(initialWallRefItemPosition);
-                            currentItemsTransforms[i].position = initialWallRefItemPosition;
+                            ItemStatus itemStatus = itemStatusDic[itemStatusId];
+
+                            // the items not between the camera and the initial wall must not be affected
+                            if (cameraDistanceToInitWall < itemStatus.distanceToWallsDic[wallStatus.obj.GetInstanceID()])
+                            {
+                                continue;
+                            }
+                            
+                            // initial position of the item currently being dragged is recalculated in real time
+                            if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                            {
+                                Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
+                                Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                                Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
+                                cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1 / distanceScale));
+                                initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
+                                initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+                                // TODO below for handling multiple walls
+                                itemStatus.initPos = initWallRefItemPos;
+                            }
+                            // otherwise, in case of the other items
+                            else
+                            {
+                                Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
+                                Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                                Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
+                                cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
+                                initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
+                                initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+                                // TODO below for handling multiple walls
+                                itemStatus.obj.transform.position = initWallRefItemPos;
+                            }
+                            itemStatusDic[itemStatusId] = itemStatus;
                         }
                     }
                 }
+                wallStatusDic[wallStatusId] = wallStatus;
             }
         }
 
-        public void StartReposition(IInputSource source, uint sourceId, GameObject obj, DraggableType type)
+        private void SurfaceMeshesToPlanes_MakePlanesComplete(object source, System.EventArgs args)
         {
-            if (type == DraggableType.Wall)
+            // initialize 
+            List<GameObject> planes = SurfaceMeshesToPlanes.Instance.GetActivePlanes(PlaneTypes.Ceiling | PlaneTypes.Floor | PlaneTypes.Table | PlaneTypes.Wall);
+            for (int i=0; i<planes.Count; i++)
             {
-                if (isDraggingWall)
-                {
-                    Debug.Log("Is dragging a wall already. StartReposition()/RepositionManager");
-                    return;
-                }
+                WallStatus wallStatus = new WallStatus(planes[i]);
+                wallStatusDic.Add(planes[i].GetInstanceID(), wallStatus);
+            }
+            isWallAvailable = true;
 
+            // initialize itemStatusDic
+            List<GameObject> items = VirtualItemsManager.Instance.GetItemObjects();
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemStatus itemStatus = new ItemStatus(items[i]);
+                itemStatus.initPos = items[i].transform.position;
+
+                // initialize distanceToWallsDic (distance to each walls)
+                foreach (KeyValuePair<int, WallStatus> entry in wallStatusDic)
+                {
+                    int wallStatusId = entry.Key;
+                    WallStatus wallStatus = entry.Value;
+
+                    // calculate initial distance to wall, by projecting the item's position into the wall in wall's z-axis
+                    Vector3 wallProjectedItemPosition = wallStatus.obj.transform.InverseTransformPoint(items[i].transform.position);
+                    wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
+                    wallProjectedItemPosition = wallStatus.obj.transform.TransformPoint(wallProjectedItemPosition);
+                    float itemDistanceToWall = Vector3.Magnitude(wallProjectedItemPosition - items[i].transform.position);
+
+                    itemStatus.distanceToWallsDic.Add(wallStatusId, itemDistanceToWall);
+                }
+                itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
+            }
+        }
+
+        public void StartReposition(GameObject obj, DraggableType type)
+        {
+            if (type == DraggableType.WALL)
+            {
                 if (MaximumArmLength < MinimumArmLength)
                 {
                     Debug.Log("MaximumArmLength < MinimumArmLength. StartReposition()/RepositionManager");
                     return;
                 }
 
-                wallInputSource = source;
-                wallInputSourceId = sourceId;
+                WallStatus wallStatus;
 
-                // initialize currentWallObject
-                currentWallObject = obj;
-
-                // for indicating initial wall position
-                initialWallObject = Instantiate(currentWallObject);
-
-                if (!GenerateInitialWallObject)
+                if(!wallStatusDic.TryGetValue(obj.GetInstanceID(), out wallStatus))
                 {
-                    initialWallObject.GetComponent<MeshRenderer>().enabled = false;
-                    initialWallObject.GetComponent<MeshCollider>().sharedMesh = null;
-                }
-
-                // save items initial positions and distances to the wall (which would be used for retoration)
-                // TODO encapsulate position and distance
-                initialItemsPositions = VirtualItemsManager.Instance.GetAllObjectPositions();
-                initialItemsDistances.Clear();
-
-                for (int i = 0; i < initialItemsPositions.Count; i++)
-                {
-                    // calculate initial distance to wall, by projecting the item's position into the wall in wall's z-axis
-                    Vector3 wallProjectedItemPosition = currentWallObject.transform.InverseTransformPoint(initialItemsPositions[i]);
-                    wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
-                    wallProjectedItemPosition = currentWallObject.transform.TransformPoint(wallProjectedItemPosition);
-                    float itemDistanceToWall = Vector3.Magnitude(wallProjectedItemPosition - initialItemsPositions[i]);
-
-                    initialItemsDistances.Add(itemDistanceToWall);
-                }
-
-                isDraggingWall = true;
-            }
-
-            if (type == DraggableType.Item)
-            {
-                if (isDraggingItem)
-                {
-                    Debug.Log("Is dragging an item already. StartReposition()/RepositionManager");
+                    Debug.Log("GameObject " + obj.GetInstanceID() + " doesn't exist");
                     return;
                 }
 
-                itemInputSource = source;
-                itemInputSourceId = sourceId;
+                wallStatus.obj = obj;
+                wallStatus.initObj = Instantiate(obj);
+                if (!ShowInitialWallObject)
+                {
+                    wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+                    wallStatus.initObj.GetComponent<MeshCollider>().sharedMesh = null;
+                }
+                wallStatus.mode = RepositionModes.DRAGGING;
 
+                // assign updated wallStatus
+                wallStatusDic[obj.GetInstanceID()] = wallStatus;
+            }
+
+            if (type == DraggableType.ITEM)
+            {
                 currentItemObject = obj;
-
-                isDraggingItem = true;
+                isMovingItem = true;
             }
         }
 
-        public void StopReposition(uint sourceId, DraggableType type)
+        public void StopReposition(GameObject obj, DraggableType type)
         {
-            if (sourceId == wallInputSourceId && type == DraggableType.Wall)
+            if (type == DraggableType.WALL)
             {
-                isDraggingWall = false;
-                wallMovementScale = DefaultMovementScale;
+                WallStatus wallStatus;
+
+                if (!wallStatusDic.TryGetValue(obj.GetInstanceID(), out wallStatus))
+                {
+                    Debug.Log("GameObject " + obj.GetInstanceID() + " doesn't exist");
+                    return;
+                }
+
+                wallStatus.mode = RepositionModes.IDLE;
+                wallStatus.movementScale = DefaultMovementScale;
+                Destroy(wallStatus.initObj);
+                wallStatusDic[obj.GetInstanceID()] = wallStatus;
 
                 // restore items' position
-                for (int i=0; i<currentItemsTransforms.Count; i++)
+                foreach (KeyValuePair<int, ItemStatus> entry in itemStatusDic)
                 {
-                    currentItemsTransforms[i].position = initialItemsPositions[i];
+                    ItemStatus itemStatus = entry.Value;
+                    itemStatus.obj.transform.position = itemStatus.initPos;
                 }
             }
 
-            if (sourceId == itemInputSourceId && type == DraggableType.Item)
+            if (type == DraggableType.ITEM)
             {
-                isDraggingItem = false;
+                currentItemObject = null;
+                isMovingItem = false;
+
+                ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
+                itemStatus.initPos = obj.transform.position;
+                itemStatusDic[obj.GetInstanceID()] = itemStatus;
             }
         }
-
+        
         // TODO would be deprecated since reposition logic would be migrated to this class
-        public float GetWallMovementScale()
+        public float GetWallMovementScale(int instanceId)
         {
-            return wallMovementScale;
+            return wallStatusDic[instanceId].movementScale;
         }
+        
     }
 }
 

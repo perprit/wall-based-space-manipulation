@@ -7,9 +7,7 @@ namespace ManipulateWalls
 {
     public class VirtualItemsManager : Singleton<VirtualItemsManager>
     {
-
-        private List<Transform> childTransforms = new List<Transform>();
-
+        private List<GameObject> childObjects = new List<GameObject>();
         void Start()
         {
             Transform[] transforms = gameObject.GetComponentsInChildren<Transform>();
@@ -18,7 +16,7 @@ namespace ManipulateWalls
                 // every child objects (except itself)
                 if (transforms[i].GetInstanceID() != gameObject.transform.GetInstanceID())
                 {
-                    childTransforms.Add(transforms[i]);
+                    childObjects.Add(transforms[i].gameObject);
                 }
             }
         }
@@ -28,19 +26,9 @@ namespace ManipulateWalls
 
         }
 
-        public List<Transform> GetAllObjectTransforms()
+        public List<GameObject> GetItemObjects()
         {
-            return childTransforms;
-        }
-
-        public List<Vector3> GetAllObjectPositions()
-        {
-            List<Vector3> positions = new List<Vector3>();
-            for(int i=0; i<childTransforms.Count; i++)
-            {
-                positions.Add(childTransforms[i].position);
-            }
-            return positions;
+            return childObjects;
         }
     }
 }

@@ -30,15 +30,10 @@ namespace HoloToolkit.Unity.InputModule
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
-        public bool IsDraggingEnabled = true;
-
         private Camera mainCamera;
+
         private bool isDragging;
-
-        private float smoothingRatio;
-
         private Vector3 initialObjPosition;
-
         private Vector3 initialHandVector;
         private Vector3 prevHandPosition;       // for smoothing
 
@@ -53,7 +48,6 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
-            smoothingRatio = RepositionManager.Instance.SmoothingRatio;
         }
 
         private void OnDestroy()
@@ -66,7 +60,7 @@ namespace HoloToolkit.Unity.InputModule
 
         private void Update()
         {
-            if (IsDraggingEnabled && isDragging)
+            if (isDragging)
             {
                 UpdateDragging();
             }
@@ -77,50 +71,21 @@ namespace HoloToolkit.Unity.InputModule
         /// </summary>
         public void StartDragging()
         {
-            if (!IsDraggingEnabled)
-            {
-                return;
-            }
-
-            if (isDragging)
-            {
-                return;
-            }
-
             Vector3 initialHandPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
 
             // set member variables
             isDragging = true;
+            initialObjPosition = HostTransform.position;
             initialHandVector = initialHandPosition - mainCamera.transform.position;
             prevHandPosition = initialHandPosition;
-            initialObjPosition = HostTransform.position;
 
             // Add self as a modal input handler, to get all inputs during the manipulation
             //InputManager.Instance.PushModalInputHandler(gameObject);
             InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
-            RepositionManager.Instance.StartReposition(currentInputSource, currentInputSourceId, gameObject, DraggableType.Wall);
+            RepositionManager.Instance.StartReposition(gameObject, DraggableType.WALL);
 
             StartedDragging.RaiseEvent();
-        }
-
-        /// <summary>
-        /// Enables or disables dragging.
-        /// </summary>
-        /// <param name="isEnabled">Indicates whether dragging shoudl be enabled or disabled.</param>
-        public void SetDragging(bool isEnabled)
-        {
-            if (IsDraggingEnabled == isEnabled)
-            {
-                return;
-            }
-
-            IsDraggingEnabled = isEnabled;
-
-            if (isDragging)
-            {
-                StopDragging();
-            }
         }
 
         /// <summary>
@@ -128,6 +93,7 @@ namespace HoloToolkit.Unity.InputModule
         /// </summary>
         private void UpdateDragging()
         {
+            float smoothingRatio = RepositionManager.Instance.SmoothingRatio;
             // current hand position
             Vector3 handPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
@@ -143,7 +109,9 @@ namespace HoloToolkit.Unity.InputModule
             handMovement = Vector3.Scale(handMovement, Vector3.forward);
             handMovement = HostTransform.transform.TransformDirection(handMovement);
 
-            HostTransform.position = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale();
+            HostTransform.position = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale(gameObject.GetInstanceID());
+
+            // TODO clamp position with minimum distance to wall with respect to wall normal
 
             prevHandPosition = handPosition;
         }
@@ -161,7 +129,7 @@ namespace HoloToolkit.Unity.InputModule
             // Remove self as a modal input handler
             //InputManager.Instance.PopModalInputHandler();
             InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
-            RepositionManager.Instance.StopReposition(currentInputSourceId, DraggableType.Wall);
+            RepositionManager.Instance.StopReposition(gameObject, DraggableType.WALL);
 
             isDragging = false;
             currentInputSource = null;
@@ -172,24 +140,15 @@ namespace HoloToolkit.Unity.InputModule
 
         public void OnFocusEnter()
         {
-            if (!IsDraggingEnabled)
-            {
-                return;
-            }
         }
 
         public void OnFocusExit()
         {
-            if (!IsDraggingEnabled)
-            {
-                return;
-            }
         }
 
         public void OnInputUp(InputEventData eventData)
         {
-            if (currentInputSource != null &&
-                eventData.SourceId == currentInputSourceId)
+            if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
             {
                 StopDragging();
             }
@@ -197,18 +156,18 @@ namespace HoloToolkit.Unity.InputModule
 
         public void OnInputDown(InputEventData eventData)
         {
-            if (isDragging)
-            {
-                // We're already handling drag input, so we can't start a new drag operation.
-                return;
-            }
-
             if (!eventData.InputSource.SupportsInputInfo(eventData.SourceId, SupportedInputInfo.Position))
             {
                 // The input source must provide positional data for this script to be usable
                 return;
             }
 
+            if (isDragging)
+            {
+                // We're already handling drag input, so we can't start a new drag operation.
+                return;
+            }
+            
             currentInputSource = eventData.InputSource;
             currentInputSourceId = eventData.SourceId;
             StartDragging();
