@@ -73,16 +73,16 @@ namespace HoloToolkit.Unity.InputModule
                     if ((wallStatus.mode == WallStatusModes.DRAGGING || wallStatus.mode == WallStatusModes.LOCKED) && wallStatus.initObj != null)
                     {
                         // calculate initialDistanceToWall and wallMovementScale
-                        Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                        Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(GetCameraFrontPosition());
                         initWallProjectedCameraPos = Vector3.Scale(initWallProjectedCameraPos, new Vector3(1, 1, 0));
                         initWallProjectedCameraPos = wallStatus.initObj.transform.TransformPoint(initWallProjectedCameraPos);
-                        float cameraDistanceToInitWall = Vector3.Magnitude(initWallProjectedCameraPos - mainCamera.transform.position);
+                        float cameraDistanceToInitWall = Vector3.Magnitude(initWallProjectedCameraPos - GetCameraFrontPosition());
 
                         // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
-                        Vector3 wallProjectedCameraPosition = wallStatus.obj.transform.InverseTransformPoint(mainCamera.transform.position);
+                        Vector3 wallProjectedCameraPosition = wallStatus.obj.transform.InverseTransformPoint(GetCameraFrontPosition());
                         wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
                         wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
-                        float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+                        float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - GetCameraFrontPosition());
 
                         // the scale of wall movement 
                         wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
@@ -100,7 +100,7 @@ namespace HoloToolkit.Unity.InputModule
                         if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
-                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(GetCameraFrontPosition());
                             Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
                             cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1 / distanceScale));
                             initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
@@ -113,7 +113,7 @@ namespace HoloToolkit.Unity.InputModule
                         else if (itemStatus.mode == ItemStatusModes.IDLE && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
-                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(GetCameraFrontPosition());
                             Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
                             cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
                             initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
@@ -257,6 +257,11 @@ namespace HoloToolkit.Unity.InputModule
                 }
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
             }
+        }
+
+        private Vector3 GetCameraFrontPosition()
+        {
+            return mainCamera.transform.position + mainCamera.transform.forward * MinimumDistanceToWall;
         }
         
         // TODO would be deprecated since reposition logic would be migrated to this class
