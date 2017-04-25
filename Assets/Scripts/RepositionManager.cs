@@ -27,7 +27,6 @@ namespace HoloToolkit.Unity.InputModule
         public float SmoothingRatio = 0.5f;
 
         public bool ShowInitialWallObject = false;
-        public bool GlobalRepositionEveryObject = true;
 
         private Camera mainCamera;
 
@@ -57,10 +56,10 @@ namespace HoloToolkit.Unity.InputModule
             {
                 ItemStatus itemStatus = itemStatusDic[itemStatusId];
                 
-                Vector3 itemPosVector = Vector3.zero;
-                Vector3 itemInitPosVector = Vector3.zero;
+                Vector3 itemPosChange = Vector3.zero;
+                Vector3 itemInitPosChange = Vector3.zero;
 
-                // for each walls,
+                // calculate obj.transform.position and initPos of itemStatus based on each walls
                 List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
                 foreach (int wallStatusId in wallStatusKeys)
                 {
@@ -97,7 +96,7 @@ namespace HoloToolkit.Unity.InputModule
                             continue;
                         }
 
-                        // initial position of the item is recalculated if the item is being dragged
+                        // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
@@ -107,10 +106,11 @@ namespace HoloToolkit.Unity.InputModule
                             initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
                             initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
 
-                            itemInitPosVector += initWallRefItemPos - itemStatus.obj.transform.position;
+                            itemInitPosChange += initWallRefItemPos - itemStatus.obj.transform.position;
                         }
                         // otherwise, in case of the other items
-                        else
+                        // rescaled position is calculated based on initPos
+                        else if (itemStatus.mode == ItemStatusModes.IDLE && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
                             Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
@@ -119,21 +119,21 @@ namespace HoloToolkit.Unity.InputModule
                             initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
                             initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
 
-                            itemPosVector += initWallRefItemPos - itemStatus.initPos;
+                            itemPosChange += initWallRefItemPos - itemStatus.initPos;
                         }
                     }
                     wallStatusDic[wallStatusId] = wallStatus;
                 }
+                
                 if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
                 {
-                    DebugTextController.Instance.AddMessage("itemInitPosVector: " + itemInitPosVector.ToString("F3"));
-                    itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosVector;
+                    itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosChange;
                 }
-                else
+                else if (itemStatus.mode == ItemStatusModes.IDLE && itemStatus.obj != null)
                 {
-                    DebugTextController.Instance.SetMessage("itemPosVector: " + itemPosVector.ToString("F3"));
-                    itemStatus.obj.transform.position = itemStatus.initPos + itemPosVector;
+                    itemStatus.obj.transform.position = itemStatus.initPos + itemPosChange;
                 }
+
                 itemStatusDic[itemStatusId] = itemStatus;
             }
         }
@@ -235,7 +235,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.IDLE;
-                itemStatus.initPos = obj.transform.position;
+                Debug.Log(itemStatus.initPos.ToString("F3"));
 
                 // recalculate distanceToWallsDic (distance to each wall)
                 List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
