@@ -98,7 +98,6 @@ namespace HoloToolkit.Unity.InputModule
                         }
 
                         // initial position of the item is recalculated if the item is being dragged
-                        //if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
                         if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
@@ -125,15 +124,14 @@ namespace HoloToolkit.Unity.InputModule
                     }
                     wallStatusDic[wallStatusId] = wallStatus;
                 }
-                DebugTextController.Instance.SetMessage("itemPosVector: " + itemPosVector.ToString("F3"));
-                DebugTextController.Instance.AddMessage("itemInitPosVector: " + itemInitPosVector.ToString("F3"));
-                //if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
                 if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
-                    {
+                {
+                    DebugTextController.Instance.AddMessage("itemInitPosVector: " + itemInitPosVector.ToString("F3"));
                     itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosVector;
                 }
                 else
                 {
+                    DebugTextController.Instance.SetMessage("itemPosVector: " + itemPosVector.ToString("F3"));
                     itemStatus.obj.transform.position = itemStatus.initPos + itemPosVector;
                 }
                 itemStatusDic[itemStatusId] = itemStatus;
@@ -190,6 +188,7 @@ namespace HoloToolkit.Unity.InputModule
 
                 wallStatus.obj = obj;
                 wallStatus.initObj = Instantiate(obj);
+                wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
                 if (!ShowInitialWallObject)
                 {
                     wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
