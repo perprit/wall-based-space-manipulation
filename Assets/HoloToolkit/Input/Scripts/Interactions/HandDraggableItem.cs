@@ -106,10 +106,11 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 handMovement = handVector - initHandVector;
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
-            Vector3 newObjVector = newObjPosition - mainCamera.transform.position;
-            float newObjDist = Vector3.Magnitude(newObjVector);
+            float newObjDist = Vector3.Magnitude(newObjPosition - mainCamera.transform.position);
 
-            // proportion to distance between objects (Hololens way)
+            // proportion to distance between objects (Hololens way
+            //newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 3f;
+
             HostTransform.position = initObjPosition + headMovement + handMovement * newObjDist * 3f;
 
             // constant ratio
@@ -189,5 +190,16 @@ namespace HoloToolkit.Unity.InputModule
                 StopDragging();
             }
         }
+
+        private void OnTriggerEnter(Collider coll)
+        {
+            Debug.Log("OnTriggerEnter: " + coll.gameObject.GetInstanceID());
+        }
+        
+        private void OnTriggerExit(Collider coll)
+        {
+            Debug.Log("OnTriggerExit: " + coll.gameObject.GetInstanceID());
+        }
+
     }
 }
