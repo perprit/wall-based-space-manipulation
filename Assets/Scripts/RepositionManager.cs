@@ -54,81 +54,92 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
-            // init wallStatusKeys with WallStatus objects that are dragging or locked
-            List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
 
-            foreach (int wallStatusId in wallStatusKeys)
+
+            // for each items,
+            List<int> itemStatusKeys = new List<int>(itemStatusDic.Keys);
+            foreach (int itemStatusId in itemStatusKeys)
             {
-                WallStatus wallStatus = wallStatusDic[wallStatusId];
-
-                if (wallStatus.mode == RepositionModes.IDLE)
-                {
-                    continue;
-                }
+                ItemStatus itemStatus = itemStatusDic[itemStatusId];
                 
-                if ((wallStatus.mode == RepositionModes.DRAGGING || wallStatus.mode == RepositionModes.LOCKED) && wallStatus.initObj != null)
+                Vector3 itemPosVector = Vector3.zero;
+                Vector3 itemInitPosVector = Vector3.zero;
+
+                // for each walls,
+                List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
+                foreach (int wallStatusId in wallStatusKeys)
                 {
-                    // calculate initialDistanceToWall and wallMovementScale
-                    Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
-                    initWallProjectedCameraPos = Vector3.Scale(initWallProjectedCameraPos, new Vector3(1, 1, 0));
-                    initWallProjectedCameraPos = wallStatus.initObj.transform.TransformPoint(initWallProjectedCameraPos);
-                    float cameraDistanceToInitWall = Vector3.Magnitude(initWallProjectedCameraPos - mainCamera.transform.position);
+                    WallStatus wallStatus = wallStatusDic[wallStatusId];
 
-                    // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
-                    Vector3 wallProjectedCameraPosition = wallStatus.obj.transform.InverseTransformPoint(mainCamera.transform.position);
-                    wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
-                    wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
-                    float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
-
-                    // the scale of wall movement 
-                    wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
-
-                    if (GlobalRepositionEveryObject)
+                    if (wallStatus.mode == RepositionModes.IDLE)
                     {
+                        continue;
+                    }
+
+                    if ((wallStatus.mode == RepositionModes.DRAGGING || wallStatus.mode == RepositionModes.LOCKED) && wallStatus.initObj != null)
+                    {
+                        // calculate initialDistanceToWall and wallMovementScale
+                        Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                        initWallProjectedCameraPos = Vector3.Scale(initWallProjectedCameraPos, new Vector3(1, 1, 0));
+                        initWallProjectedCameraPos = wallStatus.initObj.transform.TransformPoint(initWallProjectedCameraPos);
+                        float cameraDistanceToInitWall = Vector3.Magnitude(initWallProjectedCameraPos - mainCamera.transform.position);
+
+                        // calculate current distance to wall, by projecting camera position into the wall in wall's z-axis
+                        Vector3 wallProjectedCameraPosition = wallStatus.obj.transform.InverseTransformPoint(mainCamera.transform.position);
+                        wallProjectedCameraPosition = Vector3.Scale(wallProjectedCameraPosition, new Vector3(1, 1, 0));
+                        wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
+                        float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - mainCamera.transform.position);
+
+                        // the scale of wall movement 
+                        wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
+
                         // the scale between initial wall and current wall
                         float distanceScale = cameraDistanceToWall / cameraDistanceToInitWall;    // TODO needs error handling for zero divide or something?
 
-                        // reposition every items
-                        List<int> itemStatusKeys = new List<int>(itemStatusDic.Keys);
-                        foreach (int itemStatusId in itemStatusKeys)
+                        // the items not between the camera and the initial wall must not be affected
+                        if (cameraDistanceToInitWall < itemStatus.distanceToWallsDic[wallStatus.obj.GetInstanceID()])
                         {
-                            ItemStatus itemStatus = itemStatusDic[itemStatusId];
+                            continue;
+                        }
 
-                            // the items not between the camera and the initial wall must not be affected
-                            if (cameraDistanceToInitWall < itemStatus.distanceToWallsDic[wallStatus.obj.GetInstanceID()])
-                            {
-                                continue;
-                            }
-                            
-                            // initial position of the item currently being dragged is recalculated in real time
-                            if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
-                            {
-                                Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
-                                Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
-                                Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
-                                cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1 / distanceScale));
-                                initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
-                                initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
-                                // TODO below for handling multiple walls
-                                itemStatus.initPos = initWallRefItemPos;
-                            }
-                            // otherwise, in case of the other items
-                            else
-                            {
-                                Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
-                                Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
-                                Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
-                                cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
-                                initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
-                                initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
-                                // TODO below for handling multiple walls
-                                itemStatus.obj.transform.position = initWallRefItemPos;
-                            }
-                            itemStatusDic[itemStatusId] = itemStatus;
+                        // initial position of the item is recalculated if the item is being dragged
+                        if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                        {
+                            Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
+                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
+                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, 1 / distanceScale));
+                            initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
+                            initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+
+                            itemInitPosVector += initWallRefItemPos - itemStatus.obj.transform.position;
+                        }
+                        // otherwise, in case of the other items
+                        else
+                        {
+                            Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
+                            Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
+                            Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
+                            cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, distanceScale));
+                            initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
+                            initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+
+                            itemPosVector += initWallRefItemPos - itemStatus.initPos;
                         }
                     }
+                    wallStatusDic[wallStatusId] = wallStatus;
                 }
-                wallStatusDic[wallStatusId] = wallStatus;
+                DebugTextController.Instance.SetMessage("itemPosVector: " + itemPosVector.ToString("F3"));
+                DebugTextController.Instance.AddMessage("itemInitPosVector: " + itemInitPosVector.ToString("F3"));
+                if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                {
+                    itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosVector;
+                }
+                else
+                {
+                    itemStatus.obj.transform.position = itemStatus.initPos + itemPosVector;
+                }
+                itemStatusDic[itemStatusId] = itemStatus;
             }
         }
 
@@ -224,10 +235,12 @@ namespace HoloToolkit.Unity.InputModule
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
 
                 // restore items' position
-                foreach (KeyValuePair<int, ItemStatus> entry in itemStatusDic)
+                List<int> itemStatusKeys = new List<int>(itemStatusDic.Keys);
+                foreach (int itemStatusId in itemStatusKeys)
                 {
-                    ItemStatus itemStatus = entry.Value;
+                    ItemStatus itemStatus = itemStatusDic[itemStatusId];
                     itemStatus.obj.transform.position = itemStatus.initPos;
+                    itemStatusDic[itemStatusId] = itemStatus;
                 }
             }
 
@@ -238,6 +251,21 @@ namespace HoloToolkit.Unity.InputModule
 
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.initPos = obj.transform.position;
+
+                // recalculate distanceToWallsDic (distance to each wall)
+                List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);
+                foreach (int wallStatusId in wallStatusKeys)
+                {
+                    WallStatus wallStatus = wallStatusDic[wallStatusId];
+
+                    // calculate distance to each wall by projecting the item into the wall in its z-axis
+                    Vector3 wallProjectedItemPosition = wallStatus.obj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
+                    wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
+                    wallProjectedItemPosition = wallStatus.obj.transform.TransformPoint(wallProjectedItemPosition);
+                    float itemDistanceToWall = Vector3.Magnitude(wallProjectedItemPosition - itemStatus.obj.transform.position);
+
+                    itemStatus.distanceToWallsDic[wallStatusId] = itemDistanceToWall;
+                }
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
             }
         }
