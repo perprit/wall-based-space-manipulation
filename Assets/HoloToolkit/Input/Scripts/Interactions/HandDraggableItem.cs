@@ -83,7 +83,7 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
-            RepositionManager.Instance.StartReposition(gameObject, DraggableType.ITEM);
+            RepositionManager.Instance.SetItemMode(gameObject, ItemStatusModes.DRAGGING);
 
             // Add self as a modal input handler, to get all inputs during the manipulation
             //InputManager.Instance.PushModalInputHandler(gameObject);
@@ -145,7 +145,7 @@ namespace HoloToolkit.Unity.InputModule
             isDragging = false;
             currentInputSource = null;
 
-            RepositionManager.Instance.StopReposition(gameObject, DraggableType.ITEM);
+            RepositionManager.Instance.SetItemMode(gameObject, ItemStatusModes.IDLE);
             StoppedDragging.RaiseEvent();
         }
 

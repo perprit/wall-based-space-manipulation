@@ -5,7 +5,7 @@ using HoloToolkit.Unity.SpatialMapping;
 
 namespace HoloToolkit.Unity.InputModule
 {
-    public enum RepositionModes
+    public enum WallStatusModes
     {
         IDLE, DRAGGING, LOCKED
     }
@@ -14,14 +14,14 @@ namespace HoloToolkit.Unity.InputModule
     {
         public GameObject obj;
         public GameObject initObj;
-        public RepositionModes mode;
+        public WallStatusModes mode;
         public float movementScale;
 
         public WallStatus(GameObject obj_)
         {
             obj = obj_;
             initObj = null;
-            mode = RepositionModes.IDLE;
+            mode = WallStatusModes.IDLE;
             movementScale = RepositionManager.Instance.DefaultMovementScale;
         }
     }

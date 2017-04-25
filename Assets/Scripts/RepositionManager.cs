@@ -33,10 +33,7 @@ namespace HoloToolkit.Unity.InputModule
 
         private Dictionary<int, WallStatus> wallStatusDic = new Dictionary<int, WallStatus>();
         private bool isWallAvailable = false;
-
-        // variables for items (virtual objects) currently being dragged
-        private GameObject currentItemObject = null;
-        private bool isMovingItem = false;
+        
         private Dictionary<int, ItemStatus> itemStatusDic = new Dictionary<int, ItemStatus>();
 
         void Start()
@@ -54,8 +51,6 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
-
-
             // for each items,
             List<int> itemStatusKeys = new List<int>(itemStatusDic.Keys);
             foreach (int itemStatusId in itemStatusKeys)
@@ -71,12 +66,12 @@ namespace HoloToolkit.Unity.InputModule
                 {
                     WallStatus wallStatus = wallStatusDic[wallStatusId];
 
-                    if (wallStatus.mode == RepositionModes.IDLE)
+                    if (wallStatus.mode == WallStatusModes.IDLE)
                     {
                         continue;
                     }
 
-                    if ((wallStatus.mode == RepositionModes.DRAGGING || wallStatus.mode == RepositionModes.LOCKED) && wallStatus.initObj != null)
+                    if ((wallStatus.mode == WallStatusModes.DRAGGING || wallStatus.mode == WallStatusModes.LOCKED) && wallStatus.initObj != null)
                     {
                         // calculate initialDistanceToWall and wallMovementScale
                         Vector3 initWallProjectedCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
@@ -103,7 +98,8 @@ namespace HoloToolkit.Unity.InputModule
                         }
 
                         // initial position of the item is recalculated if the item is being dragged
-                        if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                        //if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                        if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
                         {
                             Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
                             Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(mainCamera.transform.position);
@@ -131,8 +127,9 @@ namespace HoloToolkit.Unity.InputModule
                 }
                 DebugTextController.Instance.SetMessage("itemPosVector: " + itemPosVector.ToString("F3"));
                 DebugTextController.Instance.AddMessage("itemInitPosVector: " + itemInitPosVector.ToString("F3"));
-                if (isMovingItem && currentItemObject != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
-                {
+                //if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null && itemStatus.obj.GetInstanceID() == currentItemObject.GetInstanceID())
+                if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)
+                    {
                     itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosVector;
                 }
                 else
@@ -179,23 +176,17 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
-        public void StartReposition(GameObject obj, DraggableType type)
+        public void SetWallMode(GameObject obj, WallStatusModes mode)
         {
-            if (type == DraggableType.WALL)
+            if (mode == WallStatusModes.DRAGGING)
             {
                 if (MaximumArmLength < MinimumArmLength)
                 {
                     Debug.Log("MaximumArmLength < MinimumArmLength. StartReposition()/RepositionManager");
                     return;
                 }
-
-                WallStatus wallStatus;
-
-                if(!wallStatusDic.TryGetValue(obj.GetInstanceID(), out wallStatus))
-                {
-                    Debug.Log("GameObject " + obj.GetInstanceID() + " doesn't exist");
-                    return;
-                }
+                
+                WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.obj = obj;
                 wallStatus.initObj = Instantiate(obj);
@@ -204,32 +195,20 @@ namespace HoloToolkit.Unity.InputModule
                     wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
                     wallStatus.initObj.GetComponent<MeshCollider>().sharedMesh = null;
                 }
-                wallStatus.mode = RepositionModes.DRAGGING;
+                wallStatus.mode = WallStatusModes.DRAGGING;
 
                 // assign updated wallStatus
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
             }
-
-            if (type == DraggableType.ITEM)
+            else if (mode == WallStatusModes.LOCKED)
             {
-                currentItemObject = obj;
-                isMovingItem = true;
+
             }
-        }
-
-        public void StopReposition(GameObject obj, DraggableType type)
-        {
-            if (type == DraggableType.WALL)
+            else if (mode == WallStatusModes.IDLE)
             {
-                WallStatus wallStatus;
+                WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
-                if (!wallStatusDic.TryGetValue(obj.GetInstanceID(), out wallStatus))
-                {
-                    Debug.Log("GameObject " + obj.GetInstanceID() + " doesn't exist");
-                    return;
-                }
-
-                wallStatus.mode = RepositionModes.IDLE;
+                wallStatus.mode = WallStatusModes.IDLE;
                 wallStatus.movementScale = DefaultMovementScale;
                 Destroy(wallStatus.initObj);
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
@@ -243,13 +222,20 @@ namespace HoloToolkit.Unity.InputModule
                     itemStatusDic[itemStatusId] = itemStatus;
                 }
             }
+        }
 
-            if (type == DraggableType.ITEM)
-            {
-                currentItemObject = null;
-                isMovingItem = false;
-
+        public void SetItemMode(GameObject obj, ItemStatusModes mode)
+        {
+            if (mode == ItemStatusModes.DRAGGING)
+            {                
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
+                itemStatus.mode = ItemStatusModes.DRAGGING;
+                itemStatusDic[obj.GetInstanceID()] = itemStatus;
+            }
+            else if (mode == ItemStatusModes.IDLE)
+            {
+                ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
+                itemStatus.mode = ItemStatusModes.IDLE;
                 itemStatus.initPos = obj.transform.position;
 
                 // recalculate distanceToWallsDic (distance to each wall)
