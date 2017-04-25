@@ -178,6 +178,7 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (mode == WallStatusModes.DRAGGING)
             {
+                Debug.Log("WallStatusModes.DRAGGING");
                 if (MaximumArmLength < MinimumArmLength)
                 {
                     Debug.Log("MaximumArmLength < MinimumArmLength. StartReposition()/RepositionManager");
@@ -201,10 +202,16 @@ namespace HoloToolkit.Unity.InputModule
             }
             else if (mode == WallStatusModes.LOCKED)
             {
+                Debug.Log("WallStatusModes.LOCKED");
+                WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
+                wallStatus.mode = WallStatusModes.LOCKED;
+
+                wallStatusDic[obj.GetInstanceID()] = wallStatus;
             }
             else if (mode == WallStatusModes.IDLE)
             {
+                Debug.Log("WallStatusModes.IDLE");
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.IDLE;
@@ -226,13 +233,15 @@ namespace HoloToolkit.Unity.InputModule
         public void SetItemMode(GameObject obj, ItemStatusModes mode)
         {
             if (mode == ItemStatusModes.DRAGGING)
-            {                
+            {
+                Debug.Log("ItemStatusModes.DRAGGING");
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.DRAGGING;
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
             }
             else if (mode == ItemStatusModes.IDLE)
             {
+                Debug.Log("ItemStatusModes.IDLE");
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.IDLE;
                 Debug.Log(itemStatus.initPos.ToString("F3"));
@@ -261,6 +270,27 @@ namespace HoloToolkit.Unity.InputModule
             return wallStatusDic[instanceId].movementScale;
         }
         
+        public ItemStatusModes GetItemStatusMode(int itemObjectId)
+        {
+            ItemStatus itemStatus;
+            if (!itemStatusDic.TryGetValue(itemObjectId, out itemStatus))
+            {
+                Debug.LogError("item " + itemObjectId + " doesn't exist");
+                return ItemStatusModes.IDLE;
+            }
+            return itemStatus.mode;
+        }
+
+        public WallStatusModes GetWallStatusMode(int wallObjectId)
+        {
+            WallStatus wallStatus;
+            if (!wallStatusDic.TryGetValue(wallObjectId, out wallStatus))
+            {
+                Debug.LogError("wall " + wallObjectId + " doesn't exist");
+                return WallStatusModes.IDLE;
+            }
+            return wallStatus.mode;
+        }
     }
 }
 

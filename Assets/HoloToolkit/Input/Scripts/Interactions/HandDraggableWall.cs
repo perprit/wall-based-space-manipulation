@@ -17,20 +17,12 @@ namespace HoloToolkit.Unity.InputModule
                                  IInputHandler,
                                  ISourceStateHandler
     {
-        /// <summary>
-        /// Event triggered when dragging starts.
-        /// </summary>
-        public event Action StartedDragging;
-
-        /// <summary>
-        /// Event triggered when dragging stops.
-        /// </summary>
-        public event Action StoppedDragging;
-
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
         private Camera mainCamera;
+
+        private int instanceId;
 
         private bool isDragging;
         private Vector3 initialObjPosition;
@@ -48,6 +40,7 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
+            instanceId = gameObject.GetInstanceID();
         }
 
         private void OnDestroy()
@@ -84,8 +77,6 @@ namespace HoloToolkit.Unity.InputModule
             //InputManager.Instance.PushModalInputHandler(gameObject);
             InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
             RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.DRAGGING);
-
-            StartedDragging.RaiseEvent();
         }
 
         /// <summary>
@@ -129,13 +120,9 @@ namespace HoloToolkit.Unity.InputModule
             // Remove self as a modal input handler
             //InputManager.Instance.PopModalInputHandler();
             InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
-            RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
 
+            RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.LOCKED);
             isDragging = false;
-            currentInputSource = null;
-
-            HostTransform.position = initialObjPosition;
-            StoppedDragging.RaiseEvent();
         }
 
         public void OnFocusEnter()
@@ -150,7 +137,10 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
             {
-                StopDragging();
+                if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING)
+                {
+                    StopDragging();
+                }
             }
         }
 
@@ -167,10 +157,23 @@ namespace HoloToolkit.Unity.InputModule
                 // We're already handling drag input, so we can't start a new drag operation.
                 return;
             }
-            
-            currentInputSource = eventData.InputSource;
-            currentInputSourceId = eventData.SourceId;
-            StartDragging();
+
+            if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.IDLE)
+            {
+                currentInputSource = eventData.InputSource;
+                currentInputSourceId = eventData.SourceId;
+                StartDragging();
+            }
+            else if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.LOCKED)
+            {
+                if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
+                {
+                    currentInputSource = null;
+
+                    HostTransform.position = initialObjPosition;
+                    RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
+                }
+            }
         }
 
         public void OnSourceDetected(SourceStateEventData eventData)
@@ -182,7 +185,11 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
             {
-                StopDragging();
+                //StopDragging();
+                if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING)
+                {
+                    StopDragging();
+                }
             }
         }
     }
