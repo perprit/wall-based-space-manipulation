@@ -4,6 +4,7 @@
 using UnityEngine;
 using System;
 using ManipulateWalls;
+using System.Collections.Generic;
 
 namespace HoloToolkit.Unity.InputModule
 {
@@ -30,10 +31,12 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 initHandVector;
         private Vector3 prevHandPosition;   // for smoothing
 
-        private IInputSource currentInputSource = null;
+        private IInputSource currentInputSource;
         private uint currentInputSourceId;
 
         private float smoothingRatio;
+
+        private List<int> collidedWallIds;
 
         private void Start()
         {
@@ -43,7 +46,10 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             mainCamera = Camera.main;
+            currentInputSource = null;
+            currentInputSourceId = 0;
             smoothingRatio = RepositionManager.Instance.SmoothingRatio;
+            collidedWallIds = new List<int>();
         }
 
         private void OnDestroy()
@@ -194,11 +200,19 @@ namespace HoloToolkit.Unity.InputModule
         private void OnTriggerEnter(Collider coll)
         {
             Debug.Log("OnTriggerEnter: " + coll.gameObject.GetInstanceID());
+            if (RepositionManager.Instance.IsWallExist(coll.gameObject.GetInstanceID()))
+            {
+                collidedWallIds.Add(coll.gameObject.GetInstanceID());
+            }
         }
         
         private void OnTriggerExit(Collider coll)
         {
             Debug.Log("OnTriggerExit: " + coll.gameObject.GetInstanceID());
+            if (RepositionManager.Instance.IsWallExist(coll.gameObject.GetInstanceID()))
+            {
+                collidedWallIds.RemoveAt(collidedWallIds.FindIndex(i => i == coll.gameObject.GetInstanceID()));
+            }
         }
 
     }

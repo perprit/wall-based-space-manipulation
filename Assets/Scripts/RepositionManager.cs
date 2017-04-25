@@ -291,6 +291,16 @@ namespace HoloToolkit.Unity.InputModule
             }
             return wallStatus.mode;
         }
+
+        public bool IsItemExist(int itemObjectId)
+        {
+            return itemStatusDic.ContainsKey(itemObjectId);
+        }
+
+        public bool IsWallExist(int wallObjectId)
+        {
+            return wallStatusDic.ContainsKey(wallObjectId);
+        }
     }
 }
 
