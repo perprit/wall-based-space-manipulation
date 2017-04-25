@@ -79,12 +79,26 @@ namespace HoloToolkit.Unity.InputModule
         // for control multi modal input
         public void AddMultiModalInputHandler(uint sourceId, GameObject inputHandler)
         {
-            MultiModalInputDictionary.Add(sourceId, inputHandler);
+            if (!MultiModalInputDictionary.ContainsKey(sourceId))
+            {
+                MultiModalInputDictionary.Add(sourceId, inputHandler);
+            }
+            else
+            {
+                Debug.LogError("try to add, but sourceID " + sourceId + " already exist");
+            }
         }
 
         public void RemoveMultiModalInputHandler(uint sourceId)
         {
-            MultiModalInputDictionary.Remove(sourceId);
+            if (MultiModalInputDictionary.ContainsKey(sourceId))
+            {
+                MultiModalInputDictionary.Remove(sourceId);
+            }
+            else
+            {
+                Debug.LogError("try to remove, but sourceID " + sourceId + " doesn't exist");
+            }
         }
 
         public void ClearMultiModalInputHandler()

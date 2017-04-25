@@ -178,7 +178,6 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (mode == WallStatusModes.DRAGGING)
             {
-                Debug.Log("WallStatusModes.DRAGGING");
                 if (MaximumArmLength < MinimumArmLength)
                 {
                     Debug.Log("MaximumArmLength < MinimumArmLength. StartReposition()/RepositionManager");
@@ -189,6 +188,7 @@ namespace HoloToolkit.Unity.InputModule
 
                 wallStatus.obj = obj;
                 wallStatus.initObj = Instantiate(obj);
+                Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
                 wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
                 if (!ShowInitialWallObject)
                 {
@@ -202,7 +202,6 @@ namespace HoloToolkit.Unity.InputModule
             }
             else if (mode == WallStatusModes.LOCKED)
             {
-                Debug.Log("WallStatusModes.LOCKED");
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.LOCKED;
@@ -211,7 +210,6 @@ namespace HoloToolkit.Unity.InputModule
             }
             else if (mode == WallStatusModes.IDLE)
             {
-                Debug.Log("WallStatusModes.IDLE");
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.IDLE;
@@ -234,17 +232,14 @@ namespace HoloToolkit.Unity.InputModule
         {
             if (mode == ItemStatusModes.DRAGGING)
             {
-                Debug.Log("ItemStatusModes.DRAGGING");
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.DRAGGING;
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
             }
             else if (mode == ItemStatusModes.IDLE)
             {
-                Debug.Log("ItemStatusModes.IDLE");
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.IDLE;
-                Debug.Log(itemStatus.initPos.ToString("F3"));
 
                 // recalculate distanceToWallsDic (distance to each wall)
                 List<int> wallStatusKeys = new List<int>(wallStatusDic.Keys);

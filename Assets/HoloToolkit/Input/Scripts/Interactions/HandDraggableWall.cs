@@ -24,7 +24,6 @@ namespace HoloToolkit.Unity.InputModule
 
         private int instanceId;
 
-        private bool isDragging;
         private Vector3 initialObjPosition;
         private Vector3 initialHandVector;
         private Vector3 prevHandPosition;       // for smoothing
@@ -45,38 +44,19 @@ namespace HoloToolkit.Unity.InputModule
 
         private void OnDestroy()
         {
-            if (isDragging)
+            if (currentInputSource != null)
             {
-                StopDragging();
+                // Remove self as a modal input handler
+                InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
             }
         }
 
         private void Update()
         {
-            if (isDragging)
+            if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING && currentInputSource != null)
             {
                 UpdateDragging();
             }
-        }
-
-        /// <summary>
-        /// Starts dragging the object.
-        /// </summary>
-        public void StartDragging()
-        {
-            Vector3 initialHandPosition;
-            currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
-
-            // set member variables
-            isDragging = true;
-            initialObjPosition = HostTransform.position;
-            initialHandVector = initialHandPosition - mainCamera.transform.position;
-            prevHandPosition = initialHandPosition;
-
-            // Add self as a modal input handler, to get all inputs during the manipulation
-            //InputManager.Instance.PushModalInputHandler(gameObject);
-            InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
-            RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.DRAGGING);
         }
 
         /// <summary>
@@ -107,24 +87,6 @@ namespace HoloToolkit.Unity.InputModule
             prevHandPosition = handPosition;
         }
 
-        /// <summary>
-        /// Stops dragging the object.
-        /// </summary>
-        public void StopDragging()
-        {
-            if (!isDragging)
-            {
-                return;
-            }
-
-            // Remove self as a modal input handler
-            //InputManager.Instance.PopModalInputHandler();
-            InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
-
-            RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.LOCKED);
-            isDragging = false;
-        }
-
         public void OnFocusEnter()
         {
         }
@@ -139,7 +101,12 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING)
                 {
-                    StopDragging();
+                    // Remove self as a modal input handler
+                    InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
+                    RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.LOCKED);
+
+                    currentInputSource = null;
+                    currentInputSourceId = 0;
                 }
             }
         }
@@ -152,7 +119,7 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
-            if (isDragging)
+            if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING)
             {
                 // We're already handling drag input, so we can't start a new drag operation.
                 return;
@@ -162,33 +129,40 @@ namespace HoloToolkit.Unity.InputModule
             {
                 currentInputSource = eventData.InputSource;
                 currentInputSourceId = eventData.SourceId;
-                StartDragging();
+
+                // Add self as a modal input handler, to get all inputs during the manipulation
+                InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
+                RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.DRAGGING);
+
+                // calculate initial positions
+                Vector3 initialHandPosition;
+                currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
+                initialObjPosition = HostTransform.position;
+                initialHandVector = initialHandPosition - mainCamera.transform.position;
+                prevHandPosition = initialHandPosition;
             }
             else if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.LOCKED)
             {
-                if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
-                {
-                    currentInputSource = null;
-
-                    HostTransform.position = initialObjPosition;
-                    RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
-                }
+                HostTransform.position = initialObjPosition;
+                RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
             }
         }
 
         public void OnSourceDetected(SourceStateEventData eventData)
         {
-            // Nothing to do
+            // nothing to do
         }
 
         public void OnSourceLost(SourceStateEventData eventData)
         {
             if (currentInputSource != null && eventData.SourceId == currentInputSourceId)
             {
-                //StopDragging();
                 if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING)
                 {
-                    StopDragging();
+                    // Remove self as a modal input handler
+                    //InputManager.Instance.PopModalInputHandler();
+                    InputManager.Instance.RemoveMultiModalInputHandler(currentInputSourceId);
+                    RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.LOCKED);
                 }
             }
         }

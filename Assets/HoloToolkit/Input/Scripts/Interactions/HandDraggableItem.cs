@@ -168,15 +168,15 @@ namespace HoloToolkit.Unity.InputModule
 
         public void OnInputDown(InputEventData eventData)
         {
-            if (isDragging)
-            {
-                // We're already handling drag input, so we can't start a new drag operation.
-                return;
-            }
-
             if (!eventData.InputSource.SupportsInputInfo(eventData.SourceId, SupportedInputInfo.Position))
             {
                 // The input source must provide positional data for this script to be usable
+                return;
+            }
+
+            if (isDragging)
+            {
+                // We're already handling drag input, so we can't start a new drag operation.
                 return;
             }
 

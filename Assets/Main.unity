@@ -206,6 +206,18 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4000013316072862, guid: a611e772ef8ddf64d8106a9cbb70f31c, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013316072862, guid: a611e772ef8ddf64d8106a9cbb70f31c, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4000013316072862, guid: a611e772ef8ddf64d8106a9cbb70f31c, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a611e772ef8ddf64d8106a9cbb70f31c, type: 2}
   m_IsPrefabParent: 0
@@ -644,7 +656,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
-  IsDraggingEnabled: 1
 --- !u!1 &1005049748
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,7 +750,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
-  IsDraggingEnabled: 1
 --- !u!1 &1161758571
 GameObject:
   m_ObjectHideFlags: 0
@@ -891,7 +901,6 @@ MonoBehaviour:
   DefaultMovementScale: 5
   SmoothingRatio: 0.5
   ShowInitialWallObject: 0
-  GlobalRepositionEveryObject: 1
 --- !u!1 &1597151798
 GameObject:
   m_ObjectHideFlags: 0
