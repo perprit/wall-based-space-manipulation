@@ -9,7 +9,7 @@ public class PlaneFinder : Singleton<PlaneFinder>
     public bool limitScanningByTime = true;
 
     [Tooltip("How much time (in seconds) that the SurfaceObserver will run after being started; used when 'Limit Scanning By Time' is checked.")]
-    private float scanTime = 15.0f;
+    private float scanTime = 10.0f;
 
     [Tooltip("Material to use when rendering Spatial Mapping meshes while the observer is running.")]
     public Material defaultMaterial;

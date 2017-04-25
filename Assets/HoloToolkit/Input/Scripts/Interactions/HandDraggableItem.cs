@@ -17,16 +17,6 @@ namespace HoloToolkit.Unity.InputModule
                                  IInputHandler,
                                  ISourceStateHandler
     {
-        /// <summary>
-        /// Event triggered when dragging starts.
-        /// </summary>
-        public event Action StartedDragging;
-
-        /// <summary>
-        /// Event triggered when dragging stops.
-        /// </summary>
-        public event Action StoppedDragging;
-
         [Tooltip("Transform that will be dragged. Defaults to the object of the component.")]
         public Transform HostTransform;
 
@@ -96,8 +86,6 @@ namespace HoloToolkit.Unity.InputModule
             initHandVector = initHandPosition - mainCamera.transform.position;
             initCameraPosition = mainCamera.transform.position;
             initObjPosition = HostTransform.position;
-
-            StartedDragging.RaiseEvent();
         }
 
         /// <summary>
@@ -121,7 +109,11 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 newObjVector = newObjPosition - mainCamera.transform.position;
             float newObjDist = Vector3.Magnitude(newObjVector);
 
-            HostTransform.position = initObjPosition + headMovement + handMovement * newObjDist * 2f;
+            // proportion to distance between objects (Hololens way)
+            HostTransform.position = initObjPosition + headMovement + handMovement * newObjDist * 3f;
+
+            // constant ratio
+            //HostTransform.position = initObjPosition + headMovement + handMovement * 7f;
 
             // TODO clamp position with collided walls
 
@@ -146,7 +138,6 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource = null;
 
             RepositionManager.Instance.SetItemMode(gameObject, ItemStatusModes.IDLE);
-            StoppedDragging.RaiseEvent();
         }
 
         public void OnFocusEnter()

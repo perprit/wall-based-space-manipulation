@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using HoloToolkit.Unity;
+using UnityEngine.SceneManagement;
 
 namespace ManipulateWalls
 {
@@ -43,6 +44,11 @@ namespace ManipulateWalls
         void SetTaskSettingSequence(List<TaskSetting> _tsl)
         {
             taskSettingList = _tsl;
+        }
+        
+        public void ResetScene()
+        {
+            SceneManager.LoadScene("Main");
         }
     }
 }
