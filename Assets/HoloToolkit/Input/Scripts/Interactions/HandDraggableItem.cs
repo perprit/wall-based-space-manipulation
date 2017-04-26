@@ -35,9 +35,8 @@ namespace HoloToolkit.Unity.InputModule
         private uint currentInputSourceId;
 
         private float smoothingRatio;
-
-        private List<int> collidedWallIds;
-
+        private float sphereRadius;
+        
         private void Start()
         {
             if (HostTransform == null)
@@ -49,7 +48,7 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource = null;
             currentInputSourceId = 0;
             smoothingRatio = RepositionManager.Instance.SmoothingRatio;
-            collidedWallIds = new List<int>();
+            sphereRadius = 0.25f;
         }
 
         private void OnDestroy()
@@ -126,9 +125,9 @@ namespace HoloToolkit.Unity.InputModule
             // clamp movement vector with wall objects
             RaycastHit hit;
             // raycast only on SpatialMapping layer
-            if (Physics.Raycast(initObjPosition, Vector3.Normalize(moveDirection), out hit, Vector3.Magnitude(moveDirection), 1 << LayerMask.NameToLayer("SpatialMapping")))
+            if (Physics.Raycast(initObjPosition, Vector3.Normalize(moveDirection), out hit, Vector3.Magnitude(moveDirection) + sphereRadius, 1 << LayerMask.NameToLayer("SpatialMapping")))
             {
-                HostTransform.position = hit.point;
+                HostTransform.position = hit.point - Vector3.Normalize(moveDirection) * sphereRadius;
             }
             else
             {
