@@ -657,6 +657,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
+  rigidbody: {fileID: 601686003}
 --- !u!54 &601686003
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -767,6 +768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HostTransform: {fileID: 0}
+  rigidbody: {fileID: 1005049754}
 --- !u!54 &1005049754
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -933,6 +935,7 @@ MonoBehaviour:
   DefaultMovementScale: 5
   SmoothingRatio: 0.5
   ShowInitialWallObject: 0
+  IsWallAvailable: 0
 --- !u!1 &1597151798
 GameObject:
   m_ObjectHideFlags: 0

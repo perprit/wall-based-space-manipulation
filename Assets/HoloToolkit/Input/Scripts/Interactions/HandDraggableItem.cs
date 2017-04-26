@@ -113,17 +113,27 @@ namespace HoloToolkit.Unity.InputModule
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
             float newObjDist = Vector3.Magnitude(newObjPosition - mainCamera.transform.position);
+            newObjDist = newObjDist > 1f ? newObjDist : 1f;
 
             // proportion to distance between objects (Hololens way
-            //newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 3f;
-
-            HostTransform.position = initObjPosition + headMovement + handMovement * newObjDist * 3f;
-
+            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist;
+            
             // constant ratio
-            //HostTransform.position = initObjPosition + headMovement + handMovement * 7f;
+            //newObjPosition = initObjPosition + headMovement + handMovement * 7f;
 
-            // TODO clamp position with collided walls
+            Vector3 moveDirection = newObjPosition - initObjPosition;
 
+            // clamp movement vector with wall objects
+            RaycastHit hit;
+            // raycast only on SpatialMapping layer
+            if (Physics.Raycast(initObjPosition, Vector3.Normalize(moveDirection), out hit, Vector3.Magnitude(moveDirection), 1 << LayerMask.NameToLayer("SpatialMapping")))
+            {
+                HostTransform.position = hit.point;
+            }
+            else
+            {
+                HostTransform.position = newObjPosition;
+            }
             prevHandPosition = handPosition;
         }
 
@@ -196,24 +206,5 @@ namespace HoloToolkit.Unity.InputModule
                 StopDragging();
             }
         }
-
-        private void OnTriggerEnter(Collider coll)
-        {
-            Debug.Log("OnTriggerEnter: " + coll.gameObject.GetInstanceID());
-            if (RepositionManager.Instance.IsWallExist(coll.gameObject.GetInstanceID()))
-            {
-                collidedWallIds.Add(coll.gameObject.GetInstanceID());
-            }
-        }
-        
-        private void OnTriggerExit(Collider coll)
-        {
-            Debug.Log("OnTriggerExit: " + coll.gameObject.GetInstanceID());
-            if (RepositionManager.Instance.IsWallExist(coll.gameObject.GetInstanceID()))
-            {
-                collidedWallIds.RemoveAt(collidedWallIds.FindIndex(i => i == coll.gameObject.GetInstanceID()));
-            }
-        }
-
     }
 }

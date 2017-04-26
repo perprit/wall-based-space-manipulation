@@ -53,7 +53,9 @@ namespace HoloToolkit.Unity.InputModule
 
         private void Update()
         {
-            if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING && currentInputSource != null)
+            if (RepositionManager.Instance.IsWallAvailable
+                && RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.DRAGGING
+                && currentInputSource != null)
             {
                 UpdateDragging();
             }

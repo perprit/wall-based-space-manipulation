@@ -28,10 +28,11 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool ShowInitialWallObject = false;
 
+        public bool IsWallAvailable = false;
+
         private Camera mainCamera;
 
         private Dictionary<int, WallStatus> wallStatusDic = new Dictionary<int, WallStatus>();
-        private bool isWallAvailable = false;
         
         private Dictionary<int, ItemStatus> itemStatusDic = new Dictionary<int, ItemStatus>();
 
@@ -45,7 +46,7 @@ namespace HoloToolkit.Unity.InputModule
         void Update()
         {
             // just pass by update logics if planes are not detected yet
-            if (!isWallAvailable)
+            if (!IsWallAvailable)
             {
                 return;
             }
@@ -147,7 +148,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = new WallStatus(planes[i]);
                 wallStatusDic.Add(planes[i].GetInstanceID(), wallStatus);
             }
-            isWallAvailable = true;
+            IsWallAvailable = true;
 
             // initialize itemStatusDic
             List<GameObject> items = VirtualItemsManager.Instance.GetItemObjects();
