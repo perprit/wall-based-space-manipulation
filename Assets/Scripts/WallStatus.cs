@@ -16,6 +16,8 @@ namespace HoloToolkit.Unity.InputModule
         public GameObject initObj;
         public WallStatusModes mode;
         public float movementScale;
+        public float distanceScale;
+        public Vector3 cameraFrontWhenLocked;
 
         public WallStatus(GameObject obj_)
         {
@@ -23,6 +25,8 @@ namespace HoloToolkit.Unity.InputModule
             initObj = null;
             mode = WallStatusModes.IDLE;
             movementScale = RepositionManager.Instance.DefaultMovementScale;
+            distanceScale = 1f;
+            cameraFrontWhenLocked = Vector3.zero;
         }
     }
 }

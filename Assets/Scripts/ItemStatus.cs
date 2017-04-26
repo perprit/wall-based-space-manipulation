@@ -17,14 +17,12 @@ namespace HoloToolkit.Unity.InputModule
         public Vector3 initPos;
         //public bool isDragging;
         public ItemStatusModes mode;
-        public Dictionary<int, float> distanceToWallsDic;
 
         public ItemStatus(GameObject obj_)
         {
             obj = obj_;
             initPos = Vector3.zero;
             mode = ItemStatusModes.IDLE;
-            distanceToWallsDic = new Dictionary<int, float>();
         }
     }
 }

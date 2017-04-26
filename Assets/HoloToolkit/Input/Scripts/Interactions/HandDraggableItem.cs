@@ -113,7 +113,7 @@ namespace HoloToolkit.Unity.InputModule
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
             float newObjDist = Vector3.Magnitude(newObjPosition - mainCamera.transform.position);
-            newObjDist = newObjDist > 1f ? newObjDist : 1f;
+            newObjDist = newObjDist > 2f ? newObjDist : 2f;
 
             // proportion to distance between objects (Hololens way
             newObjPosition = initObjPosition + headMovement + handMovement * newObjDist;
