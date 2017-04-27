@@ -9,7 +9,10 @@ Shader "Custom/GridSelected"
 
 		SubShader
 	{
-		Tags{ "RenderType" = "Opaque" }
+		Tags{ "RenderType" = "Transparent" "Queue" = "Transparent" }
+		Blend SrcAlpha OneMinusSrcAlpha
+		Cull Off
+		LOD 200
 
 		Pass
 	{
@@ -63,7 +66,7 @@ Shader "Custom/GridSelected"
 
 	// Initialize to draw black with full alpha. This way we will occlude holograms even when
 	// we are drawing black.
-	fixed4 ret = float4(0,0,0,1);
+	fixed4 ret = float4(0,0,0,0);
 
 	/*
 	// Normals need to be renormalized in the fragment shader to overcome

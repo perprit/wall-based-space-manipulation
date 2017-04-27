@@ -112,7 +112,7 @@ namespace HoloToolkit.Unity.InputModule
                         }
 
                         // recalculate initPos while the item is being dragged
-                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
+                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initObj.transform.position);
                         Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(GetCameraFrontPosition());
                         Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
                         cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, wallStatus.distanceScale));
@@ -122,18 +122,18 @@ namespace HoloToolkit.Unity.InputModule
                         // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
-                            itemInitPosChange += itemStatus.initPos - initWallRefItemPos;
+                            itemInitPosChange += itemStatus.initObj.transform.position - initWallRefItemPos;
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
-                            itemPosChange += initWallRefItemPos - itemStatus.initPos;
+                            itemPosChange += initWallRefItemPos - itemStatus.initObj.transform.position;
                         }
                     }
                     else if (wallStatus.mode == WallStatusModes.LOCKED)
                     {
                         // while locked, we use cameraFrontWhenLocked for camera position
-                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initPos);
+                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initObj.transform.position);
                         Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(wallStatus.cameraFrontWhenLocked);
                         Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
                         cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, wallStatus.distanceScale));
@@ -143,12 +143,12 @@ namespace HoloToolkit.Unity.InputModule
                         // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
-                            itemInitPosChange += itemStatus.initPos - initWallRefItemPos;
+                            itemInitPosChange += itemStatus.initObj.transform.position - initWallRefItemPos;
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
-                            itemPosChange += initWallRefItemPos - itemStatus.initPos;
+                            itemPosChange += initWallRefItemPos - itemStatus.initObj.transform.position;
                         }
                     }
                     wallStatusDic[wallStatusId] = wallStatus;
@@ -156,11 +156,11 @@ namespace HoloToolkit.Unity.InputModule
                 
                 if (itemStatus.mode == ItemStatusModes.DRAGGING)
                 {
-                    itemStatus.initPos = itemStatus.obj.transform.position + itemInitPosChange;
+                    itemStatus.initObj.transform.position = itemStatus.obj.transform.position + itemInitPosChange;
                 }
                 else if (itemStatus.mode == ItemStatusModes.IDLE)
                 {
-                    itemStatus.obj.transform.position = itemStatus.initPos + itemPosChange;
+                    itemStatus.obj.transform.position = itemStatus.initObj.transform.position + itemPosChange;
                 }
 
                 itemStatusDic[itemStatusId] = itemStatus;
@@ -183,7 +183,12 @@ namespace HoloToolkit.Unity.InputModule
             for (int i = 0; i < items.Count; i++)
             {
                 ItemStatus itemStatus = new ItemStatus(items[i]);
-                itemStatus.initPos = items[i].transform.position;
+                itemStatus.initObj = Instantiate(itemStatus.obj);
+                itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
+                itemStatus.initObj.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+                itemStatus.initObj.GetComponent<Collider>().enabled = false;
+                
                 itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
             }
         }
@@ -239,7 +244,7 @@ namespace HoloToolkit.Unity.InputModule
                 foreach (int itemStatusId in itemStatusKeys)
                 {
                     ItemStatus itemStatus = itemStatusDic[itemStatusId];
-                    itemStatus.obj.transform.position = itemStatus.initPos;
+                    itemStatus.obj.transform.position = itemStatus.initObj.transform.position;
                     itemStatusDic[itemStatusId] = itemStatus;
                 }
             }

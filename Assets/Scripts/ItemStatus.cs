@@ -14,14 +14,14 @@ namespace HoloToolkit.Unity.InputModule
     {
         public GameObject obj;
         //public GameObject initObj;
-        public Vector3 initPos;
+        public GameObject initObj;
         //public bool isDragging;
         public ItemStatusModes mode;
 
         public ItemStatus(GameObject obj_)
         {
             obj = obj_;
-            initPos = Vector3.zero;
+            initObj = null;
             mode = ItemStatusModes.IDLE;
         }
     }

@@ -114,10 +114,10 @@ Material:
       second: 0.02
     - first:
         name: _LineScale
-      second: 0.02
+      second: 0.01
     - first:
         name: _LinesPerMeter
-      second: 4
+      second: 2
     - first:
         name: _Metallic
       second: 0
