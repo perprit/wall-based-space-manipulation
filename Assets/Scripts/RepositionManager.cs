@@ -90,7 +90,7 @@ namespace HoloToolkit.Unity.InputModule
                         // the scale between initial wall and current wall
                         wallStatus.distanceScale = cameraDistanceToWall / cameraDistanceToInitWall;    // TODO needs error handling for zero divide or something?
 
-                        // calculate initial distance to wall, by projecting the item's position into the wall in wall's z-axis
+                        // calculate item distance to wall, by projecting the item's position into the wall in wall's z-axis
                         Vector3 wallProjectedItemPosition = wallStatus.obj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
                         wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
                         wallProjectedItemPosition = wallStatus.obj.transform.TransformPoint(wallProjectedItemPosition);
@@ -130,7 +130,8 @@ namespace HoloToolkit.Unity.InputModule
                     }
                     else if (wallStatus.mode == WallStatusModes.LOCKED && wallStatus.initObj != null)
                     {
-                        // TODO BUG do not handle when camera position changes while the walls are locked
+                        // TODO BUG do not handle when camera position changes while a multiple of walls are locked at the same time
+
                         // while locked, we use cameraFrontWhenLocked for camera position
                         // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING && itemStatus.obj != null)

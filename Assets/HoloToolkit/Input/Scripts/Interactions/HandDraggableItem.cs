@@ -120,14 +120,15 @@ namespace HoloToolkit.Unity.InputModule
             // constant ratio
             //newObjPosition = initObjPosition + headMovement + handMovement * 7f;
 
-            Vector3 moveDirection = newObjPosition - initObjPosition;
+            Vector3 eyeToObjDirection = newObjPosition - mainCamera.transform.position;
 
             // clamp movement vector with wall objects
             RaycastHit hit;
             // raycast only on SpatialMapping layer
-            if (Physics.Raycast(initObjPosition, Vector3.Normalize(moveDirection), out hit, Vector3.Magnitude(moveDirection) + sphereRadius, 1 << LayerMask.NameToLayer("SpatialMapping")))
+            if (Physics.Raycast(mainCamera.transform.position, Vector3.Normalize(eyeToObjDirection), out hit,
+                Vector3.Magnitude(eyeToObjDirection) + sphereRadius, 1 << LayerMask.NameToLayer("SpatialMapping")))
             {
-                HostTransform.position = hit.point - Vector3.Normalize(moveDirection) * sphereRadius;
+                HostTransform.position = hit.point - Vector3.Normalize(eyeToObjDirection) * sphereRadius;
             }
             else
             {
