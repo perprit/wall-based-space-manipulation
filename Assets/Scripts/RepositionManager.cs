@@ -266,7 +266,7 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
-        private Vector3 GetCameraFrontPosition()
+        public Vector3 GetCameraFrontPosition()
         {
             return mainCamera.transform.position + mainCamera.transform.forward * NearClippingPlaneDist;
         }
@@ -297,6 +297,24 @@ namespace HoloToolkit.Unity.InputModule
                 return WallStatusModes.IDLE;
             }
             return wallStatus.mode;
+        }
+
+        public GameObject GetWallInitObject(int wallObjectId)
+        {
+            WallStatus wallStatus;
+            if (!wallStatusDic.TryGetValue(wallObjectId, out wallStatus))
+            {
+                Debug.LogError("wall " + wallObjectId + " doesn't exist");
+                return null;
+            }
+            
+            if (wallStatus.initObj == null || wallStatus.mode != WallStatusModes.DRAGGING)
+            {
+                Debug.LogError("initObj of wall " + wallObjectId + " doesn't exist");
+                return null;
+            }
+
+            return wallStatus.initObj;
         }
 
         public bool IsItemExist(int itemObjectId)

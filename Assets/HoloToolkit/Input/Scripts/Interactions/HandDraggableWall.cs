@@ -82,9 +82,23 @@ namespace HoloToolkit.Unity.InputModule
             handMovement = Vector3.Scale(handMovement, Vector3.forward);
             handMovement = HostTransform.transform.TransformDirection(handMovement);
 
-            HostTransform.position = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale(gameObject.GetInstanceID());
+            Vector3 newWallPosition = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale(gameObject.GetInstanceID());
 
-            // TODO clamp position with minimum distance to wall with respect to wall normal
+            Transform initWallTransform = RepositionManager.Instance.GetWallInitObject(gameObject.GetInstanceID()).transform;
+
+            Vector3 initRefWallPos = initWallTransform.InverseTransformPoint(newWallPosition);
+            Vector3 initRefCameraPos = initWallTransform.InverseTransformPoint(RepositionManager.Instance.GetCameraFrontPosition());
+
+            float initRefWallDist = Mathf.Abs(initRefWallPos.z);
+            float initRefCameraDist = Mathf.Abs(initRefCameraPos.z) + RepositionManager.Instance.MinimumDistanceToWall - RepositionManager.Instance.NearClippingPlaneDist;
+            if (initRefWallDist > initRefCameraDist)
+            {
+                initRefWallPos.z = initRefCameraPos.z;
+            }
+
+            newWallPosition = initWallTransform.TransformPoint(initRefWallPos);
+
+            HostTransform.position = newWallPosition;
 
             prevHandPosition = handPosition;
         }
