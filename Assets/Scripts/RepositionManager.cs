@@ -270,7 +270,12 @@ namespace HoloToolkit.Unity.InputModule
         {
             return mainCamera.transform.position + mainCamera.transform.forward * NearClippingPlaneDist;
         }
-        
+
+        public Vector3 GetCameraMinDistToWallPosition()
+        {
+            return mainCamera.transform.position + mainCamera.transform.forward * MinimumDistanceToWall;
+        }
+
         // TODO would be deprecated since reposition logic would be migrated to this class
         public float GetWallMovementScale(int instanceId)
         {

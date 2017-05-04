@@ -87,11 +87,15 @@ namespace HoloToolkit.Unity.InputModule
             Transform initWallTransform = RepositionManager.Instance.GetWallInitObject(gameObject.GetInstanceID()).transform;
 
             Vector3 initRefWallPos = initWallTransform.InverseTransformPoint(newWallPosition);
-            Vector3 initRefCameraPos = initWallTransform.InverseTransformPoint(RepositionManager.Instance.GetCameraFrontPosition());
+            Vector3 initRefCameraPos = initWallTransform.InverseTransformPoint(RepositionManager.Instance.GetCameraMinDistToWallPosition());
 
-            float initRefWallDist = Mathf.Abs(initRefWallPos.z);
-            float initRefCameraDist = Mathf.Abs(initRefCameraPos.z) + RepositionManager.Instance.MinimumDistanceToWall - RepositionManager.Instance.NearClippingPlaneDist;
-            if (initRefWallDist > initRefCameraDist)
+            float initRefWallZ = initRefWallPos.z;
+            float initRefCameraZ = initRefCameraPos.z;
+            if (Mathf.Sign(initRefWallZ * initRefCameraZ) < 0)
+            {
+                initRefWallPos.z = Vector3.Scale(initRefWallPos, new Vector3(1, 1, 0)).z;
+            }
+            else if (Mathf.Abs(initRefWallZ) > Mathf.Abs(initRefCameraZ))
             {
                 initRefWallPos.z = initRefCameraPos.z;
             }
