@@ -114,7 +114,7 @@ namespace HoloToolkit.Unity.InputModule
             float newObjDist = Vector3.Magnitude(newObjPosition - mainCamera.transform.position);
 
             // proportion to distance between objects (Hololens way
-            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 2.5f;
+            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 2f;
             
             // constant ratio
             //newObjPosition = initObjPosition + headMovement + handMovement * 7f;
@@ -127,12 +127,10 @@ namespace HoloToolkit.Unity.InputModule
             if (Physics.Raycast(mainCamera.transform.position, Vector3.Normalize(eyeToObjDirection), out hit,
                 Vector3.Magnitude(eyeToObjDirection), 1 << LayerMask.NameToLayer("SpatialMapping")))
             {
-                HostTransform.position = hit.point;
+                newObjPosition = hit.point;
             }
-            else
-            {
-                HostTransform.position = newObjPosition;
-            }
+
+            HostTransform.position = newObjPosition;
             prevHandPosition = handPosition;
         }
 

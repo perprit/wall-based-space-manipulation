@@ -110,45 +110,54 @@ namespace HoloToolkit.Unity.InputModule
                         {
                             continue;
                         }
-
-                        // recalculate initPos while the item is being dragged
-                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initObj.transform.position);
-                        Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(GetCameraFrontPosition());
-                        Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
-                        cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, wallStatus.distanceScale));
-                        initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
-                        initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+                        
+                        // calculate initPos with respect to current wall
+                        Vector3 cameraToItemDir = itemStatus.initObj.transform.position - GetCameraFrontPosition();
+                        cameraToItemDir = wallStatus.initObj.transform.InverseTransformDirection(cameraToItemDir);
+                        cameraToItemDir = Vector3.Scale(cameraToItemDir, new Vector3(1, 1, wallStatus.distanceScale));
+                        cameraToItemDir = wallStatus.initObj.transform.TransformDirection(cameraToItemDir);
+                        Vector3 newItemInitPos = GetCameraFrontPosition() + cameraToItemDir;
 
                         // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
-                            itemInitPosChange += itemStatus.initObj.transform.position - initWallRefItemPos;
+                            itemInitPosChange += itemStatus.initObj.transform.position - newItemInitPos;
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
-                            itemPosChange += initWallRefItemPos - itemStatus.initObj.transform.position;
+                            itemPosChange += newItemInitPos - itemStatus.initObj.transform.position;
                         }
                     }
                     else if (wallStatus.mode == WallStatusModes.LOCKED)
                     {
+                        // calculate initPos with respect to current wall
                         // while locked, we use cameraFrontWhenLocked for camera position
-                        Vector3 initWallRefItemPos = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.initObj.transform.position);
-                        Vector3 initWallRefCameraPos = wallStatus.initObj.transform.InverseTransformPoint(wallStatus.cameraFrontWhenLocked);
-                        Vector3 cameraToItemDirection = initWallRefItemPos - initWallRefCameraPos;
-                        cameraToItemDirection = Vector3.Scale(cameraToItemDirection, new Vector3(1, 1, wallStatus.distanceScale));
-                        initWallRefItemPos = initWallRefCameraPos + cameraToItemDirection;
-                        initWallRefItemPos = wallStatus.initObj.transform.TransformPoint(initWallRefItemPos);
+                        Vector3 cameraToItemDir = itemStatus.initObj.transform.position - wallStatus.cameraFrontWhenLocked;
+                        cameraToItemDir = wallStatus.initObj.transform.InverseTransformDirection(cameraToItemDir);
+                        cameraToItemDir = Vector3.Scale(cameraToItemDir, new Vector3(1, 1, wallStatus.distanceScale));
+                        cameraToItemDir = wallStatus.initObj.transform.TransformDirection(cameraToItemDir);
+                        Vector3 newItemInitPos = wallStatus.cameraFrontWhenLocked + cameraToItemDir;
 
                         // recalculate initPos while the item is being dragged
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
-                            itemInitPosChange += itemStatus.initObj.transform.position - initWallRefItemPos;
+                            itemInitPosChange += itemStatus.initObj.transform.position - newItemInitPos;
+                            // clamping
+                            Vector3 initRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemInitPosChange);
+                            if (initRefChange.z < 0f) initRefChange.z = 0f;
+                            initRefChange = wallStatus.initObj.transform.TransformDirection(initRefChange);
+                            itemInitPosChange = initRefChange;
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
-                            itemPosChange += initWallRefItemPos - itemStatus.initObj.transform.position;
+                            itemPosChange += newItemInitPos - itemStatus.initObj.transform.position;
+                            // clamping
+                            Vector3 itemRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemPosChange);
+                            if (itemRefChange.z > 0f) itemRefChange.z = 0f;
+                            itemRefChange = wallStatus.initObj.transform.TransformDirection(itemRefChange);
+                            itemPosChange = itemRefChange;
                         }
                     }
                     wallStatusDic[wallStatusId] = wallStatus;
