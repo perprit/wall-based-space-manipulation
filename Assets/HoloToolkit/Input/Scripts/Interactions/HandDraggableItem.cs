@@ -30,6 +30,7 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 initHandPosition;
         private Vector3 initHandVector;
         private Vector3 prevHandPosition;   // for smoothing
+        private Vector3 prevObjPosition;   // for smoothing
 
         private IInputSource currentInputSource;
         private uint currentInputSourceId;
@@ -111,10 +112,10 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 handMovement = handVector - initHandVector;
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
-            float newObjDist = Vector3.Magnitude(newObjPosition - mainCamera.transform.position);
+            float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
 
             // proportion to distance between objects (Hololens way
-            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 2f;
+            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 1.5f;
             
             // constant ratio
             //newObjPosition = initObjPosition + headMovement + handMovement * 7f;
@@ -131,6 +132,7 @@ namespace HoloToolkit.Unity.InputModule
             }
 
             HostTransform.position = newObjPosition;
+            prevObjPosition = newObjPosition;
             prevHandPosition = handPosition;
         }
 

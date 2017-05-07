@@ -24,7 +24,7 @@ namespace HoloToolkit.Unity.InputModule
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
         public float MinimumDistanceToWall = 1.5f;
         public float DefaultMovementScale = 5f;
-        public float SmoothingRatio = 0.5f;
+        public float SmoothingRatio = 0.8f;
         public float NearClippingPlaneDist = 0.85f;
 
         public bool IsWallAvailable = false;
