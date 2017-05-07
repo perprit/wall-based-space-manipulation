@@ -27,8 +27,6 @@ namespace HoloToolkit.Unity.InputModule
         public float SmoothingRatio = 0.5f;
         public float NearClippingPlaneDist = 0.85f;
 
-        public bool ShowInitialWallObject = false;
-
         public bool IsWallAvailable = false;
 
         private Camera mainCamera;
@@ -197,6 +195,7 @@ namespace HoloToolkit.Unity.InputModule
                 Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
                 itemStatus.initObj.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
                 itemStatus.initObj.GetComponent<Collider>().enabled = false;
+                itemStatus.initObj.transform.localScale *= 1.05f;
                 
                 itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
             }
@@ -218,11 +217,6 @@ namespace HoloToolkit.Unity.InputModule
                 wallStatus.initObj = Instantiate(obj);
                 wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
                 Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
-                if (!ShowInitialWallObject)
-                {
-                    wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
-                    wallStatus.initObj.GetComponent<MeshCollider>().sharedMesh = null;
-                }
 
                 // assign updated wallStatus
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
