@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using ManipulateWalls;
 
 namespace HoloToolkit.Unity.SpatialMapping
 {
@@ -62,7 +63,7 @@ namespace HoloToolkit.Unity.SpatialMapping
         // Use for initialization.
         private void Start()
         {
-            if (autoStartObserver)
+            if (ExperimentManager.Instance.UseSpatialMapping && autoStartObserver)
             {
                 StartObserver();
             }

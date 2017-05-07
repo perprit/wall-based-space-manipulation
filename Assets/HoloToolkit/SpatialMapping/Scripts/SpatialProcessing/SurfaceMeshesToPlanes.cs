@@ -37,14 +37,14 @@ namespace HoloToolkit.Unity.SpatialMapping
         /// </summary>
         [HideInInspector]
         public PlaneTypes drawPlanesMask =
-            (PlaneTypes.Wall | PlaneTypes.Floor | PlaneTypes.Ceiling | PlaneTypes.Table);
+            (PlaneTypes.Wall);
 
         /// <summary>
         /// Determines which plane types should be discarded.
         /// Use this when the spatial mapping mesh is a better fit for the surface (ex: round tables).
         /// </summary>
         [HideInInspector]
-        public PlaneTypes destroyPlanesMask = PlaneTypes.Unknown;
+        public PlaneTypes destroyPlanesMask = (PlaneTypes.Unknown | PlaneTypes.Floor | PlaneTypes.Ceiling | PlaneTypes.Table);
 
         /// <summary>
         /// Floor y value, which corresponds to the maximum horizontal area found below the user's head position.

@@ -2,6 +2,7 @@
 using UnityEngine;
 using HoloToolkit.Unity;
 using HoloToolkit.Unity.SpatialMapping;
+using ManipulateWalls;
 
 public class PlaneFinder : Singleton<PlaneFinder>
 {
@@ -51,7 +52,7 @@ public class PlaneFinder : Singleton<PlaneFinder>
     {
         // Check to see if the spatial mapping data has been processed
         // and if we are limiting how much time the user can spend scanning.
-        if (!meshesProcessed && limitScanningByTime)
+        if (ExperimentManager.Instance.UseSpatialMapping && !meshesProcessed && limitScanningByTime)
         {
             // If we have not processed the spatial mapping data
             // and scanning time is limited...

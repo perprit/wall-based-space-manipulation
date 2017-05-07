@@ -38,7 +38,14 @@ namespace HoloToolkit.Unity.InputModule
         {
             mainCamera = Camera.main;
             //currentItemsTransforms = VirtualItemsManager.Instance.GetAllObjectTransforms();
-            SurfaceMeshesToPlanes.Instance.MakePlanesComplete += SurfaceMeshesToPlanes_MakePlanesComplete;
+            if (ExperimentManager.Instance.UseSpatialMapping)
+            {
+                SurfaceMeshesToPlanes.Instance.MakePlanesComplete += SurfaceMeshesToPlanes_MakePlanesComplete;
+            }
+            else
+            {
+                ExperimentManager.Instance.SetWallComplete += ExperimentManager_SetWallComplete;
+            }
         }
         
         void Update()
@@ -201,6 +208,35 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
+        private void ExperimentManager_SetWallComplete(object source, System.EventArgs args)
+        {
+            // set surface meshes disabled
+            SpatialMappingManager.Instance.EnableSurfaceMeshes(false);
+
+            // initialize 
+            GameObject plane = ExperimentManager.Instance.GetWallObject();
+
+            WallStatus wallStatus = new WallStatus(plane);
+            wallStatusDic.Add(plane.GetInstanceID(), wallStatus);
+
+            IsWallAvailable = true;
+
+            // initialize itemStatusDic
+            List<GameObject> items = VirtualItemsManager.Instance.GetItemObjects();
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemStatus itemStatus = new ItemStatus(items[i]);
+                itemStatus.initObj = Instantiate(itemStatus.obj);
+                itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
+                itemStatus.initObj.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
+                itemStatus.initObj.GetComponent<Collider>().enabled = false;
+                itemStatus.initObj.transform.localScale *= 1.05f;
+
+                itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
+            }
+        }
+
         public void SetWallMode(GameObject obj, WallStatusModes mode)
         {
             if (mode == WallStatusModes.DRAGGING)
@@ -216,6 +252,7 @@ namespace HoloToolkit.Unity.InputModule
                 wallStatus.mode = WallStatusModes.DRAGGING;
                 wallStatus.initObj = Instantiate(obj);
                 wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
                 Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
 
                 // assign updated wallStatus

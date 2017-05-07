@@ -65,13 +65,11 @@ Shader "Custom/GridSelected"
 				// we are drawing black.
 				fixed4 ret = float4(0,0,0,1);
 
-				/*
 				// Normals need to be renormalized in the fragment shader to overcome 
 				// interpolation.
 				float3 normal = normalize(i.normal);
-				*/
 
-				if (abs(wpmod.y) < _LineScale* _LinesPerMeter || abs(wpmod.x) < _LineScale* _LinesPerMeter)
+				if (abs(wpmod.x) < _LineScale* _LinesPerMeter || abs(wpmod.y) < _LineScale* _LinesPerMeter || abs(wpmod.z) < _LineScale* _LinesPerMeter)
 				{
 					ret = float4(1, 1, 1, 1);
 					ret.a = 1;

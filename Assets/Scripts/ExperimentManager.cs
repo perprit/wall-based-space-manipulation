@@ -1,49 +1,72 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 using HoloToolkit.Unity;
 using UnityEngine.SceneManagement;
+using HoloToolkit.Unity.SpatialMapping;
+using HoloToolkit.Unity.InputModule;
 
 namespace ManipulateWalls
 {
-    public enum InteractionType
-    {
-        GGI, HOMER, GR
-    }
-
-    public enum RepositionType
-    {
-        C2C, C2F, F2C, F2F
-    }
 
     public class ExperimentManager : Singleton<ExperimentManager>
     {
-        class TaskSetting
-        {
-            InteractionType interactionType;
-            RepositionType repositionType;
-
-            TaskSetting(InteractionType _it, RepositionType _rt)
-            {
-                interactionType = _it;
-                repositionType = _rt;
-            }
-        }
-
-        public InteractionType interactionType = InteractionType.GR;
-        public RepositionType repositionDirectionType = RepositionType.C2F;
+        public GameObject wallPrefab;
+        public int UserId = 0;
+        public int PhaseId = 0;
+        public int TrialId = 0;
+        public bool UseSpatialMapping = false;
+        
+        public event EventHandler SetWallComplete;
 
         private List<TaskSetting> taskSettingList = new List<TaskSetting>();
+        private GameObject wallObj;
 
         void Start()
         {
-
+            if (UseSpatialMapping)
+            {
+                return;
+            }
+            gameObject.transform.position = Vector3.zero;
+            gameObject.transform.rotation = Quaternion.identity;
+            SetWall();
         }
-        
-        void SetTaskSettingSequence(List<TaskSetting> _tsl)
+
+        public void InitExperiment()
         {
-            taskSettingList = _tsl;
+            //taskSettingList = TaskManager.Instance.LoadTaskSequence(UserId);
+            //SetTaskSettingSequence();
+        }
+
+        public void SetWall()
+        {
+            if (wallObj != null)
+            {
+                Destroy(wallObj);
+                wallObj = null;
+            }
+            wallObj = Instantiate(wallPrefab);
+            wallObj.transform.parent = gameObject.transform;
+            wallObj.layer = SpatialMappingManager.Instance.PhysicsLayer;
+            
+            wallObj.transform.position = new Vector3(0f, 0f, 8f);
+            wallObj.transform.rotation = Quaternion.identity;
+            wallObj.transform.localScale = new Vector3(2f, 2f, 0.001f);
+
+            // We are done set wall, trigger an event.
+            EventHandler handler = SetWallComplete;
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        public GameObject GetWallObject()
+        {
+            return wallObj;
         }
         
         public void ResetScene()

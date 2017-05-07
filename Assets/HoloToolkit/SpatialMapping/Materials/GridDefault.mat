@@ -117,7 +117,7 @@ Material:
       second: 0.01
     - first:
         name: _LinesPerMeter
-      second: 2
+      second: 5
     - first:
         name: _Metallic
       second: 0
