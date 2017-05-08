@@ -29,6 +29,8 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool IsWallAvailable = false;
 
+        public GameObject InitItemPrefab;
+
         private Camera mainCamera;
 
         private Dictionary<int, WallStatus> wallStatusDic = new Dictionary<int, WallStatus>();
@@ -197,13 +199,9 @@ namespace HoloToolkit.Unity.InputModule
             for (int i = 0; i < items.Count; i++)
             {
                 ItemStatus itemStatus = new ItemStatus(items[i]);
-                itemStatus.initObj = Instantiate(itemStatus.obj);
-                itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
-                Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
-                itemStatus.initObj.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
-                itemStatus.initObj.GetComponent<Collider>().enabled = false;
-                itemStatus.initObj.transform.localScale *= 1.05f;
-                
+                itemStatus.initObj = Instantiate(InitItemPrefab);
+                itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
+
                 itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
             }
         }
@@ -226,12 +224,8 @@ namespace HoloToolkit.Unity.InputModule
             for (int i = 0; i < items.Count; i++)
             {
                 ItemStatus itemStatus = new ItemStatus(items[i]);
-                itemStatus.initObj = Instantiate(itemStatus.obj);
-                itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
-                Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
-                itemStatus.initObj.GetComponent<MeshRenderer>().material.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
-                itemStatus.initObj.GetComponent<Collider>().enabled = false;
-                itemStatus.initObj.transform.localScale *= 1.05f;
+                itemStatus.initObj = Instantiate(InitItemPrefab);
+                itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
 
                 itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
             }

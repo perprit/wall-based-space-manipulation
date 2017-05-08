@@ -62,6 +62,7 @@ namespace HoloToolkit.Unity.InputModule
 
         private void Update()
         {
+            DebugTextController.Instance.SetMessage(HostTransform.position.ToString("F2"));
             if (isDragging)
             {
                 UpdateDragging();

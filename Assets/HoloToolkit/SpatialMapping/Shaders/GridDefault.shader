@@ -12,6 +12,7 @@ Shader "Custom/GridSelected"
 		Tags{ "RenderType" = "Transparent" "Queue" = "Transparent" }
 		Blend SrcAlpha OneMinusSrcAlpha
 		Cull Off
+		ZWrite On
 		LOD 200
 
 		Pass
