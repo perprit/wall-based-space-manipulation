@@ -30,5 +30,15 @@ namespace ManipulateWalls
         {
             return childObjects;
         }
+
+        public void SetItemPos(Vector3 pos)
+        {
+            if(childObjects.Count != 1)
+            {
+                Debug.LogError("childObjects.Cound == " + childObjects.Count);
+                return;
+            }
+            childObjects[0].transform.position = pos;
+        }
     }
 }

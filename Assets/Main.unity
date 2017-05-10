@@ -363,6 +363,10 @@ Prefab:
       propertyPath: HostTransform
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1555723766337660, guid: 0004f6f79a395bb47bc36f9bac298b58, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 0004f6f79a395bb47bc36f9bac298b58, type: 2}
   m_IsPrefabParent: 0
@@ -948,10 +952,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallPrefab: {fileID: 1000010593991404, guid: 97c43499e77a4c547ad612cc41c910e8, type: 2}
+  itemPrefab: {fileID: 1555723766337660, guid: 0004f6f79a395bb47bc36f9bac298b58, type: 2}
   UserId: 0
   PhaseId: 0
   TrialId: 0
   UseSpatialMapping: 0
+  WallInitPosition: {x: 1.75, y: 0.7, z: 10.5}
+  WallInitScale: {x: 1.75, y: 1.5, z: 0.0001}
 --- !u!114 &1874102115
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -211,24 +211,19 @@ namespace HoloToolkit.Unity.InputModule
             // set surface meshes disabled
             SpatialMappingManager.Instance.EnableSurfaceMeshes(false);
 
-            // initialize 
-            GameObject plane = ExperimentManager.Instance.GetWallObject();
-
-            WallStatus wallStatus = new WallStatus(plane);
-            wallStatusDic.Add(plane.GetInstanceID(), wallStatus);
+            // initialize wall
+            GameObject wallObj = ExperimentManager.Instance.GetWallObject();
+            WallStatus wallStatus = new WallStatus(wallObj);
+            wallStatusDic.Add(wallObj.GetInstanceID(), wallStatus);
 
             IsWallAvailable = true;
 
-            // initialize itemStatusDic
-            List<GameObject> items = VirtualItemsManager.Instance.GetItemObjects();
-            for (int i = 0; i < items.Count; i++)
-            {
-                ItemStatus itemStatus = new ItemStatus(items[i]);
-                itemStatus.initObj = Instantiate(InitItemPrefab);
-                itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
-
-                itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
-            }
+            // initialize item
+            GameObject itemObj = ExperimentManager.Instance.GetItemObject();
+            ItemStatus itemStatus = new ItemStatus(itemObj);
+            itemStatus.initObj = Instantiate(InitItemPrefab);
+            itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
+            itemStatusDic.Add(itemObj.GetInstanceID(), itemStatus);
         }
 
         public void SetWallMode(GameObject obj, WallStatusModes mode)

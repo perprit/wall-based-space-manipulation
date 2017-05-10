@@ -14,15 +14,21 @@ namespace ManipulateWalls
     public class ExperimentManager : Singleton<ExperimentManager>
     {
         public GameObject wallPrefab;
+        public GameObject itemPrefab;
         public int UserId = 0;
         public int PhaseId = 0;
         public int TrialId = 0;
         public bool UseSpatialMapping = false;
-        
+
+        public Vector3 WallInitPosition = new Vector3(1.75f, 0.7f, 10.5f);
+        public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
+
         public event EventHandler SetWallComplete;
 
-        private List<TaskSetting> taskSettingList = new List<TaskSetting>();
+        private GameObject itemObj;
         private GameObject wallObj;
+
+        private List<TaskSetting> taskSettingList = new List<TaskSetting>();
 
         void Start()
         {
@@ -32,7 +38,7 @@ namespace ManipulateWalls
             }
             gameObject.transform.position = Vector3.zero;
             gameObject.transform.rotation = Quaternion.identity;
-            SetWall();
+            SetItemAndWall();
         }
 
         public void InitExperiment()
@@ -41,8 +47,18 @@ namespace ManipulateWalls
             //SetTaskSettingSequence();
         }
 
-        public void SetWall()
+        private void SetItemAndWall()
         {
+            // set item
+            if (itemObj != null)
+            {
+                itemObj = null;
+            }
+            itemObj = Instantiate(itemPrefab);
+            itemObj.transform.parent = gameObject.transform;
+            itemObj.transform.position = WallInitPosition + Vector3.back * 6f;
+
+            // set wall
             if (wallObj != null)
             {
                 Destroy(wallObj);
@@ -51,10 +67,10 @@ namespace ManipulateWalls
             wallObj = Instantiate(wallPrefab);
             wallObj.transform.parent = gameObject.transform;
             wallObj.layer = SpatialMappingManager.Instance.PhysicsLayer;
-            
-            wallObj.transform.position = new Vector3(0f, 0f, 8f);
+
+            wallObj.transform.position = WallInitPosition;
             wallObj.transform.rotation = Quaternion.identity;
-            wallObj.transform.localScale = new Vector3(2f, 2f, 0.001f);
+            wallObj.transform.localScale = WallInitScale;
 
             // We are done set wall, trigger an event.
             EventHandler handler = SetWallComplete;
@@ -62,6 +78,11 @@ namespace ManipulateWalls
             {
                 handler(this, EventArgs.Empty);
             }
+        }
+
+        public GameObject GetItemObject()
+        {
+            return itemObj;
         }
 
         public GameObject GetWallObject()
