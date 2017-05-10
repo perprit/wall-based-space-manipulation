@@ -37,6 +37,9 @@ namespace HoloToolkit.Unity.InputModule
 
         private float smoothingRatio;
         private float sphereRadius;
+
+        private float recordedTime = 0f;
+        private Vector3 recordedHandPos = Vector3.zero; 
         
         private void Start()
         {
@@ -62,7 +65,6 @@ namespace HoloToolkit.Unity.InputModule
 
         private void Update()
         {
-            DebugTextController.Instance.SetMessage(HostTransform.position.ToString("F2"));
             if (isDragging)
             {
                 UpdateDragging();
@@ -103,7 +105,7 @@ namespace HoloToolkit.Unity.InputModule
             // Hololens-like object movement
             Vector3 handPosition;
             currentInputSource.TryGetPosition(currentInputSourceId, out handPosition);
-            
+
             // hand position after smoothing
             handPosition = handPosition * smoothingRatio + prevHandPosition * (1 - smoothingRatio);
 
@@ -113,17 +115,38 @@ namespace HoloToolkit.Unity.InputModule
             Vector3 handMovement = handVector - initHandVector;
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
-            float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
 
-            // proportion to distance between objects (Hololens way
-            newObjPosition = initObjPosition + headMovement + handMovement * newObjDist * 2f;
-            
-            // constant ratio
-            //newObjPosition = initObjPosition + headMovement + handMovement * 7f;
+            if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
+            {
+                // CONST
+                newObjPosition = initObjPosition + headMovement + handMovement * 4f;
+            }
+            else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
+            {
+                // ADAPT
+                float velocity = Vector3.Magnitude(handPosition - prevHandPosition) / Time.smoothDeltaTime;
+                velocity = velocity * 3 + 1;
+                newObjPosition = initObjPosition + headMovement + handMovement * velocity * 2f;
+                initObjPosition = newObjPosition;
+                initHandVector = handVector;
+            }
+            else if (ExperimentManager.Instance.InteractionType == InteractionType.DIST)
+            {
+                // DIST
+                float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
+                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist, 2f, Mathf.Infinity);
+            }
 
-            Vector3 eyeToObjDirection = newObjPosition - mainCamera.transform.position;
+            float currTime = Time.time;
+            if(currTime - recordedTime > 1.0f)
+            {
+                DebugTextController.Instance.SetMessage("velocity: " + Vector3.Magnitude(handPosition - recordedHandPos) / (currTime - recordedTime));
+                recordedTime = currTime;
+                recordedHandPos = handPosition;
+            }
 
             // clamp movement vector with wall objects
+            Vector3 eyeToObjDirection = newObjPosition - mainCamera.transform.position;
             RaycastHit hit;
             // raycast only on SpatialMapping layer
             if (Physics.Raycast(mainCamera.transform.position, Vector3.Normalize(eyeToObjDirection), out hit,

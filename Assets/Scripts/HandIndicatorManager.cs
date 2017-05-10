@@ -56,7 +56,6 @@ namespace ManipulateWalls
 
         public void OnSourceDetected(SourceStateEventData eventData)
         {
-            DebugTextController.Instance.SetMessage("SourceDetected, id: " + eventData.SourceId);
             if (handDictionary.ContainsKey(eventData.SourceId))
             {
                 Debug.Log("handDictonary already contains key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");
@@ -75,7 +74,6 @@ namespace ManipulateWalls
 
         public void OnSourceLost(SourceStateEventData eventData)
         {
-            DebugTextController.Instance.SetMessage("Source Lost, id: " + eventData.SourceId);
             if (!handDictionary.ContainsKey(eventData.SourceId))
             {
                 Debug.Log("handDictonary does not contain key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");

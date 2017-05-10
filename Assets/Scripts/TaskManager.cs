@@ -7,25 +7,32 @@ namespace ManipulateWalls
 {
     public enum InteractionType
     {
-        GOGO, CONST, DIST
+        ADAPT, CONST, DIST
     }
 
-    public enum RepositionType
+    public enum ZDistType
     {
-        C2C, C2F, F2C, F2F
+        S2M, S2F, M2F, M2S, F2S, F2M
+    }
+
+    public enum XYPosType
+    {
+        I2I, I2O, O2I, O2O
     }
 
     struct TaskSetting
     {
         InteractionType interactionType;
-        RepositionType repositionType;
+        ZDistType zDistType;
+        XYPosType xyPosType;
         Vector3 ItemPosition;
         Vector3 TargetPosition;
 
-        TaskSetting(InteractionType _it, RepositionType _rt, Vector3 _ip, Vector3 _tp)
+        TaskSetting(InteractionType _it, ZDistType _zd, XYPosType _xy, Vector3 _ip, Vector3 _tp)
         {
             interactionType = _it;
-            repositionType = _rt;
+            zDistType = _zd;
+            xyPosType = _xy;
             ItemPosition = _ip;
             TargetPosition = _tp;
         }

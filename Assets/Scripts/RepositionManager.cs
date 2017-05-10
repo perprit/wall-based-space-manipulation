@@ -21,7 +21,7 @@ namespace HoloToolkit.Unity.InputModule
     {
         // the range of the hand position that is recognizable
         public float MinimumArmLength = 0.3f;
-        public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength!
+        public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength
         public float MinimumDistanceToWall = 1.5f;
         public float DefaultMovementScale = 5f;
         public float SmoothingRatio = 0.8f;
@@ -49,7 +49,7 @@ namespace HoloToolkit.Unity.InputModule
                 ExperimentManager.Instance.SetWallComplete += ExperimentManager_SetWallComplete;
             }
         }
-        
+
         void Update()
         {
             // just pass by update logics if planes are not detected yet

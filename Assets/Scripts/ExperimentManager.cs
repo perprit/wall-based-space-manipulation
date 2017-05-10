@@ -19,6 +19,7 @@ namespace ManipulateWalls
         public int PhaseId = 0;
         public int TrialId = 0;
         public bool UseSpatialMapping = false;
+        public InteractionType InteractionType = InteractionType.CONST;
 
         public Vector3 WallInitPosition = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
