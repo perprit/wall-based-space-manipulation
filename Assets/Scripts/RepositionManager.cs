@@ -239,6 +239,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.DRAGGING;
+                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.1f, 1.0f, 0.7f);
                 wallStatus.initObj = Instantiate(obj);
                 wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
                 wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
@@ -252,6 +253,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.LOCKED;
+                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.3f, 1.0f, 0.3f);
                 wallStatus.cameraFrontWhenLocked = GetCameraFrontPosition();
 
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
@@ -261,6 +263,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.IDLE;
+                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(1.0f, 1.0f, 1.0f);
                 Destroy(wallStatus.initObj);
                 wallStatus.initObj = null;
                 wallStatus.movementScale = DefaultMovementScale;

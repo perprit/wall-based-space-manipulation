@@ -5,6 +5,7 @@ Shader "Custom/GridSelected"
 	{
 		_LineScale("LineScale", Float) = 0.01
 		_LinesPerMeter("LinesPerMeter", Float) = 5
+		_Color("Color", Color) = (1.0, 1.0, 1.0, 1)
 	}
 
 		SubShader
@@ -27,6 +28,7 @@ Shader "Custom/GridSelected"
 		// They can be set at run time using renderer.material.SetFloat()
 		float _LineScale;
 	float _LinesPerMeter;
+	float4 _Color;
 
 	// This is the data structure that the vertex program provides to the fragment program.
 	struct VertToFrag
@@ -67,7 +69,7 @@ Shader "Custom/GridSelected"
 
 	// Initialize to draw black with full alpha. This way we will occlude holograms even when
 	// we are drawing black.
-	fixed4 ret = float4(0,0,0,0);
+	float4 ret = float4(0,0,0,0);
 
 	/*
 	// Normals need to be renormalized in the fragment shader to overcome
@@ -77,7 +79,7 @@ Shader "Custom/GridSelected"
 
 	if (abs(wpmod.y) < _LineScale* _LinesPerMeter || abs(wpmod.x) < _LineScale* _LinesPerMeter)
 	{
-		ret = float4(0.3, 1, 0.3, 1);
+		ret = _Color;
 		ret.a = 1;
 	}
 
