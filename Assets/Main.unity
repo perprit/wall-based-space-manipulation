@@ -983,6 +983,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74de2e1b8420eaf4f9e58f58c02724a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1875986635
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1875986636}
+  - component: {fileID: 1875986637}
+  m_Layer: 0
+  m_Name: UDPManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1875986636
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1875986635}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1996365279}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1875986637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1875986635}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fc81532cee758a4eb20cde6285b89aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UDP_PORT: 3003
+  externalIP: 192.168.0.197
+  externalPort: 3003
 --- !u!1 &1958182512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,6 +1099,7 @@ Transform:
   - {fileID: 1597151799}
   - {fileID: 1874102113}
   - {fileID: 1958182513}
+  - {fileID: 1875986636}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -119,7 +119,7 @@ namespace HoloToolkit.Unity.InputModule
             if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
             {
                 // CONST
-                newObjPosition = initObjPosition + headMovement + handMovement * 4f;
+                newObjPosition = initObjPosition + headMovement + handMovement * 5f;
             }
             else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
             {
