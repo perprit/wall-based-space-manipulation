@@ -959,6 +959,7 @@ MonoBehaviour:
   TrialId: 0
   UseSpatialMapping: 0
   InteractionType: 0
+  VelocityMul: 8
   WallInitPosition: {x: 1.75, y: 0.7, z: 10.5}
   WallInitScale: {x: 1.75, y: 1.5, z: 0.0001}
 --- !u!114 &1874102115

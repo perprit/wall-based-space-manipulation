@@ -8,10 +8,21 @@ namespace ManipulateWalls
 {
     public class UtilFunctions : Singleton<UtilFunctions>
     {
-        public float QuadraticInOut (float k)
+        public float QuadraticInOut (float k, float min, float max)
         {
-            if ((k *= 2f) < 1f) return 0.5f * k * k;
-            return -0.5f * ((k -= 1f) * (k - 2f) - 1f);
+            if (min >= max) return k;
+            float v = Mathf.Clamp(k, min, max);
+            v = v / (max - min);
+
+            if ((v *= 2f) < 1f)
+            {
+                v = 0.5f * v * v;
+            }
+            else
+            {
+                v = -0.5f * ((v -= 1f) * (v - 2f) - 1f);
+            }
+            return v * (max - min);
         }
     }
 

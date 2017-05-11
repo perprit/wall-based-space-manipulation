@@ -36,10 +36,6 @@ namespace HoloToolkit.Unity.InputModule
         private uint currentInputSourceId;
 
         private float smoothingRatio;
-        private float sphereRadius;
-
-        private float recordedTime = 0f;
-        private Vector3 recordedHandPos = Vector3.zero; 
         
         private void Start()
         {
@@ -52,7 +48,6 @@ namespace HoloToolkit.Unity.InputModule
             currentInputSource = null;
             currentInputSourceId = 0;
             smoothingRatio = RepositionManager.Instance.SmoothingRatio;
-            sphereRadius = 0.25f;
         }
 
         private void OnDestroy()
@@ -124,10 +119,11 @@ namespace HoloToolkit.Unity.InputModule
             else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
             {
                 // ADAPT
-                float velocity = Vector3.Magnitude(handPosition - prevHandPosition) / Time.smoothDeltaTime;
-                velocity = velocity * 3 + 1;
-                newObjPosition = initObjPosition + headMovement + handMovement * velocity * 2f;
+                float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
+                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 9, 0f, 12f);
+                newObjPosition = initObjPosition + headMovement + handMovement * velocity;
                 initObjPosition = newObjPosition;
+                initCameraPosition = mainCamera.transform.position;
                 initHandVector = handVector;
             }
             else if (ExperimentManager.Instance.InteractionType == InteractionType.DIST)
@@ -135,14 +131,6 @@ namespace HoloToolkit.Unity.InputModule
                 // DIST
                 float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
                 newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist, 2f, Mathf.Infinity);
-            }
-
-            float currTime = Time.time;
-            if(currTime - recordedTime > 1.0f)
-            {
-                DebugTextController.Instance.SetMessage("velocity: " + Vector3.Magnitude(handPosition - recordedHandPos) / (currTime - recordedTime));
-                recordedTime = currTime;
-                recordedHandPos = handPosition;
             }
 
             // clamp movement vector with wall objects

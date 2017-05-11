@@ -54,7 +54,6 @@ public class UDPManager : Singleton<UDPManager> {
         }
 
         Debug.Log("listening from " + IP + " : " + UDP_PORT);
-        Debug.Log("exit start");
     }
 
     private async System.Threading.Tasks.Task SendMessage(string message)
@@ -120,7 +119,6 @@ public class UDPManager : Singleton<UDPManager> {
     [Serializable]
     public class KeyboardEvent
     {
-
     }
     [Serializable]
     public class MouseEvent
