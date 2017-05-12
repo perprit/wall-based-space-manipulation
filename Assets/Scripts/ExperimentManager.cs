@@ -81,6 +81,16 @@ namespace ManipulateWalls
             }
         }
 
+        public void SetSequenceData(SequenceData sd)
+        {
+            Debug.Log("method: " + sd.method);
+            foreach (SequenceData.Trial trial in sd.trials)
+            {
+                Debug.Log("start[0]: " + trial.start[0] + " / target[0]: " + trial.target[0]);
+                Debug.Log("z_type: " + trial.z_type + " / xy_type: " + trial.xy_type);
+            }
+        }
+
         public GameObject GetItemObject()
         {
             return itemObj;

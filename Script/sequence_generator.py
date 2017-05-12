@@ -2,6 +2,11 @@ import json
 import random
 
 PRETTY_PRINT = False
+DISABLED = True
+
+if DISABLED:
+    print("disabled now")
+    exit()
 
 """
 - ID

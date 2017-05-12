@@ -6,7 +6,6 @@ using System.Text;
 using System.Linq;
 using HoloToolkit.Unity;
 using System.Collections.Generic;
-using ManipulateWalls;
 
 #if !UNITY_EDITOR
 using Windows.Networking.Sockets;
@@ -14,20 +13,24 @@ using Windows.Networking.Connectivity;
 using Windows.Networking;
 #endif
 
-public class UDPManager : Singleton<UDPManager> {
-    public string UDP_PORT;
-    public string externalIP;
-    public string externalPort;
+namespace ManipulateWalls
+{
+    public class UDPManager : Singleton<UDPManager>
+    {
+        public string UDP_PORT;
+        public string externalIP;
+        public string externalPort;
 
-    private volatile MouseEvent MouseDelta = new MouseEvent();
+        private bool NEW_SEQUENCE = false;
+        private volatile SequenceData sd = new SequenceData();
 
-    public readonly static Queue<Action> ExecuteOnMainThread = new Queue<Action>();
+        public readonly static Queue<Action> ExecuteOnMainThread = new Queue<Action>();
 
 #if !UNITY_EDITOR
     DatagramSocket socket;
 #endif
 
-    // Use this for initialization
+        // Use this for initialization
 #if !UNITY_EDITOR
     async void Start()
     {
@@ -71,19 +74,26 @@ public class UDPManager : Singleton<UDPManager> {
         }
     }
 #else
-    void Start()
-    {
+        void Start()
+        {
 
-    }
+        }
 #endif
 
-    void Update()
-    {
-        while (ExecuteOnMainThread.Count > 0)
+        void Update()
         {
-            ExecuteOnMainThread.Dequeue().Invoke();
+            while (ExecuteOnMainThread.Count > 0)
+            {
+                ExecuteOnMainThread.Dequeue().Invoke();
+
+                if (NEW_SEQUENCE && sd != null)
+                {
+                    ExperimentManager.Instance.SetSequenceData(sd);
+                    NEW_SEQUENCE = false;
+                    sd = null;
+                }
+            }
         }
-    }
 
 #if !UNITY_EDITOR
     private async void Socket_MessageReceived(Windows.Networking.Sockets.DatagramSocket sender,
@@ -104,8 +114,8 @@ public class UDPManager : Singleton<UDPManager> {
                 Debug.Log("Enqueue MESSAGE: " + message);
                 try
                 {
-                    //MouseEvent me = JsonUtility.FromJson<MouseEvent>(message);
-                    //MouseDelta.add(me);                
+                    sd = JsonUtility.FromJson<SequenceData>(message);
+                    NEW_SEQUENCE = true;
                 }            
                 catch (FormatException e)
                 {
@@ -115,49 +125,21 @@ public class UDPManager : Singleton<UDPManager> {
         }
     }
 #endif
-
-    [Serializable]
-    public class KeyboardEvent
-    {
     }
+
     [Serializable]
-    public class MouseEvent
+    public class SequenceData
     {
-        public int l;   // left button
-        public int m;   // middle button
-        public int r;   // right button
-        public int s;   // scroll wheel
-        public int x;   // x mouse movement
-        public int y;   // y mouse movement
-
-        public void clear()
+        [Serializable]
+        public class Trial
         {
-            l = 0;
-            m = 0;
-            r = 0;
-            s = 0;
-            x = 0;
-            y = 0;
+            public string[] start;
+            public string[] target;
+            public string z_type;
+            public string xy_type;
         }
 
-        public void add(MouseEvent me)
-        {
-            this.l += me.l;
-            this.m += me.m;
-            this.r += me.r;
-            this.s += me.s;
-            this.x += me.x;
-            this.y += me.y;
-        }
-
-        public bool isZero()
-        {
-            return this.x == 0 && this.y == 0 && this.l == 0 && this.m == 0 && this.r == 0 && this.s == 0;
-        }
-
-        public bool isScroll()
-        {
-            return this.s != 0;
-        }
+        public string method;
+        public Trial[] trials;
     }
 }
