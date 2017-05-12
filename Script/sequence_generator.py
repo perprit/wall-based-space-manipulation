@@ -2,7 +2,7 @@ import json
 import random
 
 PRETTY_PRINT = False
-DISABLED = True
+DISABLED = False
 
 if DISABLED:
     print("disabled now")
@@ -20,7 +20,7 @@ if DISABLED:
 : S2M, S2F, M2F, M2S, F2S, F2M
 
 - XY POSITION, randomized
-(I (0): (-0.75 ~ 0.75)x(-0.75 ~ 0.75), O (1): (-1.5 ~ -0.75 || 0.75 ~ 1.5)x(-1.5 ~ -0.75 || 0.75 ~ 1.5)))
+(I (0): (-0.5 ~ 0.5)x(-0.5 ~ 0.5), O (1): (-1.0 ~ -0.5 || 0.5 ~ 1.0)x(-1.0 ~ -0.5 || 0.5 ~ 1.0)))
 : I2I, I2O, O2I, O2O
 
 
@@ -61,15 +61,15 @@ def z_gen(index):
 def xy_gen(index):
     if index == 0:
         # In
-        return ["%.3f" % random.uniform(-0.75, 0.75), "%.3f" % random.uniform(-0.75, 0.75)]
+        return ["%.3f" % random.uniform(-0.5, 0.5), "%.3f" % random.uniform(-0.5, 0.5)]
     elif index == 1:
         # Out
         ret = []
         for _ in range(2):
             if random.randint(0, 1) == 0:
-                ret.append("%.3f" % random.uniform(-1.5, -0.75))
+                ret.append("%.3f" % random.uniform(-1.0, -0.5))
             else:
-                ret.append("%.3f" % random.uniform(0.75, 1.5))
+                ret.append("%.3f" % random.uniform(0.5, 1.0))
         return ret
 
 zdist_trans_dic = ["S", "M", "F"]

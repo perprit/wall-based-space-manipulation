@@ -336,6 +336,24 @@ namespace HoloToolkit.Unity.InputModule
             return wallStatus.mode;
         }
 
+        public GameObject GetItemInitObject(int itemObjectId)
+        {
+            ItemStatus itemStatus;
+            if (!itemStatusDic.TryGetValue(itemObjectId, out itemStatus))
+            {
+                Debug.LogError("wall " + itemObjectId + " doesn't exist");
+                return null;
+            }
+
+            if (itemStatus.initObj == null)
+            {
+                Debug.LogError("initObj of wall " + itemObjectId + " doesn't exist");
+                return null;
+            }
+
+            return itemStatus.initObj;
+        }
+
         public GameObject GetWallInitObject(int wallObjectId)
         {
             WallStatus wallStatus;

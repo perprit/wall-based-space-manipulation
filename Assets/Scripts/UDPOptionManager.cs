@@ -15,14 +15,11 @@ using Windows.Networking;
 
 namespace ManipulateWalls
 {
-    public class UDPManager : Singleton<UDPManager>
+    public class UDPOptionManager : Singleton<UDPOptionManager>
     {
         public string UDP_PORT;
         public string externalIP;
         public string externalPort;
-
-        private bool NEW_SEQUENCE = false;
-        private volatile SequenceData sd = new SequenceData();
 
         public readonly static Queue<Action> ExecuteOnMainThread = new Queue<Action>();
 
@@ -85,27 +82,25 @@ namespace ManipulateWalls
             while (ExecuteOnMainThread.Count > 0)
             {
                 ExecuteOnMainThread.Dequeue().Invoke();
-
-                if (NEW_SEQUENCE && sd != null)
-                {
-                    ExperimentManager.Instance.SetTrialList(sd);
-                    NEW_SEQUENCE = false;
-                    sd = null;
-                }
             }
         }
 
         public void DisposeSocket()
         {
 #if !UNITY_EDITOR
-            if (socket != null)
-            {
-                socket.Dispose();
-            }
+            DisposeSocketAsync();
 #endif
         }
 
 #if !UNITY_EDITOR
+    async void DisposeSocketAsync()
+    {
+        if (socket != null)
+        {
+            socket.Dispose();
+        }
+    }
+
     private async void Socket_MessageReceived(Windows.Networking.Sockets.DatagramSocket sender,
         Windows.Networking.Sockets.DatagramSocketMessageReceivedEventArgs args)
     {
@@ -124,8 +119,18 @@ namespace ManipulateWalls
                 Debug.Log("Enqueue MESSAGE: " + message);
                 try
                 {
-                    sd = JsonUtility.FromJson<SequenceData>(message);
-                    NEW_SEQUENCE = true;
+                    if (message == "practice")
+                    {
+                        // TODO
+                    }
+                    else if (message == "test")
+                    {
+                        // TODO
+                    }
+                    else if (message == "reset")
+                    {
+                        // TODO
+                    }
                 }            
                 catch (FormatException e)
                 {
@@ -135,22 +140,5 @@ namespace ManipulateWalls
         }
     }
 #endif
-    }
-
-    [Serializable]
-    public class SequenceData
-    {
-        [Serializable]
-        public class TrialString
-        {
-            public string[] start;
-            public string[] target;
-            public string z_type;
-            public string xy_type;
-        }
-
-        public string id;
-        public string method;
-        public TrialString[] trials;
     }
 }
