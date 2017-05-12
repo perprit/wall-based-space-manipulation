@@ -114,13 +114,13 @@ namespace HoloToolkit.Unity.InputModule
             if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
             {
                 // CONST
-                newObjPosition = initObjPosition + headMovement + handMovement * 6f;
+                newObjPosition = initObjPosition + headMovement + handMovement * 5f;
             }
             else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
             {
                 // ADAPT
                 float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
-                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 9, 0f, 12f);
+                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 6, 0f, 12f);
                 newObjPosition = initObjPosition + headMovement + handMovement * velocity;
                 initObjPosition = newObjPosition;
                 initCameraPosition = mainCamera.transform.position;
@@ -130,7 +130,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 // DIST
                 float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
-                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist, 3f, Mathf.Infinity);
+                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist, 1f, Mathf.Infinity);
             }
 
             // clamp movement vector with wall objects

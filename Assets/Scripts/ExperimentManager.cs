@@ -53,7 +53,7 @@ namespace ManipulateWalls
         private GameObject wallObj;
         private GameObject targetObj;
 
-        bool TRIALS_READY = false;
+        public bool TRIALS_READY = false;
 
         void Start()
         {

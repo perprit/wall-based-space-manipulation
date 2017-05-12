@@ -2,7 +2,7 @@ import json
 import random
 
 PRETTY_PRINT = False
-DISABLED = False
+DISABLED = True
 
 if DISABLED:
     print("disabled now")
@@ -20,8 +20,8 @@ if DISABLED:
 : S2M, S2F, M2F, M2S, F2S, F2M
 
 - XY POSITION, randomized
-(I (0): (-0.5 ~ 0.5)x(-0.5 ~ 0.5), O (1): (-1.0 ~ -0.5 || 0.5 ~ 1.0)x(-1.0 ~ -0.5 || 0.5 ~ 1.0)))
-: I2I, I2O, O2I, O2O
+(L (0) : (-1.0 ~ 0.0), R (1) : (0.0 ~ 1.0))
+: LL, LR, RL, RR
 
 
 OUTPUT
@@ -58,28 +58,25 @@ def z_gen(index):
         # F
         return "%.3f" % random.uniform(7, 9)
 
-def xy_gen(index):
-    if index == 0:
-        # In
-        return ["%.3f" % random.uniform(-0.5, 0.5), "%.3f" % random.uniform(-0.5, 0.5)]
-    elif index == 1:
-        # Out
-        ret = []
-        for _ in range(2):
-            if random.randint(0, 1) == 0:
-                ret.append("%.3f" % random.uniform(-1.0, -0.5))
-            else:
-                ret.append("%.3f" % random.uniform(0.5, 1.0))
-        return ret
+def xy_gen(index_list):
+    pos = []
+
+    for index in index_list:
+        if index == 0:
+            pos.append("%.3f" % random.uniform(-1.0, 0.0))
+        elif index == 1:
+            pos.append("%.3f" % random.uniform(0.0, 1.0))
+    
+    return pos
 
 zdist_trans_dic = ["S", "M", "F"]
 def zdist_trans(l):
     return zdist_trans_dic[l[0]] + "2" + zdist_trans_dic[l[1]]
 
 
-xypos_trans_dic = ["I", "O"]
+xypos_trans_dic = ["L", "R"]
 def xypos_trans(l):
-    return xypos_trans_dic[l[0]] + "2" + xypos_trans_dic[l[1]]
+    return xypos_trans_dic[l[0]] + xypos_trans_dic[l[1]]
     
 
 method_trans_dic = [
@@ -117,9 +114,9 @@ for id in range(0, 12):
         trials = []
         for zdist in zdist_list:
             for xypos in xypos_list:
-                start = xy_gen(xypos[0])
+                start = xy_gen(xypos)
                 start.append(z_gen(zdist[0]))
-                target = xy_gen(xypos[1])
+                target = xy_gen(xypos)
                 target.append(z_gen(zdist[1]))
                 
                 trials.append({

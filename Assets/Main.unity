@@ -887,7 +887,7 @@ Prefab:
         type: 2}
       propertyPath: RoomModel
       value: 
-      objectReference: {fileID: 100008, guid: a4748711ec386de4cb63da106fbb7515, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 114000012149591842, guid: 2ed75ffdf9031c94e8bce4b3d17b9928,
         type: 2}
       propertyPath: m_Enabled
