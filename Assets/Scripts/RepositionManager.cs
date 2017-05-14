@@ -247,6 +247,7 @@ namespace HoloToolkit.Unity.InputModule
 
                 // assign updated wallStatus
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
+                ExperimentManager.Instance.AddEventLog(LogEvent.WALL_DRAGGING);
             }
             else if (mode == WallStatusModes.LOCKED)
             {
@@ -257,6 +258,7 @@ namespace HoloToolkit.Unity.InputModule
                 wallStatus.cameraFrontWhenLocked = GetCameraFrontPosition();
 
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
+                ExperimentManager.Instance.AddEventLog(LogEvent.WALL_LOCKED);
             }
             else if (mode == WallStatusModes.IDLE)
             {
@@ -279,6 +281,7 @@ namespace HoloToolkit.Unity.InputModule
                     itemStatus.obj.transform.position = itemStatus.initObj.transform.position;
                     itemStatusDic[itemStatusId] = itemStatus;
                 }
+                ExperimentManager.Instance.AddEventLog(LogEvent.WALL_IDLE);
             }
         }
 
@@ -289,12 +292,14 @@ namespace HoloToolkit.Unity.InputModule
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.DRAGGING;
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
+                ExperimentManager.Instance.AddEventLog(LogEvent.ITEM_DRAGGING);
             }
             else if (mode == ItemStatusModes.IDLE)
             {
                 ItemStatus itemStatus = itemStatusDic[obj.GetInstanceID()];
                 itemStatus.mode = ItemStatusModes.IDLE;
                 itemStatusDic[obj.GetInstanceID()] = itemStatus;
+                ExperimentManager.Instance.AddEventLog(LogEvent.ITEM_IDLE);
             }
         }
 

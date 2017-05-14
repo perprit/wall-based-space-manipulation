@@ -10,7 +10,13 @@ using HoloToolkit.Unity.InputModule;
 
 namespace ManipulateWalls
 {
-
+    public enum LogEvent
+    {
+        TRIAL_START, TRIAL_END,
+        ITEM_DRAGGING, ITEM_IDLE,
+        WALL_DRAGGING, WALL_LOCKED, WALL_IDLE,
+        HAND_LOST, HAND_FOUND
+    }
     public class ExperimentManager : Singleton<ExperimentManager>
     {
         public struct Trial
@@ -55,6 +61,18 @@ namespace ManipulateWalls
 
         public bool TRIALS_READY = false;
 
+        private float trialStartTime = 0f;
+        private float handDistMoved = 0f;
+        private string currXYType = "unknown";
+        private string currZType = "unknown";
+
+        private Vector3 prevHandPos = Vector3.zero;
+
+        public void AddHandDistMoved(float dist)
+        {
+            handDistMoved += dist;
+        }
+
         void Start()
         {
             if (UseSpatialMapping)
@@ -73,8 +91,10 @@ namespace ManipulateWalls
             method = "DIST_W";
             TRIALS_READY = true;
             SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("I2O", "M2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
-            trials.Add(new Trial("I2O", "M2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
+            trials.Add(new Trial("LL", "M2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
+            trials.Add(new Trial("LR", "M2F", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
+            trials.Add(new Trial("RL", "F2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
+            trials.Add(new Trial("RR", "F2M", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
             StartTrial(0);
 #endif
         }
@@ -96,9 +116,30 @@ namespace ManipulateWalls
             }
         }
 
+        public void AddEventLog(LogEvent logEvent)
+        {
+            string message = "";
+            message += UserId + "\t";
+            message += method + "\t";
+            message += trialIdx + "\t";
+            message += currXYType + "\t";
+            message += currZType + "\t";
+            message += (Time.time - trialStartTime).ToString("F4") + "\t";
+            message += handDistMoved + "\t";
+            message += logEvent.ToString() + "\t";
+            LogManager.Instance.SendLogMessage(message);
+        }
+
+        public void SaveNewHandPosition(Vector3 newHandPos)
+        {
+            handDistMoved += Vector3.Magnitude(newHandPos - prevHandPos);
+            prevHandPos = newHandPos;
+        }
+
         private void ExperimentManager_TrialComplete (object source, EventArgs args)
         {
             Debug.Log("Trial complete, " + trialIdx);
+            AddEventLog(LogEvent.TRIAL_END);
             trialIdx++;
             if (trialIdx >= trials.Count)
             {
@@ -195,9 +236,9 @@ namespace ManipulateWalls
 
         private void StartTrial(int trialNumber)
         {
-            if (trials == null || trials.Count == 0)
+            if (trials == null || trials.Count == 0 || trials.Count <= trialNumber)
             {
-                Debug.LogError("trials is null or empty");
+                Debug.LogError("trials is null or empty or less than trialNumber");
                 return;
             }
             if (itemObj == null || targetObj == null)
@@ -208,12 +249,19 @@ namespace ManipulateWalls
 
             Trial trial = trials[trialNumber];
 
+            trialStartTime = Time.time;
+            handDistMoved = 0f;
+            currXYType = trial.xy_type;
+            currZType = trial.z_type;
+
             SetStartPos(trial.startPos);
             SetTargetPos(trial.targetPos);
 
             DebugTextController.Instance.SetMessage("ID: " + UserId);
             DebugTextController.Instance.AddMessage("Method: " + method);
             DebugTextController.Instance.AddMessage("Trial: " + trialNumber + "/" + trials.Count);
+
+            AddEventLog(LogEvent.TRIAL_START);
         }
 
         private void SetStartPos(Vector3 start)

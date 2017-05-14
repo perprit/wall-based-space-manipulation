@@ -44,8 +44,10 @@ namespace ManipulateWalls
                 Hand hand = entry.Value;
                 Vector3 indicatorPosition;
                 hand.inputSource.TryGetPosition(entry.Key, out indicatorPosition);
-                //DebugTextController.Instance.SetMessage("Camera: " + Camera.main.transform.position.ToString("F3"));
-                //DebugTextController.Instance.AddMessage("Source: " + Camera.main.transform.InverseTransformPoint(indicatorPosition).ToString("F3"));
+
+                // save hand position to record hand movement distance
+                ExperimentManager.Instance.SaveNewHandPosition(indicatorPosition);
+
                 // indicator must be farther than 0.85m in z-axis (near clipping plane) to be able to be seen
                 indicatorPosition = Camera.main.transform.InverseTransformPoint(indicatorPosition);
                 indicatorPosition += new Vector3(0, 0, 0.85f);
@@ -62,6 +64,11 @@ namespace ManipulateWalls
                 return;
             }
 
+            if (handDictionary.Count > 0)
+            {
+                Debug.Log("Do not allow hands to be detected more than one");
+            }
+
             if (HandIndicatorPrefab == null)
             {
                 return;
@@ -70,6 +77,8 @@ namespace ManipulateWalls
             GameObject indicator = Instantiate(HandIndicatorPrefab);
 
             handDictionary.Add(eventData.SourceId, new Hand(eventData.InputSource, eventData.SourceId, indicator));
+
+            ExperimentManager.Instance.AddEventLog(LogEvent.HAND_FOUND);
         }
 
         public void OnSourceLost(SourceStateEventData eventData)
@@ -85,6 +94,13 @@ namespace ManipulateWalls
             Destroy(lostHand.indicator);
 
             handDictionary.Remove(eventData.SourceId);
+
+            ExperimentManager.Instance.AddEventLog(LogEvent.HAND_LOST);
+        }
+
+        public bool IsHandFound()
+        {
+            return handDictionary.Count > 0;
         }
     }
 }
