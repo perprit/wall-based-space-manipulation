@@ -150,6 +150,7 @@ namespace ManipulateWalls
         }
 
         public string id;
+        public string mode;
         public string method;
         public TrialString[] trials;
     }

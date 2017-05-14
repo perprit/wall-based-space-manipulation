@@ -66,6 +66,8 @@ namespace ManipulateWalls
         private string currXYType = "unknown";
         private string currZType = "unknown";
 
+        private bool SEND_LOG = true;
+
         private Vector3 prevHandPos = Vector3.zero;
 
         public void AddHandDistMoved(float dist)
@@ -118,6 +120,11 @@ namespace ManipulateWalls
 
         public void AddEventLog(LogEvent logEvent)
         {
+            if(!SEND_LOG)
+            {
+                Debug.Log("SEND_LOG: false, do not send event log");
+                return;
+            }
             string message = "";
             message += UserId + "\t";
             message += method + "\t";
@@ -291,6 +298,14 @@ namespace ManipulateWalls
             trials.Clear();
             trialIdx = 0;
             method = sd.method;
+            if(sd.mode == "p")
+            {
+                SEND_LOG = false;
+            }
+            else
+            {
+                SEND_LOG = true;
+            }
             SetInteractionMethod(sd.method);
 
             for (int i = 0; i < 4; i++)
