@@ -60,13 +60,14 @@ namespace ManipulateWalls
         {
             if (handDictionary.ContainsKey(eventData.SourceId))
             {
-                Debug.Log("handDictonary already contains key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");
+                Debug.LogError("handDictonary already contains key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");
                 return;
             }
 
             if (handDictionary.Count > 0)
             {
-                Debug.Log("Do not allow hands to be detected more than one");
+                Debug.LogError("Do not allow hands to be detected more than one");
+                return;
             }
 
             if (HandIndicatorPrefab == null)
@@ -85,7 +86,7 @@ namespace ManipulateWalls
         {
             if (!handDictionary.ContainsKey(eventData.SourceId))
             {
-                Debug.Log("handDictonary does not contain key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");
+                Debug.LogError("handDictonary does not contain key: " + eventData.SourceId + " / OnSourceDetected, HandIndicatorManager");
                 return;
             }
 

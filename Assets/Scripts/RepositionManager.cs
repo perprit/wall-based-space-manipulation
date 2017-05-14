@@ -101,8 +101,6 @@ namespace HoloToolkit.Unity.InputModule
                         wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
                         float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - GetCameraFrontPosition());
 
-                        Debug.Log(cameraDistanceToWall);
-
                         // the scale of wall movement 
                         wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
                         // the scale between initial wall and current wall
@@ -117,7 +115,6 @@ namespace HoloToolkit.Unity.InputModule
                         // the items not between the camera and the initial wall must not be affected
                         if (cameraDistanceToInitWall < itemDistanceToInitWall)
                         {
-                            Debug.Log(cameraDistanceToInitWall + ", " + itemDistanceToInitWall);
                             continue;
                         }
                         

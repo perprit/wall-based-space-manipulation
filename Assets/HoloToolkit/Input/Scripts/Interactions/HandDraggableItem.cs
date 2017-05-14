@@ -120,7 +120,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 // ADAPT
                 float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
-                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 6, 0f, 12f);
+                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 8, 0f, 12f);
                 newObjPosition = initObjPosition + headMovement + handMovement * velocity;
                 initObjPosition = newObjPosition;
                 initCameraPosition = mainCamera.transform.position;

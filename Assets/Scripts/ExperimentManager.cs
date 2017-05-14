@@ -125,7 +125,7 @@ namespace ManipulateWalls
             message += currXYType + "\t";
             message += currZType + "\t";
             message += (Time.time - trialStartTime).ToString("F4") + "\t";
-            message += handDistMoved + "\t";
+            message += handDistMoved.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
             LogManager.Instance.SendLogMessage(message);
         }
@@ -301,7 +301,6 @@ namespace ManipulateWalls
                 Vector3 startPos = new Vector3(float.Parse(trial.start[0]), float.Parse(trial.start[1]), float.Parse(trial.start[2]));
                 Vector3 targetPos = new Vector3(float.Parse(trial.target[0]), float.Parse(trial.target[1]), float.Parse(trial.target[2]));
                 trials.Add(new Trial(trial.xy_type, trial.z_type, startPos, targetPos));
-                //Debug.Log(trials.Count + "/ " + trial.xy_type + ", " + trial.z_type + ", " + startPos.ToString("F2") + ", " + targetPos.ToString("F2"));
             }
 
             TRIALS_READY = true;
