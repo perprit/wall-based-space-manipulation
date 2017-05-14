@@ -308,11 +308,11 @@ namespace ManipulateWalls
             }
             SetInteractionMethod(sd.method);
 
-            for (int i = 0; i < 4; i++)
-            {
-                SequenceData.TrialString trial = sd.trials[i];
-            //foreach (SequenceData.TrialString trial in sd.trials)
+            //for (int i = 0; i < 4; i++)
             //{
+            //    SequenceData.TrialString trial = sd.trials[i];
+            foreach (SequenceData.TrialString trial in sd.trials)
+            {
                 Vector3 startPos = new Vector3(float.Parse(trial.start[0]), float.Parse(trial.start[1]), float.Parse(trial.start[2]));
                 Vector3 targetPos = new Vector3(float.Parse(trial.target[0]), float.Parse(trial.target[1]), float.Parse(trial.target[2]));
                 trials.Add(new Trial(trial.xy_type, trial.z_type, startPos, targetPos));
