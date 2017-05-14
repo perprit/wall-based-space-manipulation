@@ -91,10 +91,10 @@ namespace ManipulateWalls
             method = "DIST_W";
             TRIALS_READY = true;
             SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("LL", "M2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
-            trials.Add(new Trial("LR", "M2F", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
-            trials.Add(new Trial("RL", "F2S", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
-            trials.Add(new Trial("RR", "F2M", new Vector3(0.776f, 1.126f, 1.511f), new Vector3(1.176f, 1.126f, 1.511f)));
+            trials.Add(new Trial("LL", "M2S", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
+            trials.Add(new Trial("LR", "M2F", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
+            trials.Add(new Trial("RL", "F2S", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
+            trials.Add(new Trial("RR", "F2M", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
             StartTrial(0);
 #endif
         }

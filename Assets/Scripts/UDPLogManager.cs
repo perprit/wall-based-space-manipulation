@@ -87,7 +87,9 @@ namespace ManipulateWalls
 
         public void SendLogMessage(string message)
         {
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
+            Debug.Log(message);
+#else
             SendMessage(message);
 #endif
         }

@@ -101,20 +101,23 @@ namespace HoloToolkit.Unity.InputModule
                         wallProjectedCameraPosition = wallStatus.obj.transform.TransformPoint(wallProjectedCameraPosition);
                         float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - GetCameraFrontPosition());
 
+                        Debug.Log(cameraDistanceToWall);
+
                         // the scale of wall movement 
                         wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
                         // the scale between initial wall and current wall
                         wallStatus.distanceScale = cameraDistanceToWall / cameraDistanceToInitWall;    // TODO needs error handling for zero divide or something?
 
                         // calculate item distance to wall, by projecting the item's position into the wall in wall's z-axis
-                        Vector3 wallProjectedItemPosition = wallStatus.obj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
-                        wallProjectedItemPosition = Vector3.Scale(wallProjectedItemPosition, new Vector3(1, 1, 0));
-                        wallProjectedItemPosition = wallStatus.obj.transform.TransformPoint(wallProjectedItemPosition);
-                        float itemDistanceToWall = Vector3.Magnitude(wallProjectedItemPosition - itemStatus.obj.transform.position);
+                        Vector3 initWallProjItemPosition = wallStatus.initObj.transform.InverseTransformPoint(itemStatus.obj.transform.position);
+                        initWallProjItemPosition = Vector3.Scale(initWallProjItemPosition, new Vector3(1, 1, 0));
+                        initWallProjItemPosition = wallStatus.initObj.transform.TransformPoint(initWallProjItemPosition);
+                        float itemDistanceToInitWall = Vector3.Magnitude(initWallProjItemPosition - itemStatus.obj.transform.position);
 
                         // the items not between the camera and the initial wall must not be affected
-                        if (cameraDistanceToInitWall < itemDistanceToWall)
+                        if (cameraDistanceToInitWall < itemDistanceToInitWall)
                         {
+                            Debug.Log(cameraDistanceToInitWall + ", " + itemDistanceToInitWall);
                             continue;
                         }
                         
@@ -124,14 +127,9 @@ namespace HoloToolkit.Unity.InputModule
                         cameraToItemDir = Vector3.Scale(cameraToItemDir, new Vector3(1, 1, wallStatus.distanceScale));
                         cameraToItemDir = wallStatus.initObj.transform.TransformDirection(cameraToItemDir);
                         Vector3 newItemInitPos = GetCameraFrontPosition() + cameraToItemDir;
-
-                        // recalculate initPos while the item is being dragged
-                        if (itemStatus.mode == ItemStatusModes.DRAGGING)
-                        {
-                            itemInitPosChange += itemStatus.initObj.transform.position - newItemInitPos;
-                        }
-                        // or current position of the item
-                        else if (itemStatus.mode == ItemStatusModes.IDLE)
+                        
+                        // current position of the item
+                        if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
                             itemPosChange += newItemInitPos - itemStatus.initObj.transform.position;
                         }
@@ -150,21 +148,25 @@ namespace HoloToolkit.Unity.InputModule
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
                             itemInitPosChange += itemStatus.initObj.transform.position - newItemInitPos;
+                            /*
                             // clamping
                             Vector3 initRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemInitPosChange);
                             if (initRefChange.z < 0f) initRefChange.z = 0f;
                             initRefChange = wallStatus.initObj.transform.TransformDirection(initRefChange);
                             itemInitPosChange = initRefChange;
+                            */
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
                             itemPosChange += newItemInitPos - itemStatus.initObj.transform.position;
+                            /*
                             // clamping
                             Vector3 itemRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemPosChange);
                             if (itemRefChange.z > 0f) itemRefChange.z = 0f;
                             itemRefChange = wallStatus.initObj.transform.TransformDirection(itemRefChange);
                             itemPosChange = itemRefChange;
+                            */
                         }
                     }
                     wallStatusDic[wallStatusId] = wallStatus;
@@ -368,7 +370,7 @@ namespace HoloToolkit.Unity.InputModule
                 return null;
             }
             
-            if (wallStatus.initObj == null || wallStatus.mode != WallStatusModes.DRAGGING)
+            if (wallStatus.initObj == null)
             {
                 Debug.LogError("initObj of wall " + wallObjectId + " doesn't exist");
                 return null;
