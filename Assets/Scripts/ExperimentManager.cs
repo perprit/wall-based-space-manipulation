@@ -122,7 +122,6 @@ namespace ManipulateWalls
         {
             if(!SEND_LOG)
             {
-                Debug.Log("SEND_LOG: false, do not send event log");
                 return;
             }
             string message = "";

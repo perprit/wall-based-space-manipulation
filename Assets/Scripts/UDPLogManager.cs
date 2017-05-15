@@ -113,7 +113,6 @@ namespace ManipulateWalls
     private async void Socket_MessageReceived(Windows.Networking.Sockets.DatagramSocket sender,
         Windows.Networking.Sockets.DatagramSocketMessageReceivedEventArgs args)
     {
-        Debug.Log("GOT MESSAGE: ");
         //Read the message that was received from the UDP echo client.
         Stream streamIn = args.GetDataStream().AsStreamForRead();
         StreamReader reader = new StreamReader(streamIn);
