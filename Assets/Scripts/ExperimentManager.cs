@@ -327,6 +327,11 @@ namespace ManipulateWalls
         {
             return wallObj;
         }
+
+        public GameObject GetTargetObject()
+        {
+            return targetObj;
+        }
         
         public void ResetScene()
         {

@@ -219,6 +219,12 @@ namespace HoloToolkit.Unity.InputModule
             itemStatus.initObj = Instantiate(InitItemPrefab);
             itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
             itemStatusDic.Add(itemObj.GetInstanceID(), itemStatus);
+
+            GameObject targetObj = ExperimentManager.Instance.GetTargetObject();
+            ItemStatus targetItemStatus = new ItemStatus(targetObj);
+            targetItemStatus.initObj = Instantiate(InitItemPrefab);
+            targetItemStatus.initObj.transform.position = targetItemStatus.obj.transform.position;
+            itemStatusDic.Add(targetObj.GetInstanceID(), targetItemStatus);
         }
 
         public void SetWallMode(GameObject obj, WallStatusModes mode)
