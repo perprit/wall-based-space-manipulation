@@ -7,7 +7,7 @@ HOLOLENS_PORT = 3003
 
 ID = 0
 BLOCK = 0
-MODE = "t"
+TRIAL = 0
 
 # validate ID, BLOCK and TRIAL
 
@@ -17,9 +17,9 @@ if len(sys.argv) == 3:
 elif len(sys.argv) == 4:
     ID = int(sys.argv[1])
     BLOCK = int(sys.argv[2])
-    MODE = sys.argv[3]
+    TRIAL = int(sys.argv[3])
 else:
-    print("Usage: <script> <ID> <BLOCK>")
+    print("Usage: <script> <ID> <BLOCK> [<TRIAL>]")
     exit()
 
 if ID < 0 or ID > 11:
@@ -30,8 +30,10 @@ if BLOCK < 0 or BLOCK > 5:
     print ("valid BLOCK: 0 <= BLOCK <= 5, current BLOCK: {}".format(BLOCK))
     exit()
 
-if MODE != "t" and MODE != "p":
-    print ("valid MODE: p or n, current MODE: {}".format(MODE))
+if TRIAL < 0 or TRIAL > 23:
+    print ("valid TRIAL: 0 <= TRIAL <= 23, current TRIAL: {}".format(TRIAL))
+    exit()
+
 
 # open sequence file
 with open('sequence.json') as data_file:    
@@ -40,15 +42,8 @@ with open('sequence.json') as data_file:
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 s= sequence_all[str(ID)][BLOCK]
-s["id"] = ID
-s["mode"] = MODE
-
 message = json.dumps(s)
-print("ID: {} / BLOCK: {}, METHOD: {}".format(ID, BLOCK, s["method"]))
-if MODE == "p":
-    print("PRACTICE MODE: log is not recorded")
-else:
-    print("TEST MODE: logs are recorded")
-# print(message)
+print("ID: {} / BLOCK: {} / METHOD: {}".format(ID, BLOCK, s["method"]))
+print(message)
 data = message.encode(encoding='UTF-8')
 sock.sendto(data, (HOLOLENS_IP, HOLOLENS_PORT))
