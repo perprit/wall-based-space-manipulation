@@ -1,8 +1,9 @@
 import json
 import random
+import math
 
 PRETTY_PRINT = False
-DISABLED = True
+DISABLED = False
 
 if DISABLED:
     print("disabled now")
@@ -19,9 +20,9 @@ if DISABLED:
 (S (0): 1 ~ 3, M (1): 4 ~ 6, F (2): 7 ~ 9)
 : S2M, S2F, M2F, M2S, F2S, F2M
 
-- XY POSITION, randomized
-(L (0) : (-1.0 ~ 0.0), R (1) : (0.0 ~ 1.0))
-: LL, LR, RL, RR
+- XY POSITION, randomized (0 < dist(x,y) < 2)
+(D1 (0): 0.0 ~ 0.5, D2 (1): 0.5 ~ 1.0, D3 (2): 1.0 ~ 1.5, D4 (3): 1.5 ~ 2.0)
+: D1, D2, D3, D4
 
 
 OUTPUT
@@ -34,7 +35,6 @@ OUTPUT
             <trials>:
             [
                 {
-                    "xy_type": ~~,
                     "z_type": ~~,
                     "start": ~~,
                     "target": ~~
@@ -58,25 +58,28 @@ def z_gen(index):
         # F
         return "%.3f" % random.uniform(7, 9)
 
-def xy_gen(index_list):
-    pos = []
+def euc_dist(a, b):
+    return math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]))
 
-    for index in index_list:
-        if index == 0:
-            pos.append("%.3f" % random.uniform(-1.0, 0.0))
-        elif index == 1:
-            pos.append("%.3f" % random.uniform(0.0, 1.0))
+def xy_gen(index):
+    start_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
+    target_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
+
+    while not (0.5 * index < euc_dist(start_xy, target_xy) and euc_dist(start_xy, target_xy) < 0.5 * (index+1)):
+        start_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
+        target_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
     
-    return pos
+    print(euc_dist(start_xy, target_xy), 0.5 * (index+1), xypos_trans(index))
+    return (["%.3f" % xy for xy in start_xy], ["%.3f" % xy for xy in target_xy])
 
 zdist_trans_dic = ["S", "M", "F"]
 def zdist_trans(l):
     return zdist_trans_dic[l[0]] + "2" + zdist_trans_dic[l[1]]
 
 
-xypos_trans_dic = ["L", "R"]
-def xypos_trans(l):
-    return xypos_trans_dic[l[0]] + xypos_trans_dic[l[1]]
+xypos_trans_dic = ["D1", "D2", "D3", "D4"]
+def xypos_trans(i):
+    return xypos_trans_dic[i]
     
 
 method_trans_dic = [
@@ -102,8 +105,12 @@ zdist_list = [
     [0, 1], [0, 2], [1, 2], [1, 0], [2, 0], [2, 1]
 ]
 
+# xypos_list = [
+#     [0, 0], [0, 1], [1, 0], [1, 1]
+# ]
+
 xypos_list = [
-    [0, 0], [0, 1], [1, 0], [1, 1]
+    0, 1, 2, 3
 ]
 
 sequence = {}
@@ -114,9 +121,8 @@ for id in range(0, 12):
         trials = []
         for zdist in zdist_list:
             for xypos in xypos_list:
-                start = xy_gen(xypos)
+                start, target = xy_gen(xypos)
                 start.append(z_gen(zdist[0]))
-                target = xy_gen(xypos)
                 target.append(z_gen(zdist[1]))
                 
                 trials.append({
