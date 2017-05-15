@@ -200,6 +200,7 @@ namespace HoloToolkit.Unity.InputModule
                 return;
             }
 
+            /*
             GameObject wall = ExperimentManager.Instance.GetWallObject();
             if (RepositionManager.Instance.GetWallStatusMode(wall.GetInstanceID()) == WallStatusModes.LOCKED)
             {
@@ -208,6 +209,7 @@ namespace HoloToolkit.Unity.InputModule
                 initObj.transform.position = gameObject.transform.position;
                 RepositionManager.Instance.SetWallMode(wall, WallStatusModes.IDLE);
             }
+            */
 
             currentInputSource = eventData.InputSource;
             currentInputSourceId = eventData.SourceId;

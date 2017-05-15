@@ -1002,8 +1002,7 @@ MonoBehaviour:
   LeastDistance: 0.25
   wallPrefab: {fileID: 1000010593991404, guid: 97c43499e77a4c547ad612cc41c910e8, type: 2}
   itemPrefab: {fileID: 1555723766337660, guid: 0004f6f79a395bb47bc36f9bac298b58, type: 2}
-  targetPrefab: {fileID: 1555723766337660, guid: 15c634dd8df381642878d446fd0eb25d,
-    type: 2}
+  targetPrefab: {fileID: 100000, guid: 23fc59362ba1e264eb5b636821ad929a, type: 2}
   TRIALS_READY: 0
 --- !u!114 &1874102115
 MonoBehaviour:

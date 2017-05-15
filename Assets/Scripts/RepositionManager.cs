@@ -145,25 +145,21 @@ namespace HoloToolkit.Unity.InputModule
                         if (itemStatus.mode == ItemStatusModes.DRAGGING)
                         {
                             itemInitPosChange += itemStatus.initObj.transform.position - newItemInitPos;
-                            /*
                             // clamping
                             Vector3 initRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemInitPosChange);
                             if (initRefChange.z < 0f) initRefChange.z = 0f;
                             initRefChange = wallStatus.initObj.transform.TransformDirection(initRefChange);
                             itemInitPosChange = initRefChange;
-                            */
                         }
                         // or current position of the item
                         else if (itemStatus.mode == ItemStatusModes.IDLE)
                         {
                             itemPosChange += newItemInitPos - itemStatus.initObj.transform.position;
-                            /*
                             // clamping
                             Vector3 itemRefChange = wallStatus.initObj.transform.InverseTransformDirection(itemPosChange);
                             if (itemRefChange.z > 0f) itemRefChange.z = 0f;
                             itemRefChange = wallStatus.initObj.transform.TransformDirection(itemRefChange);
                             itemPosChange = itemRefChange;
-                            */
                         }
                     }
                     wallStatusDic[wallStatusId] = wallStatus;

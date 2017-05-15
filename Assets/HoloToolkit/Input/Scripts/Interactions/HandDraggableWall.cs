@@ -91,9 +91,15 @@ namespace HoloToolkit.Unity.InputModule
 
             float initRefWallZ = initRefWallPos.z;
             float initRefCameraZ = initRefCameraPos.z;
+            /*
             if (Mathf.Sign(initRefWallZ * initRefCameraZ) < 0 && Mathf.Abs(initRefWallZ) > Mathf.Abs(initRefCameraZ))
             {
                 initRefWallPos.z = -initRefCameraPos.z;
+            }
+            */
+            if (Mathf.Sign(initRefWallZ * initRefCameraZ) < 0)
+            {
+                initRefWallPos.z = 0;
             }
             else if (Mathf.Sign(initRefWallZ * initRefCameraZ) > 0 && Mathf.Abs(initRefWallZ) > Mathf.Abs(initRefCameraZ))
             {
