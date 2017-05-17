@@ -119,17 +119,9 @@ namespace ManipulateWalls
                 Debug.Log("Enqueue MESSAGE: " + message);
                 try
                 {
-                    if (message == "practice")
+                    if (message == "restart")
                     {
-                        // TODO
-                    }
-                    else if (message == "test")
-                    {
-                        // TODO
-                    }
-                    else if (message == "reset")
-                    {
-                        // TODO
+                        ExperimentManager.Instance.ResetScene();
                     }
                 }            
                 catch (FormatException e)
