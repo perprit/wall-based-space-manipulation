@@ -133,7 +133,7 @@ namespace ManipulateWalls
             message += (Time.time - trialStartTime).ToString("F4") + "\t";
             message += handDistMoved.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
-            LogManager.Instance.SendLogMessage(message);
+            LogManager.Instance.SendLogMessage(UserId+".tsv", message);
         }
 
         public void SaveNewHandPosition(Vector3 newHandPos)

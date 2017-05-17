@@ -69,7 +69,7 @@ namespace ManipulateWalls
 
                 writer.WriteBytes(data);
                 await writer.StoreAsync();
-                Debug.Log("Sent: " + message);
+                //Debug.Log("Sent: " + message);
             }
         }
     }
@@ -109,19 +109,19 @@ namespace ManipulateWalls
     private async void Socket_MessageReceived(Windows.Networking.Sockets.DatagramSocket sender,
         Windows.Networking.Sockets.DatagramSocketMessageReceivedEventArgs args)
     {
-        Debug.Log("GOT MESSAGE: ");
+        //Debug.Log("GOT MESSAGE: ");
         //Read the message that was received from the UDP echo client.
         Stream streamIn = args.GetDataStream().AsStreamForRead();
         StreamReader reader = new StreamReader(streamIn);
         string message = await reader.ReadLineAsync();
 
-        Debug.Log("MESSAGE: " + message);
+        //Debug.Log("MESSAGE: " + message);
 
         if (ExecuteOnMainThread.Count == 0)
         {
             ExecuteOnMainThread.Enqueue(() =>
             {
-                Debug.Log("Enqueue MESSAGE: " + message);
+                //Debug.Log("Enqueue MESSAGE: " + message);
                 try
                 {
                     sd = JsonUtility.FromJson<SequenceData>(message);
