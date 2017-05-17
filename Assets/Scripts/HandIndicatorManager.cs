@@ -79,7 +79,7 @@ namespace ManipulateWalls
 
             handDictionary.Add(eventData.SourceId, new Hand(eventData.InputSource, eventData.SourceId, indicator));
 
-            //ExperimentManager.Instance.AddEventLog(LogEvent.HAND_FOUND);
+            ExperimentManager.Instance.AddEventLog(LogEvent.HAND_FOUND);
         }
 
         public void OnSourceLost(SourceStateEventData eventData)
@@ -96,7 +96,7 @@ namespace ManipulateWalls
 
             handDictionary.Remove(eventData.SourceId);
 
-            //ExperimentManager.Instance.AddEventLog(LogEvent.HAND_LOST);
+            ExperimentManager.Instance.AddEventLog(LogEvent.HAND_LOST);
         }
 
         public bool IsHandFound()

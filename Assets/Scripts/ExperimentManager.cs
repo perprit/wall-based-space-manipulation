@@ -175,7 +175,11 @@ namespace ManipulateWalls
                 Destroy(targetObj);
                 targetObj = null;
             }
-            targetObj = Instantiate(targetPrefab);
+            GameObject targetInst = Instantiate(targetPrefab);
+            targetObj = new GameObject();
+            targetInst.transform.parent = targetObj.transform;
+            targetInst.transform.localPosition = new Vector3(0f, -0.125f, 0f);
+            targetObj.transform.localRotation = Quaternion.Euler(-60f, 0f, 0f);
             targetObj.transform.parent = gameObject.transform;
             SetTargetPos(Vector3.forward * 8f + Vector3.right * 0.5f);
 
