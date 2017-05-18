@@ -32,6 +32,11 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 prevHandPosition;   // for smoothing
         private Vector3 prevObjPosition;   // for smoothing
 
+        private float minRatio = 2f;
+        private float maxRatio = 14f;
+        private float distMul = 1.8f;
+        private float velMul = 12f;
+
         private IInputSource currentInputSource;
         private uint currentInputSourceId;
 
@@ -113,15 +118,14 @@ namespace HoloToolkit.Unity.InputModule
 
             if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
             {
-                // CONST
+                // CONST, deprecated
                 newObjPosition = initObjPosition + headMovement + handMovement * 5.5f;
             }
             else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
             {
                 // ADAPT
                 float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
-                //Debug.Log(velocity.ToString("F3") + " / " + UtilFunctions.Instance.QuadraticInOut(velocity * 8, 1f, 12f).ToString("F3"));
-                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * 15, 5f, 10f);
+                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * velMul, minRatio, maxRatio);
                 newObjPosition = initObjPosition + headMovement + handMovement * velocity;
                 initObjPosition = newObjPosition;
                 initCameraPosition = mainCamera.transform.position;
@@ -131,7 +135,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 // DIST
                 float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
-                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * 2f, 5f, 10f);
+                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * distMul, minRatio, Mathf.Infinity);
             }
 
             // clamp movement vector with wall objects
@@ -228,6 +232,16 @@ namespace HoloToolkit.Unity.InputModule
             {
                 StopDragging();
             }
+        }
+
+        public void SetConst(string str)
+        {
+            string[] tokens = str.Split(' ');
+            minRatio = float.Parse(tokens[0]);
+            maxRatio = float.Parse(tokens[1]);
+            velMul = float.Parse(tokens[2]);
+            distMul = float.Parse(tokens[3]);
+            Debug.Log(minRatio + ", " + maxRatio + ", " + velMul + ", " + distMul);
         }
     }
 }

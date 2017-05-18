@@ -64,12 +64,6 @@ namespace ManipulateWalls
                 return;
             }
 
-            if (handDictionary.Count > 0)
-            {
-                Debug.LogError("Do not allow hands to be detected more than one");
-                return;
-            }
-
             if (HandIndicatorPrefab == null)
             {
                 return;
@@ -97,11 +91,6 @@ namespace ManipulateWalls
             handDictionary.Remove(eventData.SourceId);
 
             ExperimentManager.Instance.AddEventLog(LogEvent.HAND_LOST);
-        }
-
-        public bool IsHandFound()
-        {
-            return handDictionary.Count > 0;
         }
     }
 }

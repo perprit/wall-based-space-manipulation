@@ -17,6 +17,12 @@ namespace ManipulateWalls
         WALL_DRAGGING, WALL_LOCKED, WALL_IDLE,
         HAND_LOST, HAND_FOUND
     }
+
+    public enum InteractionType
+    {
+        CONST, DIST, ADAPT
+    }
+
     public class ExperimentManager : Singleton<ExperimentManager>
     {
         public struct Trial
@@ -45,8 +51,7 @@ namespace ManipulateWalls
 
         public event EventHandler SetWallComplete;
         public event EventHandler TrialComplete;
-
-        private List<Trial> practiceTrials = new List<Trial>();
+        
         private List<Trial> trials = new List<Trial>();
         private int trialIdx = 0;
         private string method = "unknown";
@@ -292,7 +297,14 @@ namespace ManipulateWalls
 
         private void SetTargetPos(Vector3 target)
         {
-            targetObj.transform.position = target + OriginPos;
+            if (!RepositionManager.Instance.IsWallAvailable)
+            {
+                return;
+            }
+
+            GameObject targetInitObj = RepositionManager.Instance.GetItemInitObject(targetObj.GetInstanceID());
+
+            targetInitObj.transform.position = target + OriginPos;
         }
 
         public void SetTrialList(SequenceData sd)
@@ -342,6 +354,11 @@ namespace ManipulateWalls
             UDPManager.Instance.DisposeSocket();
             DebugTextController.Instance.SetMessage("Scene reloaded");
             SceneManager.LoadScene("Main");
+        }
+
+        public void SetConst(string str)
+        {
+            itemObj.GetComponent<HandDraggableItem>().SetConst(str);
         }
     }
 }
