@@ -35,7 +35,7 @@ namespace HoloToolkit.Unity.InputModule
         private float minRatio = 2f;
         private float maxRatio = 14f;
         private float distMul = 1.8f;
-        private float velMul = 12f;
+        private float velMul = 13f;
 
         private IInputSource currentInputSource;
         private uint currentInputSourceId;

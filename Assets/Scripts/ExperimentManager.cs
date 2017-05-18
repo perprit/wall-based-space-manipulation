@@ -150,6 +150,7 @@ namespace ManipulateWalls
         private void ExperimentManager_TrialComplete (object source, EventArgs args)
         {
             Debug.Log("Trial complete, " + trialIdx);
+            SuccessTextManager.Instance.PrintSuccess();
             AddEventLog(LogEvent.TRIAL_END);
             trialIdx++;
             if (trialIdx >= trials.Count)
