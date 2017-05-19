@@ -32,10 +32,10 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 prevHandPosition;   // for smoothing
         private Vector3 prevObjPosition;   // for smoothing
 
-        private float minRatio = 2f;
-        private float maxRatio = 14f;
-        private float distMul = 1.8f;
-        private float velMul = 13f;
+        private float minRatio = 2.5f;
+        private float maxRatio = 12f;
+        private float distMul = 1.65f;
+        private float velMul = 16f;
 
         private IInputSource currentInputSource;
         private uint currentInputSourceId;
@@ -136,6 +136,9 @@ namespace HoloToolkit.Unity.InputModule
                 // DIST
                 float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
                 newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * distMul, minRatio, Mathf.Infinity);
+                initObjPosition = newObjPosition;
+                initCameraPosition = mainCamera.transform.position;
+                initHandVector = handVector;
             }
 
             // clamp movement vector with wall objects

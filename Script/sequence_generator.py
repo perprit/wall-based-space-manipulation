@@ -3,7 +3,7 @@ import random
 import math
 
 PRETTY_PRINT = False
-DISABLED = False
+DISABLED = True
 
 if DISABLED:
     print("disabled now")
