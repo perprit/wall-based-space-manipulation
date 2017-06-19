@@ -25,6 +25,7 @@ namespace HoloToolkit.Unity.InputModule
         private int instanceId;
 
         private Vector3 initialObjPosition;
+        private Vector3 lockedObjPosition;
         private Vector3 initialHandVector;
         private Vector3 prevHandPosition;       // for smoothing
 
@@ -82,7 +83,7 @@ namespace HoloToolkit.Unity.InputModule
             handMovement = Vector3.Scale(handMovement, Vector3.forward);
             handMovement = HostTransform.transform.TransformDirection(handMovement);
 
-            Vector3 newWallPosition = initialObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale(gameObject.GetInstanceID());
+            Vector3 newWallPosition = lockedObjPosition + handMovement * RepositionManager.Instance.GetWallMovementScale(gameObject.GetInstanceID());
 
             Transform initWallTransform = RepositionManager.Instance.GetWallInitObject(gameObject.GetInstanceID()).transform;
 
@@ -97,7 +98,7 @@ namespace HoloToolkit.Unity.InputModule
                 initRefWallPos.z = -initRefCameraPos.z;
             }
             */
-            if (Mathf.Sign(initRefWallZ * initRefCameraZ) < 0)
+            if (initRefWallZ * initRefCameraZ < 0)
             {
                 initRefWallPos.z = 0;
             }
@@ -164,19 +165,35 @@ namespace HoloToolkit.Unity.InputModule
                 Vector3 initialHandPosition;
                 currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
                 initialObjPosition = HostTransform.position;
+                lockedObjPosition = HostTransform.position;
                 initialHandVector = initialHandPosition - mainCamera.transform.position;
                 prevHandPosition = initialHandPosition;
             }
             else if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.LOCKED)
             {
-                HostTransform.position = initialObjPosition;
-                RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
+                currentInputSource = eventData.InputSource;
+                currentInputSourceId = eventData.SourceId;
+
+                // Add self as a modal input handler, to get all inputs during the manipulation
+                InputManager.Instance.AddMultiModalInputHandler(currentInputSourceId, gameObject);
+                RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.DRAGGING);
+
+                // calculate initial positions
+                Vector3 initialHandPosition;
+                currentInputSource.TryGetPosition(currentInputSourceId, out initialHandPosition);
+                lockedObjPosition = HostTransform.position;
+                initialHandVector = initialHandPosition - mainCamera.transform.position;
+                prevHandPosition = initialHandPosition;
             }
         }
 
         public void OnInputDoubleTapped(InputEventData eventData)
         {
-            Debug.Log("double tap wall");
+            if (RepositionManager.Instance.GetWallStatusMode(instanceId) == WallStatusModes.LOCKED)
+            {
+                HostTransform.position = initialObjPosition;
+                RepositionManager.Instance.SetWallMode(gameObject, WallStatusModes.IDLE);
+            }
         }
 
         public void OnSourceDetected(SourceStateEventData eventData)

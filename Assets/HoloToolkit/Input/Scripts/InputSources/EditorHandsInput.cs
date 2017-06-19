@@ -68,7 +68,7 @@ namespace HoloToolkit.Unity.InputModule
         /// </summary>
         private const int EditorHandsCount = 2;
 
-        private const float DoubleTapDuration = 0.2f;
+        private const float DoubleTapDuration = 0.3f;
 
         /// <summary>
         /// Array containing the hands data for the two fake hands

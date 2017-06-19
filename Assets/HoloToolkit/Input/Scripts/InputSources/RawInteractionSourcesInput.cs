@@ -33,6 +33,7 @@ namespace HoloToolkit.Unity.InputModule
                 IsSourceDownPending = false;
                 SourceStateChanged = false;
                 SourceStateUpdateTimer = -1;
+                FingerUpStartTime = 0;
                 InputSourceArgs = new InputSourceEventArgs(inputSource, sourceId);
             }
 
@@ -43,6 +44,7 @@ namespace HoloToolkit.Unity.InputModule
             public bool IsSourceDownPending;
             public bool SourceStateChanged;
             public float SourceStateUpdateTimer;
+            public float FingerUpStartTime;
             public readonly InputSourceEventArgs InputSourceArgs;
         }
 
@@ -51,6 +53,8 @@ namespace HoloToolkit.Unity.InputModule
         /// This mitigates fake source taps that can sometimes be detected while the input source is moving.
         /// </summary>
         private const float SourcePressDelay = 0.07f;
+
+        private const float DoubleTapDuration = 0.5f;
 
         [Tooltip("Use unscaled time. This is useful for games that have a pause mechanism or otherwise adjust the game timescale.")]
         public bool UseUnscaledTime = true;
@@ -179,37 +183,53 @@ namespace HoloToolkit.Unity.InputModule
                 sourceData.SourceStateUpdateTimer = SourcePressDelay;
             }
 
+            float time = UseUnscaledTime
+                ? Time.unscaledTime
+                : Time.time;
+
+            float deltaTime = UseUnscaledTime
+                ? Time.unscaledDeltaTime
+                : Time.deltaTime;
+
             // Source presses are delayed to mitigate issue with hand position shifting during air tap
             sourceData.SourceStateChanged = false;
             if (sourceData.SourceStateUpdateTimer >= 0)
             {
-                float deltaTime = UseUnscaledTime
-                    ? Time.unscaledDeltaTime
-                    : Time.deltaTime;
 
                 sourceData.SourceStateUpdateTimer -= deltaTime;
                 if (sourceData.SourceStateUpdateTimer < 0)
                 {
                     sourceData.IsSourceDown = sourceData.IsSourceDownPending;
                     sourceData.SourceStateChanged = true;
+                    if (!sourceData.IsSourceDown)
+                    {
+                        sourceData.FingerUpStartTime = Time.unscaledTime;
+                    }
                 }
             }
 
-            SendSourceStateEvents(sourceData);
+            SendSourceStateEvents(sourceData, time);
         }
 
         /// <summary>
         /// Sends the events for source state changes.
         /// </summary>
         /// <param name="sourceData">Source data for which events should be sent.</param>
-        private void SendSourceStateEvents(SourceData sourceData)
+        private void SendSourceStateEvents(SourceData sourceData, float time)
         {
             // Source pressed/released events
             if (sourceData.SourceStateChanged)
             {
                 if (sourceData.IsSourceDown)
                 {
-                    RaiseSourceDownEvent(sourceData.InputSourceArgs);
+                    if (time - sourceData.FingerUpStartTime < DoubleTapDuration)
+                    {
+                        RaiseSourceDoubleTapEvent(sourceData.InputSourceArgs);
+                    }
+                    else
+                    {
+                        RaiseSourceDownEvent(sourceData.InputSourceArgs);
+                    }
                 }
                 else
                 {

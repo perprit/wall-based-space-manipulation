@@ -226,7 +226,8 @@ namespace HoloToolkit.Unity.InputModule
 
         public void OnInputDoubleTapped(InputEventData eventData)
         {
-            // do nothing
+            // do the same as OnInputDown
+            OnInputDown(eventData);
         }
 
         public void OnSourceDetected(SourceStateEventData eventData)

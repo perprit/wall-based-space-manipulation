@@ -190,6 +190,11 @@ namespace HoloToolkit.Unity.InputModule
             for (int i=0; i<planes.Count; i++)
             {
                 WallStatus wallStatus = new WallStatus(planes[i]);
+                wallStatus.initObj = Instantiate(planes[i]);
+                wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+                Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
+
                 wallStatusDic.Add(planes[i].GetInstanceID(), wallStatus);
             }
             IsWallAvailable = true;
@@ -214,6 +219,11 @@ namespace HoloToolkit.Unity.InputModule
             // initialize wall
             GameObject wallObj = ExperimentManager.Instance.GetWallObject();
             WallStatus wallStatus = new WallStatus(wallObj);
+            wallStatus.initObj = Instantiate(wallObj);
+            wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+            wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+            Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
+
             wallStatusDic.Add(wallObj.GetInstanceID(), wallStatus);
 
             IsWallAvailable = true;
@@ -246,10 +256,6 @@ namespace HoloToolkit.Unity.InputModule
 
                 wallStatus.mode = WallStatusModes.DRAGGING;
                 wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.1f, 1.0f, 0.7f);
-                wallStatus.initObj = Instantiate(obj);
-                wallStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
-                wallStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
-                Destroy(wallStatus.initObj.GetComponent<HandDraggableWall>());
 
                 // assign updated wallStatus
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
@@ -272,8 +278,6 @@ namespace HoloToolkit.Unity.InputModule
 
                 wallStatus.mode = WallStatusModes.IDLE;
                 wallStatus.obj.GetComponent<Renderer>().material.color = new Color(1.0f, 1.0f, 1.0f);
-                Destroy(wallStatus.initObj);
-                wallStatus.initObj = null;
                 wallStatus.movementScale = DefaultMovementScale;
                 wallStatus.distanceScale = 1f;
                 wallStatus.cameraFrontWhenLocked = Vector3.zero;
