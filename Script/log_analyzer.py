@@ -51,4 +51,5 @@ with open("log.tsv") as logfile:
         # times = [logs[0][method][i][-1]["time"] for i in range(24)]
         # dists = [logs[0][method][i][-1]["dist"] for i in range(24)]
         
-        print("{}, time: {} / dist: {}".format(method, sum(times)/len(times), sum(dists)/len(dists)))
+        # print("{}, time: {} / dist: {}".format(method, sum(times)/len(times), sum(dists)/len(dists)))
+        print(times)

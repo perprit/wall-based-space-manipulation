@@ -48,6 +48,7 @@ namespace ManipulateWalls
         public Vector3 WallInitPos = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
         public float LeastDistance = 0.25f;
+        public Vector3 ItemOriginScale = new Vector3(0.25f, 0.25f, 0.25f);
 
         public event EventHandler SetWallComplete;
         public event EventHandler TrialComplete;
@@ -56,6 +57,7 @@ namespace ManipulateWalls
         private int trialIdx = 0;
         private string method = "unknown";
 
+        public GameObject invisibleWallPrefab;
         public GameObject wallPrefab;
         public GameObject itemPrefab;
         public GameObject targetPrefab;
@@ -63,6 +65,7 @@ namespace ManipulateWalls
         private GameObject itemObj;
         private GameObject wallObj;
         private GameObject targetObj;
+        private GameObject leftWall, rightWall, ceil, floor;
 
         public bool TRIALS_READY = false;
 
@@ -92,18 +95,20 @@ namespace ManipulateWalls
             gameObject.transform.rotation = Quaternion.identity;
 
             InitObjects();
-#if UNITY_EDITOR
             trials.Clear();
             trialIdx = 0;
             method = "DIST_W";
             TRIALS_READY = true;
             SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("LL", "M2S", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
-            trials.Add(new Trial("LR", "M2F", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
-            trials.Add(new Trial("RL", "F2S", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
-            trials.Add(new Trial("RR", "F2M", new Vector3(0.000f, 0.000f, 1.500f), new Vector3(0.500f, 0.500f, 3.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
             StartTrial(0);
-#endif
         }
 
         void Update()
@@ -173,6 +178,7 @@ namespace ManipulateWalls
             }
             itemObj = Instantiate(itemPrefab);
             itemObj.transform.parent = gameObject.transform;
+            itemObj.transform.localScale = ItemOriginScale;
             SetStartPos(Vector3.forward * 3f + Vector3.right * -0.5f);
 
             // set target
@@ -181,12 +187,15 @@ namespace ManipulateWalls
                 Destroy(targetObj);
                 targetObj = null;
             }
-            GameObject targetInst = Instantiate(targetPrefab);
-            targetObj = new GameObject();
-            targetInst.transform.parent = targetObj.transform;
-            targetInst.transform.localPosition = new Vector3(0f, -0.125f, 0f);
-            targetObj.transform.localRotation = Quaternion.Euler(-60f, 0f, 0f);
+            //GameObject targetInst = Instantiate(targetPrefab);
+            //targetObj = new GameObject();
+            //targetInst.transform.parent = targetObj.transform;
+            //targetInst.transform.localPosition = new Vector3(0f, -0.125f, 0f);
+            //targetObj.transform.localRotation = Quaternion.Euler(-60f, 0f, 0f);
+            //targetObj.transform.parent = gameObject.transform;
+            targetObj = Instantiate(targetPrefab);
             targetObj.transform.parent = gameObject.transform;
+            targetObj.transform.localScale = ItemOriginScale;
             SetTargetPos(Vector3.forward * 8f + Vector3.right * 0.5f);
 
             // set wall
@@ -202,6 +211,52 @@ namespace ManipulateWalls
             wallObj.transform.position = WallInitPos;
             wallObj.transform.rotation = Quaternion.identity;
             wallObj.transform.localScale = WallInitScale;
+
+            // set invisible wall
+            if (leftWall != null)
+            {
+                Destroy(leftWall);
+                leftWall = null;
+            }
+            leftWall = Instantiate(invisibleWallPrefab);
+            leftWall.transform.parent = gameObject.transform;
+            leftWall.layer = SpatialMappingManager.Instance.PhysicsLayer;
+            leftWall.transform.position = new Vector3(-0.15f, 0.62f, 5.5f);
+            leftWall.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            leftWall.transform.localScale = new Vector3(12f, 3f, 0.01f);
+            if (rightWall != null)
+            {
+                Destroy(rightWall);
+                rightWall = null;
+            }
+            rightWall = Instantiate(invisibleWallPrefab);
+            rightWall.transform.parent = gameObject.transform;
+            rightWall.layer = SpatialMappingManager.Instance.PhysicsLayer;
+            rightWall.transform.position = new Vector3(3.65f, 0.62f, 5.5f);
+            rightWall.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            rightWall.transform.localScale = new Vector3(12f, 3f, 0.01f);
+            if (ceil != null)
+            {
+                Destroy(ceil);
+                ceil = null;
+            }
+            ceil = Instantiate(invisibleWallPrefab);
+            ceil.transform.parent = gameObject.transform;
+            ceil.layer = SpatialMappingManager.Instance.PhysicsLayer;
+            ceil.transform.position = new Vector3(1.64f, 2.21f, 5.5f);
+            ceil.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            ceil.transform.localScale = new Vector3(3.5f, 12f, 0.01f);
+            if (floor != null)
+            {
+                Destroy(floor);
+                floor = null;
+            }
+            floor = Instantiate(invisibleWallPrefab);
+            floor.transform.parent = gameObject.transform;
+            floor.layer = SpatialMappingManager.Instance.PhysicsLayer;
+            floor.transform.position = new Vector3(1.64f, -1.25f, 5.5f);
+            floor.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            floor.transform.localScale = new Vector3(3.5f, 12f, 0.01f);
 
             // We are done set wall, trigger an event.
             EventHandler handler = SetWallComplete;
