@@ -211,6 +211,7 @@ namespace HoloToolkit.Unity.InputModule
             inputSource.ManipulationUpdated += InputSource_ManipulationUpdated;
             inputSource.SourceDown += InputSource_SourceDown;
             inputSource.SourceUp += InputSource_SourceUp;
+            inputSource.SourceDoubleTapped += InputSource_SourceDoubleTapped;
             inputSource.SourceClicked += InputSource_SourceClicked;
             inputSource.SourceDetected += InputSource_SourceDetected;
             inputSource.SourceLost += InputSource_SourceLost;
@@ -237,6 +238,7 @@ namespace HoloToolkit.Unity.InputModule
             inputSource.ManipulationUpdated -= InputSource_ManipulationUpdated;
             inputSource.SourceDown -= InputSource_SourceDown;
             inputSource.SourceUp -= InputSource_SourceUp;
+            inputSource.SourceDoubleTapped -= InputSource_SourceDoubleTapped;
             inputSource.SourceClicked -= InputSource_SourceClicked;
             inputSource.SourceDetected -= InputSource_SourceDetected;
             inputSource.SourceLost -= InputSource_SourceLost;
@@ -546,6 +548,37 @@ namespace HoloToolkit.Unity.InputModule
 
             // Pass handler through HandleEvent to perform modal/fallback logic
             HandleEvent(inputEventData, OnSourceDownEventHandler);
+
+            // UI events
+            if (ShouldSendUnityUiEvents)
+            {
+                PointerEventData unityUiPointerEvent = GazeManager.Instance.UnityUIPointerEvent;
+
+                unityUiPointerEvent.eligibleForClick = true;
+                unityUiPointerEvent.delta = Vector2.zero;
+                unityUiPointerEvent.dragging = false;
+                unityUiPointerEvent.useDragThreshold = true;
+                unityUiPointerEvent.pressPosition = unityUiPointerEvent.position;
+                unityUiPointerEvent.pointerPressRaycast = unityUiPointerEvent.pointerCurrentRaycast;
+
+                HandleBaseEvent(unityUiPointerEvent, ExecuteEvents.pointerDownHandler);
+            }
+        }
+
+        private static readonly ExecuteEvents.EventFunction<IInputHandler> OnSourceDoubleTappedEventHandler =
+            delegate (IInputHandler handler, BaseEventData eventData)
+            {
+                InputEventData casted = ExecuteEvents.ValidateEventData<InputEventData>(eventData);
+                handler.OnInputDoubleTapped(casted);
+            };
+
+        private void InputSource_SourceDoubleTapped(object sender, InputSourceEventArgs e)
+        {
+            // Create input event
+            inputEventData.Initialize(e.InputSource, e.SourceId);
+
+            // Pass handler through HandleEvent to perform modal/fallback logic
+            HandleEvent(inputEventData, OnSourceDoubleTappedEventHandler);
 
             // UI events
             if (ShouldSendUnityUiEvents)

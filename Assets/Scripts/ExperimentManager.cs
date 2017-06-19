@@ -47,8 +47,8 @@ namespace ManipulateWalls
         public Vector3 OriginPos = new Vector3(1.75f, 0.7f, 0.5f);
         public Vector3 WallInitPos = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
-        public float LeastDistance = 0.25f;
-        public Vector3 ItemOriginScale = new Vector3(0.25f, 0.25f, 0.25f);
+        public float LeastDistance = 0.20f;
+        public Vector3 ItemOriginScale = new Vector3(0.20f, 0.20f, 0.20f);
 
         public event EventHandler SetWallComplete;
         public event EventHandler TrialComplete;

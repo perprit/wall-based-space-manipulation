@@ -12,5 +12,6 @@ namespace HoloToolkit.Unity.InputModule
     {
         void OnInputUp(InputEventData eventData);
         void OnInputDown(InputEventData eventData);
+        void OnInputDoubleTapped(InputEventData eventData);
     }
 }

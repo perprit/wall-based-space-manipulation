@@ -47,6 +47,8 @@ namespace HoloToolkit.Unity.InputModule
         /// </summary>
         event EventHandler<InputSourceEventArgs> SourceDown;
 
+        event EventHandler<InputSourceEventArgs> SourceDoubleTapped;
+
         /// <summary>
         /// Event triggered when the input source clicks. This is the equivalent of the pointer clicked event of a mouse.
         /// </summary>

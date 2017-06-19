@@ -364,6 +364,11 @@ namespace HoloToolkit.Unity.InputModule
             IsInputSourceDown = true;
         }
 
+        public virtual void OnInputDoubleTapped(InputEventData eventData)
+        {
+            // do nothing
+        }
+
         /// <summary>
         /// Function for receiving OnInputClicked events from InputManager
         /// </summary>

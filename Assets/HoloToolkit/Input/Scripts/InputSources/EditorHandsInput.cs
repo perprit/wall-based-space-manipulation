@@ -29,6 +29,7 @@ namespace HoloToolkit.Unity.InputModule
                 IsFingerDownPending = false;
                 FingerStateChanged = false;
                 FingerStateUpdateTimer = -1;
+                FingerUpStartTime = 0;
                 InputSourceArgs = new InputSourceEventArgs(inputSource, handId);
             }
 
@@ -40,6 +41,7 @@ namespace HoloToolkit.Unity.InputModule
             public bool FingerStateChanged;
             public float FingerStateUpdateTimer;
             public float FingerDownStartTime;
+            public float FingerUpStartTime;
             public readonly InputSourceEventArgs InputSourceArgs;
         }
 
@@ -54,17 +56,19 @@ namespace HoloToolkit.Unity.InputModule
         /// Delay before a finger pressed is considered.
         /// This mitigates fake finger taps that can sometimes be detected while the hand is moving.
         /// </summary>
-        private const float FingerPressDelay = 0.07f;
+        private const float FingerPressDelay = 0.03f;
 
         /// <summary>
         /// The maximum interval between button down and button up that will result in a clicked event.
         /// </summary>
-        private const float MaxClickDuration = 0.5f;
+        private const float MaxClickDuration = 0.3f;
 
         /// <summary>
         /// Number of fake hands supported in the editor.
         /// </summary>
         private const int EditorHandsCount = 2;
+
+        private const float DoubleTapDuration = 0.2f;
 
         /// <summary>
         /// Array containing the hands data for the two fake hands
@@ -289,6 +293,10 @@ namespace HoloToolkit.Unity.InputModule
                     {
                         editorHandData.FingerDownStartTime = time;
                     }
+                    else
+                    {
+                        editorHandData.FingerUpStartTime = time;
+                    }
                 }
             }
 
@@ -312,7 +320,14 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (editorHandData.IsFingerDown)
                 {
-                    RaiseSourceDownEvent(editorHandData.InputSourceArgs);
+                    if (time - editorHandData.FingerUpStartTime < DoubleTapDuration)
+                    {
+                        RaiseSourceDoubleTapEvent(editorHandData.InputSourceArgs);
+                    }
+                    else
+                    {
+                        RaiseSourceDownEvent(editorHandData.InputSourceArgs);
+                    }
                 }
                 else
                 {

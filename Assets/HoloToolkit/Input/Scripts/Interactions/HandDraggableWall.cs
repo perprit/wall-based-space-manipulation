@@ -174,6 +174,11 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
+        public void OnInputDoubleTapped(InputEventData eventData)
+        {
+            Debug.Log("double tap wall");
+        }
+
         public void OnSourceDetected(SourceStateEventData eventData)
         {
             // nothing to do

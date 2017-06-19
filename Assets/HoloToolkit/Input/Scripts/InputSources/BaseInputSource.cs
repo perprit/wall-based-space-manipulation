@@ -13,6 +13,7 @@ namespace HoloToolkit.Unity.InputModule
     {
         public event EventHandler<InputSourceEventArgs> SourceUp;
         public event EventHandler<InputSourceEventArgs> SourceDown;
+        public event EventHandler<InputSourceEventArgs> SourceDoubleTapped;
         public event EventHandler<SourceClickEventArgs> SourceClicked;
         public event EventHandler<InputSourceEventArgs> SourceDetected;
         public event EventHandler<InputSourceEventArgs> SourceLost;
@@ -120,6 +121,15 @@ namespace HoloToolkit.Unity.InputModule
         protected void RaiseSourceDownEvent(InputSourceEventArgs e)
         {
             EventHandler<InputSourceEventArgs> handler = SourceDown;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        protected void RaiseSourceDoubleTapEvent(InputSourceEventArgs e)
+        {
+            EventHandler<InputSourceEventArgs> handler = SourceDoubleTapped;
             if (handler != null)
             {
                 handler(this, e);
