@@ -127,15 +127,6 @@ namespace HoloToolkit.Unity.InputModule
             }
         }
 
-        protected void RaiseSourceDoubleTapEvent(InputSourceEventArgs e)
-        {
-            EventHandler<InputSourceEventArgs> handler = SourceDoubleTapped;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
-        }
-
         protected void RaiseSourceClickedEvent(SourceClickEventArgs e)
         {
             EventHandler<SourceClickEventArgs> handler = SourceClicked;

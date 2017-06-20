@@ -33,7 +33,6 @@ namespace HoloToolkit.Unity.InputModule
                 IsSourceDownPending = false;
                 SourceStateChanged = false;
                 SourceStateUpdateTimer = -1;
-                FingerUpStartTime = 0;
                 InputSourceArgs = new InputSourceEventArgs(inputSource, sourceId);
             }
 
@@ -44,7 +43,6 @@ namespace HoloToolkit.Unity.InputModule
             public bool IsSourceDownPending;
             public bool SourceStateChanged;
             public float SourceStateUpdateTimer;
-            public float FingerUpStartTime;
             public readonly InputSourceEventArgs InputSourceArgs;
         }
 
@@ -201,10 +199,6 @@ namespace HoloToolkit.Unity.InputModule
                 {
                     sourceData.IsSourceDown = sourceData.IsSourceDownPending;
                     sourceData.SourceStateChanged = true;
-                    if (!sourceData.IsSourceDown)
-                    {
-                        sourceData.FingerUpStartTime = Time.unscaledTime;
-                    }
                 }
             }
 
@@ -222,14 +216,7 @@ namespace HoloToolkit.Unity.InputModule
             {
                 if (sourceData.IsSourceDown)
                 {
-                    if (time - sourceData.FingerUpStartTime < DoubleTapDuration)
-                    {
-                        RaiseSourceDoubleTapEvent(sourceData.InputSourceArgs);
-                    }
-                    else
-                    {
-                        RaiseSourceDownEvent(sourceData.InputSourceArgs);
-                    }
+                    RaiseSourceDownEvent(sourceData.InputSourceArgs);
                 }
                 else
                 {
