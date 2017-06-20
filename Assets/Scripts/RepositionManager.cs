@@ -29,8 +29,6 @@ namespace HoloToolkit.Unity.InputModule
 
         public bool IsWallAvailable = false;
 
-        public GameObject InitItemPrefab;
-
         private Camera mainCamera;
 
         private Dictionary<int, WallStatus> wallStatusDic = new Dictionary<int, WallStatus>();
@@ -204,7 +202,12 @@ namespace HoloToolkit.Unity.InputModule
             for (int i = 0; i < items.Count; i++)
             {
                 ItemStatus itemStatus = new ItemStatus(items[i]);
-                itemStatus.initObj = Instantiate(InitItemPrefab);
+                //itemStatus.initObj = Instantiate(InitItemPrefab);
+                itemStatus.initObj = Instantiate(items[i]);
+                itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+                itemStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+                Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
+
                 itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
 
                 itemStatusDic.Add(items[i].GetInstanceID(), itemStatus);
@@ -231,13 +234,21 @@ namespace HoloToolkit.Unity.InputModule
             // initialize item
             GameObject itemObj = ExperimentManager.Instance.GetItemObject();
             ItemStatus itemStatus = new ItemStatus(itemObj);
-            itemStatus.initObj = Instantiate(InitItemPrefab);
+            //itemStatus.initObj = Instantiate(InitItemPrefab);
+            itemStatus.initObj = Instantiate(itemObj);
+            itemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+            itemStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+            Destroy(itemStatus.initObj.GetComponent<HandDraggableItem>());
             itemStatus.initObj.transform.position = itemStatus.obj.transform.position;
             itemStatusDic.Add(itemObj.GetInstanceID(), itemStatus);
 
             GameObject targetObj = ExperimentManager.Instance.GetTargetObject();
             ItemStatus targetItemStatus = new ItemStatus(targetObj);
-            targetItemStatus.initObj = Instantiate(InitItemPrefab);
+            //targetItemStatus.initObj = Instantiate(InitItemPrefab);
+            targetItemStatus.initObj = Instantiate(targetObj);
+            targetItemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");
+            targetItemStatus.initObj.GetComponent<MeshRenderer>().enabled = false;
+            Destroy(targetItemStatus.initObj.GetComponent<HandDraggableItem>());
             targetItemStatus.initObj.transform.position = targetItemStatus.obj.transform.position;
             itemStatusDic.Add(targetObj.GetInstanceID(), targetItemStatus);
         }

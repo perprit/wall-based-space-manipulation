@@ -50,9 +50,7 @@ namespace HoloToolkit.Unity.InputModule
         /// Delay before a source press is considered.
         /// This mitigates fake source taps that can sometimes be detected while the input source is moving.
         /// </summary>
-        private const float SourcePressDelay = 0.07f;
-
-        private const float DoubleTapDuration = 0.5f;
+        private const float SourcePressDelay = 0.04f;
 
         [Tooltip("Use unscaled time. This is useful for games that have a pause mechanism or otherwise adjust the game timescale.")]
         public bool UseUnscaledTime = true;
