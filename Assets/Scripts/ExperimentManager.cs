@@ -47,7 +47,6 @@ namespace ManipulateWalls
         public Vector3 OriginPos = new Vector3(1.75f, 0.7f, 0.5f);
         public Vector3 WallInitPos = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
-        public float LeastDistance = 0.20f;
         public Vector3 ItemOriginScale = new Vector3(0.20f, 0.20f, 0.20f);
 
         public event EventHandler SetWallComplete;
@@ -56,11 +55,17 @@ namespace ManipulateWalls
         private List<Trial> trials = new List<Trial>();
         private int trialIdx = 0;
         private string method = "unknown";
+        private float leastDistance = 0.20f;
 
         public GameObject invisibleWallPrefab;
         public GameObject wallPrefab;
         public GameObject itemPrefab;
         public GameObject targetPrefab;
+
+        public GameObject targetCube;
+        public GameObject itemCube;
+        public GameObject targetSphere;
+        public GameObject itemSphere;
 
         private GameObject itemObj;
         private GameObject wallObj;
@@ -117,7 +122,7 @@ namespace ManipulateWalls
             {
                 if (RepositionManager.Instance.GetItemStatusMode(itemObj.GetInstanceID()) == ItemStatusModes.IDLE
                     && RepositionManager.Instance.GetWallStatusMode(wallObj.GetInstanceID()) == WallStatusModes.IDLE
-                    && Vector3.Magnitude(targetObj.transform.position - itemObj.transform.position) < LeastDistance)
+                    && Vector3.Magnitude(targetObj.transform.position - itemObj.transform.position) < leastDistance)
                 {
                     EventHandler handler = TrialComplete;
                     if (handler != null)
@@ -412,9 +417,39 @@ namespace ManipulateWalls
             SceneManager.LoadScene("Main");
         }
 
-        public void SetConst(string str)
+        public void SetItem(string type)
         {
-            itemObj.GetComponent<HandDraggableItem>().SetConst(str);
+            if (type == "cube")
+            {
+                itemObj.GetComponent<MeshFilter>().sharedMesh = null;
+                itemObj.GetComponent<MeshFilter>().sharedMesh = itemCube.GetComponent<MeshFilter>().sharedMesh;
+                targetObj.GetComponent<MeshFilter>().sharedMesh = null;
+                targetObj.GetComponent<MeshFilter>().sharedMesh = targetCube.GetComponent<MeshFilter>().sharedMesh;
+            }
+            else if (type == "sphere")
+            {
+                itemObj.GetComponent<MeshFilter>().sharedMesh = null;
+                itemObj.GetComponent<MeshFilter>().sharedMesh = itemSphere.GetComponent<MeshFilter>().sharedMesh;
+                targetObj.GetComponent<MeshFilter>().sharedMesh = null;
+                targetObj.GetComponent<MeshFilter>().sharedMesh = targetSphere.GetComponent<MeshFilter>().sharedMesh;
+            }
+        }
+
+        public void SetScale(string scaleStr)
+        {
+            try
+            {
+                float scale = float.Parse(scaleStr);
+                leastDistance = scale;
+                ItemOriginScale = new Vector3(scale, scale, scale);
+                itemObj.transform.localScale = ItemOriginScale;
+                targetObj.transform.localScale = ItemOriginScale;
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Experiment.SetScale got exception");
+                return;
+            }
         }
     }
 }

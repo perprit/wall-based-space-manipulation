@@ -20,12 +20,10 @@ GameObject:
   m_Component:
   - component: {fileID: 4400206591630912}
   - component: {fileID: 33724537729423046}
-  - component: {fileID: 135514207198295120}
   - component: {fileID: 23897837189412480}
-  - component: {fileID: 114989246505979078}
   - component: {fileID: 54984517746117692}
-  m_Layer: 0
-  m_Name: Item
+  m_Layer: 2
+  m_Name: TargetSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +55,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 22306abbbc892aa489ef10d03991c7c1, type: 2}
+  - {fileID: 2100000, guid: e6e12b5757bff104d958100cf51b8efe, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -97,27 +95,3 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &114989246505979078
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1555723766337660}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca42af7b7e1605e469a6e99ac6003f76, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HostTransform: {fileID: 0}
---- !u!135 &135514207198295120
-SphereCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1555723766337660}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}

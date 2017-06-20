@@ -123,9 +123,18 @@ namespace ManipulateWalls
                     {
                         ExperimentManager.Instance.ResetScene();
                     }
-                    else
+                    else if (message == "cube")
                     {
-                        ExperimentManager.Instance.SetConst(message);
+                        ExperimentManager.Instance.SetItem("cube");
+                    }
+                    else if (message == "sphere")
+                    {
+                        ExperimentManager.Instance.SetItem("sphere");
+                    }
+                    else // scale
+                    {
+                        string[] tokens = message.Split(' ');
+                        ExperimentManager.Instance.SetScale(tokens[1]);
                     }
                 }            
                 catch (FormatException e)
