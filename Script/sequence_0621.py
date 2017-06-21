@@ -126,9 +126,8 @@ for id in range(0, 12):
         random.shuffle(trials)
         sequence[id].append({'method': method_trans_dic[method], 'trials': trials})
 
-print(sequence)
-# with open("sequence.json", "w") as json_file:
-#     if PRETTY_PRINT:
-#         json.dump(sequence, json_file, sort_keys=True, indent=4, separators=(',', ': '))
-#     else:
-#         json.dump(sequence, json_file)
+with open("sequence.json", "w") as json_file:
+    if PRETTY_PRINT:
+        json.dump(sequence, json_file, sort_keys=True, indent=4, separators=(',', ': '))
+    else:
+        json.dump(sequence, json_file)
