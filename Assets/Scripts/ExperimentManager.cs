@@ -47,7 +47,8 @@ namespace ManipulateWalls
         public Vector3 OriginPos = new Vector3(1.75f, 0.7f, 0.5f);
         public Vector3 WallInitPos = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
-        public Vector3 ItemOriginScale = new Vector3(0.20f, 0.20f, 0.20f);
+        public Vector3 ItemOriginScale = new Vector3(0.25f, 0.25f, 0.25f);
+        public Vector3 TargetOriginScale = new Vector3(0.25f, 0.25f, 0.25f);
 
         public event EventHandler SetWallComplete;
         public event EventHandler CountdownEnd;
@@ -254,7 +255,7 @@ namespace ManipulateWalls
             //targetObj.transform.parent = gameObject.transform;
             targetObj = Instantiate(targetPrefab);
             targetObj.transform.parent = gameObject.transform;
-            targetObj.transform.localScale = ItemOriginScale;
+            targetObj.transform.localScale = TargetOriginScale;
             SetTargetPos(Vector3.forward * 8f + Vector3.right * 0.5f);
 
             // set wall
@@ -489,19 +490,33 @@ namespace ManipulateWalls
             }
         }
 
-        public void SetScale(string scaleStr)
+        public void SetItemScale(string scaleStr)
+        {
+            try
+            {
+                float scale = float.Parse(scaleStr);
+                ItemOriginScale = new Vector3(scale, scale, scale);
+                itemObj.transform.localScale = ItemOriginScale;
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Experiment.SetItemScale got exception");
+                return;
+            }
+        }
+
+        public void SetTargetScale(string scaleStr)
         {
             try
             {
                 float scale = float.Parse(scaleStr);
                 leastDistance = scale;
-                ItemOriginScale = new Vector3(scale, scale, scale);
-                itemObj.transform.localScale = ItemOriginScale;
-                targetObj.transform.localScale = ItemOriginScale;
+                TargetOriginScale = new Vector3(scale, scale, scale);
+                targetObj.transform.localScale = TargetOriginScale;
             }
             catch (Exception e)
             {
-                Debug.Log("Experiment.SetScale got exception");
+                Debug.Log("Experiment.SetTargetScale got exception");
                 return;
             }
         }

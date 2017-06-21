@@ -83,8 +83,11 @@ namespace HoloToolkit.Unity.InputModule
 
                     if (wallStatus.mode == WallStatusModes.IDLE)
                     {
-                        // scale z
-                        itemStatus.obj.transform.localScale = ExperimentManager.Instance.ItemOriginScale;
+                        // restore z-scale of item object
+                        if(itemStatus.type == ItemType.ITEM)
+                        {
+                            itemStatus.obj.transform.localScale = ExperimentManager.Instance.ItemOriginScale;
+                        }
                         continue;
                     }
                     else if (wallStatus.mode == WallStatusModes.DRAGGING)
@@ -125,8 +128,15 @@ namespace HoloToolkit.Unity.InputModule
                         cameraToItemDir = wallStatus.initObj.transform.TransformDirection(cameraToItemDir);
                         Vector3 newItemInitPos = GetCameraFrontPosition() + cameraToItemDir;
 
-                        // scale z
-                        itemStatus.obj.transform.localScale = Vector3.Scale(ExperimentManager.Instance.ItemOriginScale, new Vector3(1f, 1f, wallStatus.distanceScale));
+                        // adjust z-scale of item object
+                        if (itemStatus.type == ItemType.ITEM)
+                        {
+                            itemStatus.obj.transform.localScale = Vector3.Scale(ExperimentManager.Instance.ItemOriginScale, new Vector3(1f, 1f, wallStatus.distanceScale));
+                        }
+                        else if (itemStatus.type == ItemType.TARGET)
+                        {
+                            itemStatus.obj.transform.localScale = Vector3.Scale(ExperimentManager.Instance.TargetOriginScale, new Vector3(1f, 1f, wallStatus.distanceScale));
+                        }
                         
                         // current position of the item
                         if (itemStatus.mode == ItemStatusModes.IDLE)
@@ -243,7 +253,7 @@ namespace HoloToolkit.Unity.InputModule
             itemStatusDic.Add(itemObj.GetInstanceID(), itemStatus);
 
             GameObject targetObj = ExperimentManager.Instance.GetTargetObject();
-            ItemStatus targetItemStatus = new ItemStatus(targetObj);
+            ItemStatus targetItemStatus = new ItemStatus(targetObj, ItemType.TARGET);
             //targetItemStatus.initObj = Instantiate(InitItemPrefab);
             targetItemStatus.initObj = Instantiate(targetObj);
             targetItemStatus.initObj.layer = LayerMask.NameToLayer("Ignore Raycast");

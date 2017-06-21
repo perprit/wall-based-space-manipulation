@@ -134,7 +134,8 @@ namespace ManipulateWalls
                     else // scale
                     {
                         string[] tokens = message.Split(' ');
-                        ExperimentManager.Instance.SetScale(tokens[1]);
+                        ExperimentManager.Instance.SetItemScale(tokens[1]);
+                        ExperimentManager.Instance.SetTargetScale(tokens[2]);
                     }
                 }            
                 catch (FormatException e)

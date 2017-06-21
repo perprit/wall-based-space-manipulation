@@ -10,6 +10,11 @@ namespace HoloToolkit.Unity.InputModule
         DRAGGING, IDLE
     }
 
+    public enum ItemType
+    {
+        ITEM, TARGET
+    }
+
     public struct ItemStatus
     {
         public GameObject obj;
@@ -17,12 +22,22 @@ namespace HoloToolkit.Unity.InputModule
         public GameObject initObj;
         //public bool isDragging;
         public ItemStatusModes mode;
+        public ItemType type;
 
         public ItemStatus(GameObject obj_)
         {
             obj = obj_;
             initObj = null;
             mode = ItemStatusModes.IDLE;
+            type = ItemType.ITEM;
+        }
+
+        public ItemStatus(GameObject obj_, ItemType type_)
+        {
+            obj = obj_;
+            initObj = null;
+            mode = ItemStatusModes.IDLE;
+            type = type_;
         }
     }
 }
