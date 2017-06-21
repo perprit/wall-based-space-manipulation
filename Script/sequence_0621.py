@@ -61,14 +61,14 @@ def xy_gen(index):
         start_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
         target_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
     
-    print(euc_dist(start_xy, target_xy), 0.5 * (index+1), xypos_trans(index))
+    # print(euc_dist(start_xy, target_xy), 0.5 * (index+1), xypos_trans(index))
     return (["%.3f" % xy for xy in start_xy], ["%.3f" % xy for xy in target_xy])
 
 zdist_trans_dic = ["C", "F"]
 def zdist_trans(l):
     return zdist_trans_dic[l[0]] + "2" + zdist_trans_dic[l[1]]
 
-xypos_trans_dic = ["D1", "D2", "D3", "D4"]
+xypos_trans_dic = ["0.5", "1.0", "1.5", "2.0"]
 def xypos_trans(i):
     return xypos_trans_dic[i]
     
@@ -126,8 +126,9 @@ for id in range(0, 12):
         random.shuffle(trials)
         sequence[id].append({'method': method_trans_dic[method], 'trials': trials})
 
-with open("sequence.json", "w") as json_file:
-    if PRETTY_PRINT:
-        json.dump(sequence, json_file, sort_keys=True, indent=4, separators=(',', ': '))
-    else:
-        json.dump(sequence, json_file)
+print(sequence)
+# with open("sequence.json", "w") as json_file:
+#     if PRETTY_PRINT:
+#         json.dump(sequence, json_file, sort_keys=True, indent=4, separators=(',', ': '))
+#     else:
+#         json.dump(sequence, json_file)

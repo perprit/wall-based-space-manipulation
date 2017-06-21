@@ -89,6 +89,10 @@ namespace HoloToolkit.Unity.InputModule
                         {
                             itemStatus.obj.transform.localScale = ExperimentManager.Instance.ItemOriginScale;
                         }
+                        else if(itemStatus.type == ItemType.TARGET)
+                        {
+                            itemStatus.obj.transform.localScale = ExperimentManager.Instance.TargetOriginScale;
+                        }
                         continue;
                     }
                     else if (wallStatus.mode == WallStatusModes.DRAGGING)
