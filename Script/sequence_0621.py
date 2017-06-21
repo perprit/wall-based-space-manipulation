@@ -2,8 +2,8 @@ import json
 import random
 import math
 
-PRETTY_PRINT = False
-DISABLED = True
+PRETTY_PRINT = True
+DISABLED = False
 
 if DISABLED:
     print("disabled now")
@@ -48,7 +48,7 @@ OUTPUT
 """
 
 def z_gen(index):
-    return "%.3f" % ((index + 1) * 3)
+    return "%.3f" % (3 + index * 6)
 
 def euc_dist(a, b):
     return math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]))
@@ -67,7 +67,6 @@ def xy_gen(index):
 zdist_trans_dic = ["C", "F"]
 def zdist_trans(l):
     return zdist_trans_dic[l[0]] + "2" + zdist_trans_dic[l[1]]
-
 
 xypos_trans_dic = ["D1", "D2", "D3", "D4"]
 def xypos_trans(i):
@@ -94,7 +93,7 @@ method_sequence = [
 ]
 
 zdist_list = [
-    [0, 1], [0, 2], [1, 2], [1, 0], [2, 0], [2, 1]
+    [0, 1], [1, 0]
 ]
 
 # xypos_list = [
