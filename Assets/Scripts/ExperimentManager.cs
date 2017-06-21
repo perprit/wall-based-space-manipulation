@@ -139,6 +139,13 @@ namespace ManipulateWalls
             {
                 if (ON_COUNTDOWN)
                 {
+                    deltaTimeCounter += Time.deltaTime;
+                    if (deltaTimeCounter > 1)
+                    {
+                        UITextManager.Instance.PrintMessage(countdownSecLeft.ToString());
+                        countdownSecLeft--;
+                        deltaTimeCounter = 0f;
+                    }
                     if (countdownSecLeft <= 0)
                     {
                         ON_COUNTDOWN = false;
@@ -147,13 +154,6 @@ namespace ManipulateWalls
                         {
                             handler(this, EventArgs.Empty);
                         }
-                    }
-                    deltaTimeCounter += Time.deltaTime;
-                    if (deltaTimeCounter > 1)
-                    {
-                        countdownSecLeft--;
-                        deltaTimeCounter = 0f;
-                        UITextManager.Instance.PrintMessage(countdownSecLeft.ToString());
                     }
                 }
                 else if (isTrialFinished())
@@ -389,7 +389,7 @@ namespace ManipulateWalls
             DebugTextController.Instance.AddMessage("Method: " + method);
             DebugTextController.Instance.AddMessage("Trial: " + trialIdx + "/" + trials.Count);
 
-            deltaTimeCounter = 1f;
+            deltaTimeCounter = 0f;
             countdownSecLeft = CountdownDuration;
             ON_COUNTDOWN = true;
         }

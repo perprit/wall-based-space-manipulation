@@ -1110,14 +1110,18 @@ MonoBehaviour:
   OriginPos: {x: 1.75, y: 0.7, z: 0.5}
   WallInitPos: {x: 1.75, y: 0.7, z: 10.5}
   WallInitScale: {x: 3.5, y: 3, z: 0.0001}
-  LeastDistance: 0.25
   ItemOriginScale: {x: 0.25, y: 0.25, z: 0.25}
+  CountdownDuration: 3
   invisibleWallPrefab: {fileID: 1000010593991404, guid: 02fd96f1af524c1408979f038c879752,
     type: 2}
   wallPrefab: {fileID: 1000010593991404, guid: 97c43499e77a4c547ad612cc41c910e8, type: 2}
   itemPrefab: {fileID: 1141894280294124, guid: 8fdd7c7b48a0eba44999eccd2023c020, type: 2}
   targetPrefab: {fileID: 1831548092155862, guid: cfda44025ab6d954a84d84ba9b382923,
     type: 2}
+  targetCube: {fileID: 0}
+  itemCube: {fileID: 0}
+  targetSphere: {fileID: 0}
+  itemSphere: {fileID: 0}
   TRIALS_READY: 0
 --- !u!114 &1874102116
 MonoBehaviour:
