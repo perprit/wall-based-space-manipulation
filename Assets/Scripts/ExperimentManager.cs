@@ -155,9 +155,8 @@ namespace ManipulateWalls
                         deltaTimeCounter = 0f;
                         UITextManager.Instance.PrintMessage(countdownSecLeft.ToString());
                     }
-                    return;
                 }
-                if (isTrialFinished())
+                else if (isTrialFinished())
                 {
                     EventHandler handler = TrialComplete;
                     if (handler != null)
@@ -505,6 +504,11 @@ namespace ManipulateWalls
                 Debug.Log("Experiment.SetScale got exception");
                 return;
             }
+        }
+
+        public bool IsOnCountdown()
+        {
+            return ON_COUNTDOWN;
         }
     }
 }

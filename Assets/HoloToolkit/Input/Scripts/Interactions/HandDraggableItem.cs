@@ -195,6 +195,10 @@ namespace HoloToolkit.Unity.InputModule
 
         public void OnInputDown(InputEventData eventData)
         {
+            if (ExperimentManager.Instance.IsOnCountdown())
+            {
+                return;
+            }
             if (!eventData.InputSource.SupportsInputInfo(eventData.SourceId, SupportedInputInfo.Position))
             {
                 // The input source must provide positional data for this script to be usable
