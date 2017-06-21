@@ -6,10 +6,11 @@ using HoloToolkit.Unity;
 
 namespace ManipulateWalls
 {
-    public class SuccessTextManager : Singleton<SuccessTextManager> {
+    public class UITextManager : Singleton<UITextManager> {
         
         Text text;
         float lastPrintTime;
+        float printDuration = 1f;
 
         // Use this for initialization
         void Start()
@@ -20,7 +21,7 @@ namespace ManipulateWalls
 
         void Update()
         {
-            if (Time.time > lastPrintTime + 1f && text.text == "Success")
+            if (Time.time > lastPrintTime + printDuration)
             {
                 text.text = "";
             }
@@ -28,8 +29,13 @@ namespace ManipulateWalls
 
         public void PrintSuccess()
         {
+            PrintMessage("success");
+        }
+
+        public void PrintMessage(string msg)
+        {
             lastPrintTime = Time.time;
-            text.text = "Success";
+            text.text = msg;
         }
     }
 }

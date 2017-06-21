@@ -50,8 +50,11 @@ namespace ManipulateWalls
         public Vector3 ItemOriginScale = new Vector3(0.20f, 0.20f, 0.20f);
 
         public event EventHandler SetWallComplete;
+        public event EventHandler CountdownEnd;
         public event EventHandler TrialComplete;
-        
+
+        public int CountdownDuration = 5;
+
         private List<Trial> trials = new List<Trial>();
         private int trialIdx = 0;
         private string method = "unknown";
@@ -73,20 +76,17 @@ namespace ManipulateWalls
         private GameObject leftWall, rightWall, ceil, floor;
 
         public bool TRIALS_READY = false;
-
+        private bool ON_COUNTDOWN = false;
+        
+        private bool SEND_LOG = true;
         private float trialStartTime = 0f;
-        private float handDistMoved = 0f;
+        private Vector3 handMoveVector = new Vector3(0.0f, 0.0f, 0.0f);
         private string currXYType = "unknown";
         private string currZType = "unknown";
-
-        private bool SEND_LOG = true;
+        private float deltaTimeCounter = 0f;
+        private int countdownSecLeft = 0;
 
         private Vector3 prevHandPos = Vector3.zero;
-
-        public void AddHandDistMoved(float dist)
-        {
-            handDistMoved += dist;
-        }
 
         void Start()
         {
@@ -96,6 +96,7 @@ namespace ManipulateWalls
             }
 
             TrialComplete += ExperimentManager_TrialComplete;
+            CountdownEnd += ExperimentManager_CounddownEnd;
             gameObject.transform.position = Vector3.zero;
             gameObject.transform.rotation = Quaternion.identity;
 
@@ -105,24 +106,58 @@ namespace ManipulateWalls
             method = "DIST_W";
             TRIALS_READY = true;
             SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.500f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 3.000f)));
-            StartTrial(0);
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            StartTrial();
         }
 
         void Update()
         {
             if (TRIALS_READY)
             {
-                if (RepositionManager.Instance.GetItemStatusMode(itemObj.GetInstanceID()) == ItemStatusModes.IDLE
-                    && RepositionManager.Instance.GetWallStatusMode(wallObj.GetInstanceID()) == WallStatusModes.IDLE
-                    && Vector3.Magnitude(targetObj.transform.position - itemObj.transform.position) < leastDistance)
+                if (ON_COUNTDOWN)
+                {
+                    if (countdownSecLeft <= 0)
+                    {
+                        ON_COUNTDOWN = false;
+                        EventHandler handler = CountdownEnd;
+                        if (handler != null)
+                        {
+                            handler(this, EventArgs.Empty);
+                        }
+                    }
+                    deltaTimeCounter += Time.deltaTime;
+                    if (deltaTimeCounter > 1)
+                    {
+                        countdownSecLeft--;
+                        deltaTimeCounter = 0f;
+                        UITextManager.Instance.PrintMessage(countdownSecLeft.ToString());
+                    }
+                    return;
+                }
+                if (isTrialFinished())
                 {
                     EventHandler handler = TrialComplete;
                     if (handler != null)
@@ -133,9 +168,16 @@ namespace ManipulateWalls
             }
         }
 
+        private bool isTrialFinished()
+        {
+            return RepositionManager.Instance.GetItemStatusMode(itemObj.GetInstanceID()) == ItemStatusModes.IDLE
+                    && RepositionManager.Instance.GetWallStatusMode(wallObj.GetInstanceID()) == WallStatusModes.IDLE
+                    && Vector3.Magnitude(targetObj.transform.position - itemObj.transform.position) < leastDistance;
+        }
+
         public void AddEventLog(LogEvent logEvent)
         {
-            if(!SEND_LOG)
+            if(!SEND_LOG || ON_COUNTDOWN)
             {
                 return;
             }
@@ -146,21 +188,34 @@ namespace ManipulateWalls
             message += currXYType + "\t";
             message += currZType + "\t";
             message += (Time.time - trialStartTime).ToString("F4") + "\t";
-            message += handDistMoved.ToString("F4") + "\t";
+            message += handMoveVector.x.ToString("F4") + "\t";
+            message += handMoveVector.y.ToString("F4") + "\t";
+            message += handMoveVector.z.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
+            Debug.Log(message);
             LogManager.Instance.SendLogMessage(UserId+".tsv", message);
         }
 
         public void SaveNewHandPosition(Vector3 newHandPos)
         {
-            handDistMoved += Vector3.Magnitude(newHandPos - prevHandPos);
+            handMoveVector.x += Math.Abs(newHandPos.x - prevHandPos.x);
+            handMoveVector.y += Math.Abs(newHandPos.x - prevHandPos.x);
+            handMoveVector.z += Math.Abs(newHandPos.x - prevHandPos.x);
+
             prevHandPos = newHandPos;
+        }
+
+        private void ExperimentManager_CounddownEnd (object source, EventArgs args)
+        {
+            trialStartTime = Time.time;
+            handMoveVector = Vector3.zero;
+            AddEventLog(LogEvent.TRIAL_START);
         }
 
         private void ExperimentManager_TrialComplete (object source, EventArgs args)
         {
-            Debug.Log("Trial complete, " + trialIdx);
-            SuccessTextManager.Instance.PrintSuccess();
+            //Debug.Log("Trial complete, " + trialIdx);
+            UITextManager.Instance.PrintSuccess();
             AddEventLog(LogEvent.TRIAL_END);
             trialIdx++;
             if (trialIdx >= trials.Count)
@@ -169,8 +224,8 @@ namespace ManipulateWalls
                 TRIALS_READY = false;
                 return;
             }
-            
-            StartTrial(trialIdx);
+
+            StartTrial();
         }
 
         private void InitObjects()
@@ -310,9 +365,9 @@ namespace ManipulateWalls
             }
         }
 
-        private void StartTrial(int trialNumber)
+        private void StartTrial()
         {
-            if (trials == null || trials.Count == 0 || trials.Count <= trialNumber)
+            if (trials == null || trials.Count == 0 || trials.Count <= trialIdx)
             {
                 Debug.LogError("trials is null or empty or less than trialNumber");
                 return;
@@ -323,21 +378,21 @@ namespace ManipulateWalls
                 return;
             }
 
-            Trial trial = trials[trialNumber];
-
-            trialStartTime = Time.time;
-            handDistMoved = 0f;
-            currXYType = trial.xy_type;
-            currZType = trial.z_type;
+            Trial trial = trials[trialIdx];
 
             SetStartPos(trial.startPos);
             SetTargetPos(trial.targetPos);
 
+            currXYType = trial.xy_type;
+            currZType = trial.z_type;
+
             DebugTextController.Instance.SetMessage("ID: " + UserId);
             DebugTextController.Instance.AddMessage("Method: " + method);
-            DebugTextController.Instance.AddMessage("Trial: " + trialNumber + "/" + trials.Count);
+            DebugTextController.Instance.AddMessage("Trial: " + trialIdx + "/" + trials.Count);
 
-            AddEventLog(LogEvent.TRIAL_START);
+            deltaTimeCounter = 1f;
+            countdownSecLeft = CountdownDuration;
+            ON_COUNTDOWN = true;
         }
 
         private void SetStartPos(Vector3 start)
@@ -392,7 +447,7 @@ namespace ManipulateWalls
             }
 
             TRIALS_READY = true;
-            StartTrial(0);
+            StartTrial();
         }
 
         public GameObject GetItemObject()
