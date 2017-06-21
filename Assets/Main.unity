@@ -928,6 +928,7 @@ MonoBehaviour:
   DefaultMovementScale: 5
   SmoothingRatio: 0.5
   NearClippingPlaneDist: 0.85
+  WallMovementScaleCoeff: 1.5
   IsWallAvailable: 0
 --- !u!1 &1597151798
 GameObject:
@@ -971,7 +972,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RecognizerStart: 0
   KeywordsAndResponses:
-  - Keyword: 52657374617274
+  - Keyword: restart
     KeyCode: 8
     Response:
       m_PersistentCalls:

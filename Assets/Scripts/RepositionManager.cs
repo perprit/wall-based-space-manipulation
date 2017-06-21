@@ -26,6 +26,7 @@ namespace HoloToolkit.Unity.InputModule
         public float DefaultMovementScale = 5f;
         public float SmoothingRatio = 0.8f;
         public float NearClippingPlaneDist = 0.85f;
+        public float WallMovementScaleCoeff = 1.3f;
 
         public bool IsWallAvailable = false;
 
@@ -105,7 +106,7 @@ namespace HoloToolkit.Unity.InputModule
                         float cameraDistanceToWall = Vector3.Magnitude(wallProjectedCameraPosition - GetCameraFrontPosition());
 
                         // the scale of wall movement 
-                        wallStatus.movementScale = (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
+                        wallStatus.movementScale = WallMovementScaleCoeff * (cameraDistanceToInitWall - MinimumDistanceToWall) / (MaximumArmLength - MinimumArmLength);
                         // the scale between initial wall and current wall
                         wallStatus.distanceScale = cameraDistanceToWall / cameraDistanceToInitWall;    // TODO needs error handling for zero divide or something?
 
