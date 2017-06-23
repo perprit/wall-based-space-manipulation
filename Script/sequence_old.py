@@ -2,8 +2,8 @@ import json
 import random
 import math
 
-PRETTY_PRINT = True
-DISABLED = False
+PRETTY_PRINT = False
+DISABLED = True
 
 if DISABLED:
     print("disabled now")
@@ -14,11 +14,11 @@ if DISABLED:
 : 0 ~ 11
 
 - INTERACTION_METHOD, counter-balanced
-: WALL (0), NO_WALL(1)
+: DIST_N (0), ADAPT_N (1), DIST_W (2), ADAPT_W (3)
 
 - Z DISTANCE, randomized
-(C (0): 3, F (1): 9)
-: C2F, F2C
+(S (0): 3, M (1): 6, F (2): 9)
+: S2M, S2F, M2F, M2S, F2S, F2M
 
 - XY POSITION, randomized (0 < dist(x,y) < 2)
 (D1 (0): 0.5, D2 (1): 1.0, D3 (2): 1.5, D4 (3): 2.0)
@@ -48,7 +48,7 @@ OUTPUT
 """
 
 def z_gen(index):
-    return "%.3f" % (3 + index * 6)
+    return "%.3f" % ((index + 1) * 3)
 
 def euc_dist(a, b):
     return math.sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]))
@@ -61,39 +61,55 @@ def xy_gen(index):
         start_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
         target_xy = [random.uniform(-1, 1), random.uniform(-1, 1)]
     
-    # print(euc_dist(start_xy, target_xy), 0.5 * (index+1), xypos_trans(index))
+    print(euc_dist(start_xy, target_xy), 0.5 * (index+1), xypos_trans(index))
     return (["%.3f" % xy for xy in start_xy], ["%.3f" % xy for xy in target_xy])
 
-zdist_trans_dic = ["C", "F"]
+zdist_trans_dic = ["S", "M", "F"]
 def zdist_trans(l):
     return zdist_trans_dic[l[0]] + "2" + zdist_trans_dic[l[1]]
 
-xypos_trans_dic = ["0.5", "1.0", "1.5", "2.0"]
+
+xypos_trans_dic = ["D1", "D2", "D3", "D4"]
 def xypos_trans(i):
     return xypos_trans_dic[i]
     
 
 method_trans_dic = [
-    "WALL", "NO_WALL"
+    "DIST_N", "ADAPT_N", "DIST_W", "ADAPT_W"
 ]
 
+# method_sequence = [
+#     [4,3,2,5,1,0],
+#     [0,4,3,2,5,1],
+#     [1,0,4,3,2,5],
+#     [5,2,0,1,3,4],
+#     [3,1,5,0,4,2],
+#     [2,5,1,4,0,3],
+#     [4,3,2,5,1,0],
+#     [0,4,3,2,5,1],
+#     [1,0,4,3,2,5],
+#     [5,2,0,1,3,4],
+#     [3,1,5,0,4,2],
+#     [2,5,1,4,0,3],
+# ]
+
 method_sequence = [
-    [0, 1],
-    [1, 0],
-    [0, 1],
-    [1, 0],
-    [0, 1],
-    [1, 0],
-    [0, 1],
-    [1, 0],
-    [0, 1],
-    [1, 0],
-    [0, 1],
-    [1, 0]
+    [2,1,3,0],
+    [1,2,0,3],
+    [3,0,2,1],
+    [0,3,1,2],
+    [2,1,3,0],
+    [1,2,0,3],
+    [3,0,2,1],
+    [0,3,1,2],
+    [2,1,3,0],
+    [1,2,0,3],
+    [3,0,2,1],
+    [0,3,1,2],
 ]
 
 zdist_list = [
-    [0, 1], [1, 0]
+    [0, 1], [0, 2], [1, 2], [1, 0], [2, 0], [2, 1]
 ]
 
 # xypos_list = [
