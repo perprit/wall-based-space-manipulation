@@ -107,30 +107,30 @@ namespace ManipulateWalls
             method = "DIST_W";
             TRIALS_READY = true;
             SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "M2S", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "M2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2S", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2M", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
             StartTrial();
         }
 
@@ -192,6 +192,8 @@ namespace ManipulateWalls
             message += handMoveVector.y.ToString("F4") + "\t";
             message += handMoveVector.z.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
+            message += ItemOriginScale.x.ToString("F4") + "\t";
+            message += TargetOriginScale.x.ToString("F4") + "\t";
             Debug.Log(message);
             LogManager.Instance.SendLogMessage(UserId+".tsv", message);
         }
@@ -199,8 +201,8 @@ namespace ManipulateWalls
         public void SaveNewHandPosition(Vector3 newHandPos)
         {
             handMoveVector.x += Math.Abs(newHandPos.x - prevHandPos.x);
-            handMoveVector.y += Math.Abs(newHandPos.x - prevHandPos.x);
-            handMoveVector.z += Math.Abs(newHandPos.x - prevHandPos.x);
+            handMoveVector.y += Math.Abs(newHandPos.y - prevHandPos.y);
+            handMoveVector.z += Math.Abs(newHandPos.z - prevHandPos.z);
 
             prevHandPos = newHandPos;
         }
