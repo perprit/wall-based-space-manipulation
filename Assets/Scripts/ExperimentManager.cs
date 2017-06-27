@@ -57,7 +57,8 @@ namespace ManipulateWalls
 
         public int CountdownDuration = 5;
 
-        private int userId;
+        private int userId = 0;
+        private int blockNum = 1;
         private List<Trial> trials = new List<Trial>();
         private int trialIdx = 0;
         private string method = "unknown";
@@ -81,7 +82,7 @@ namespace ManipulateWalls
         public bool TRIALS_READY = false;
         private bool ON_COUNTDOWN = false;
         
-        private bool SEND_LOG = true;
+        private bool SEND_LOG = false;
         private float trialStartTime = 0f;
         private Vector3 handMoveVector = new Vector3(0.0f, 0.0f, 0.0f);
         private float handMoveDist = 0f;
@@ -175,6 +176,7 @@ namespace ManipulateWalls
             string message = "";
             message += userId + "\t";
             message += method + "\t";
+            message += blockNum + "\t";
             message += trialIdx + "\t";
             message += currXYType + "\t";
             message += currZType + "\t";
@@ -184,7 +186,7 @@ namespace ManipulateWalls
             message += handMoveVector.z.ToString("F4") + "\t";
             message += handMoveDist.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
-            message += ItemOriginScale.x.ToString("F4") + "\t";
+            message += ItemOriginScale.x.ToString("F2") + "\t";
             //message += TargetOriginScale.x.ToString("F4") + "\t";
             //Debug.Log(message);
             LogManager.Instance.SendLogMessage(userId+".tsv", message);
@@ -438,6 +440,7 @@ namespace ManipulateWalls
             trials.Clear();
             trialIdx = 0;
             userId = int.Parse(sd.id);
+            blockNum = int.Parse(sd.block);
             method = sd.method;
             if(sd.mode == "p")
             {

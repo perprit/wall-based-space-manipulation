@@ -153,6 +153,7 @@ namespace ManipulateWalls
         public string id;
         public string mode;
         public string method;
+        public string block;
         public TrialString[] trials;
     }
 }

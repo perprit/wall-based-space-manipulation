@@ -32,7 +32,7 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 prevHandPosition;   // for smoothing
         private Vector3 prevObjPosition;   // for smoothing
 
-        private float minRatio = 3f;
+        private float minRatio = 2.7f;
         private float maxRatio = 12f;
         private float distMul = 1.65f;
         private float velMul = 16f;
