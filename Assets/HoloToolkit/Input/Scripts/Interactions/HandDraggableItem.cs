@@ -32,7 +32,7 @@ namespace HoloToolkit.Unity.InputModule
         private Vector3 prevHandPosition;   // for smoothing
         private Vector3 prevObjPosition;   // for smoothing
 
-        private float minRatio = 2.5f;
+        private float minRatio = 3f;
         private float maxRatio = 12f;
         private float distMul = 1.65f;
         private float velMul = 16f;
@@ -116,30 +116,35 @@ namespace HoloToolkit.Unity.InputModule
 
             Vector3 newObjPosition = initObjPosition + headMovement + handMovement;
 
-            if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
-            {
-                // CONST, deprecated
-                newObjPosition = initObjPosition + headMovement + handMovement * 5.5f;
-            }
-            else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
-            {
-                // ADAPT
-                float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
-                velocity = UtilFunctions.Instance.QuadraticInOut(velocity * velMul, minRatio, maxRatio);
-                newObjPosition = initObjPosition + headMovement + handMovement * velocity;
-                initObjPosition = newObjPosition;
-                initCameraPosition = mainCamera.transform.position;
-                initHandVector = handVector;
-            }
-            else if (ExperimentManager.Instance.InteractionType == InteractionType.DIST)
-            {
-                // DIST
-                float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
-                newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * distMul, minRatio, Mathf.Infinity);
-                initObjPosition = newObjPosition;
-                initCameraPosition = mainCamera.transform.position;
-                initHandVector = handVector;
-            }
+            //if (ExperimentManager.Instance.InteractionType == InteractionType.CONST)
+            //{
+            //    // CONST, deprecated
+            //    newObjPosition = initObjPosition + headMovement + handMovement * 5.5f;
+            //}
+            //else if (ExperimentManager.Instance.InteractionType == InteractionType.ADAPT)
+            //{
+            //    // ADAPT
+            //    float velocity = Vector3.Magnitude(handMovement) / Time.smoothDeltaTime;
+            //    velocity = UtilFunctions.Instance.QuadraticInOut(velocity * velMul, minRatio, maxRatio);
+            //    newObjPosition = initObjPosition + headMovement + handMovement * velocity;
+            //    initObjPosition = newObjPosition;
+            //    initCameraPosition = mainCamera.transform.position;
+            //    initHandVector = handVector;
+            //}
+            //else if (ExperimentManager.Instance.InteractionType == InteractionType.DIST)
+            //{
+            //    // DIST
+            //    float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
+            //    newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * distMul, minRatio, Mathf.Infinity);
+            //    initObjPosition = newObjPosition;
+            //    initCameraPosition = mainCamera.transform.position;
+            //    initHandVector = handVector;
+            //}
+            float newObjDist = Vector3.Magnitude(prevObjPosition - mainCamera.transform.position);
+            newObjPosition = initObjPosition + headMovement + handMovement * Mathf.Clamp(newObjDist * distMul, minRatio, Mathf.Infinity);
+            initObjPosition = newObjPosition;
+            initCameraPosition = mainCamera.transform.position;
+            initHandVector = handVector;
 
             // clamp movement vector with wall objects
             Vector3 eyeToObjDirection = newObjPosition - mainCamera.transform.position;

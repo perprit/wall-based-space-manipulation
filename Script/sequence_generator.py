@@ -77,6 +77,8 @@ def xy_gen(xy_type):
 
 z_types = ["C2F", "F2C"]
 xy_types = ["SHORT", "FAR"]
+itemsizes = ["0.25", "0.15", "0.05"]
+
 method_types = ["WALL", "NO_WALL"]
 method_sequence = [
     [0, 1],
@@ -102,16 +104,18 @@ for id in range(0, 8):
         trials = []
         for z_type in z_types:
             for xy_type in xy_types:
-                start, target = xy_gen(xy_type)
-                start.append(z_gen(z_type)[0])
-                target.append(z_gen(z_type)[1])
-                
-                trials.append({
-                    "z_type" : z_type,
-                    "xy_type" : xy_type,
-                    "start" : start,
-                    "target" : target
-                })
+                for itemsize_type in itemsizes:
+                    start, target = xy_gen(xy_type)
+                    start.append(z_gen(z_type)[0])
+                    target.append(z_gen(z_type)[1])
+                    
+                    trials.append({
+                        "z_type" : z_type,
+                        "xy_type" : xy_type,
+                        "size": itemsize_type,
+                        "start" : start,
+                        "target" : target,
+                    })
         
         random.shuffle(trials)
         sequence[id].append({'method': method_types[method], 'trials': trials})

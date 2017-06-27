@@ -145,6 +145,7 @@ namespace ManipulateWalls
         {
             public string[] start;
             public string[] target;
+            public string size;
             public string z_type;
             public string xy_type;
         }

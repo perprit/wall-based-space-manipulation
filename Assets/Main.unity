@@ -924,7 +924,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MinimumArmLength: 0.3
   MaximumArmLength: 0.55
-  MinimumDistanceToWall: 2.5
+  MinimumDistanceToWall: 2
   DefaultMovementScale: 5
   SmoothingRatio: 0.5
   NearClippingPlaneDist: 0.85
@@ -1105,9 +1105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a379455d5b2f184387edbc7ee8316ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UserId: 0
   UseSpatialMapping: 0
-  InteractionType: 1
+  InteractionType: 0
   OriginPos: {x: 1.75, y: 0.7, z: 0.5}
   WallInitPos: {x: 1.75, y: 0.7, z: 10.5}
   WallInitScale: {x: 3.5, y: 3, z: 0.0001}

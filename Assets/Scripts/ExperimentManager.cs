@@ -29,22 +29,23 @@ namespace ManipulateWalls
         {
             public string xy_type;
             public string z_type;
+            public string size;
             public Vector3 startPos;
             public Vector3 targetPos;
 
-            public Trial(string _xy, string _z, Vector3 _sp, Vector3 _tp)
+            public Trial(string _xy, string _z, string _size, Vector3 _sp, Vector3 _tp)
             {
                 xy_type = _xy;
                 z_type = _z;
+                size = _size;
                 startPos = _sp;
                 targetPos = _tp;
             }
         }
-        public int UserId;
         public bool UseSpatialMapping;
         public InteractionType InteractionType;
 
-        public Vector3 OriginPos = new Vector3(1.75f, 0.7f, 0.5f);
+        public Vector3 OriginPos = new Vector3(1.75f, 0.7f, -0.5f);
         public Vector3 WallInitPos = new Vector3(1.75f, 0.7f, 10.5f);
         public Vector3 WallInitScale = new Vector3(3.5f, 3f, 0.001f);
         public Vector3 ItemOriginScale = new Vector3(0.25f, 0.25f, 0.25f);
@@ -56,6 +57,7 @@ namespace ManipulateWalls
 
         public int CountdownDuration = 5;
 
+        private int userId;
         private List<Trial> trials = new List<Trial>();
         private int trialIdx = 0;
         private string method = "unknown";
@@ -82,6 +84,7 @@ namespace ManipulateWalls
         private bool SEND_LOG = true;
         private float trialStartTime = 0f;
         private Vector3 handMoveVector = new Vector3(0.0f, 0.0f, 0.0f);
+        private float handMoveDist = 0f;
         private string currXYType = "unknown";
         private string currZType = "unknown";
         private float deltaTimeCounter = 0f;
@@ -104,33 +107,21 @@ namespace ManipulateWalls
             InitObjects();
             trials.Clear();
             trialIdx = 0;
-            method = "DIST_W";
+            method = "WALL";
             TRIALS_READY = true;
-            SetInteractionMethod("DIST_W");
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "C2F", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
-            trials.Add(new Trial("D1", "F2C", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            SetInteractionMethod("WALL");
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 10.000f)));
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "C2F", "0.15", new Vector3(-0.300f, -0.300f, 2.000f), new Vector3(0.200f, 0.300f, 9.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
+            trials.Add(new Trial("D1", "F2C", "0.15", new Vector3(-0.300f, -0.300f, 9.000f), new Vector3(0.200f, 0.300f, 2.000f)));
             StartTrial();
         }
 
@@ -182,7 +173,7 @@ namespace ManipulateWalls
                 return;
             }
             string message = "";
-            message += UserId + "\t";
+            message += userId + "\t";
             message += method + "\t";
             message += trialIdx + "\t";
             message += currXYType + "\t";
@@ -191,15 +182,17 @@ namespace ManipulateWalls
             message += handMoveVector.x.ToString("F4") + "\t";
             message += handMoveVector.y.ToString("F4") + "\t";
             message += handMoveVector.z.ToString("F4") + "\t";
+            message += handMoveDist.ToString("F4") + "\t";
             message += logEvent.ToString() + "\t";
             message += ItemOriginScale.x.ToString("F4") + "\t";
-            message += TargetOriginScale.x.ToString("F4") + "\t";
-            Debug.Log(message);
-            LogManager.Instance.SendLogMessage(UserId+".tsv", message);
+            //message += TargetOriginScale.x.ToString("F4") + "\t";
+            //Debug.Log(message);
+            LogManager.Instance.SendLogMessage(userId+".tsv", message);
         }
 
         public void SaveNewHandPosition(Vector3 newHandPos)
         {
+            handMoveDist += Vector3.Magnitude(newHandPos - prevHandPos);
             handMoveVector.x += Math.Abs(newHandPos.x - prevHandPos.x);
             handMoveVector.y += Math.Abs(newHandPos.y - prevHandPos.y);
             handMoveVector.z += Math.Abs(newHandPos.z - prevHandPos.z);
@@ -211,6 +204,7 @@ namespace ManipulateWalls
         {
             trialStartTime = Time.time;
             handMoveVector = Vector3.zero;
+            handMoveDist = 0f;
             AddEventLog(LogEvent.TRIAL_START);
         }
 
@@ -328,27 +322,38 @@ namespace ManipulateWalls
             }
         }
 
+        //private void SetInteractionMethod(string methodName)
+        //{
+        //    // methodName : CONST_N, DIST_N, ADAPT_N, CONST_W, DIST_W, ADAPT_W
+        //    string[] tokens = methodName.Split('_');
+        //    string interType= tokens[0];
+        //    string wEnabled = tokens[1];
+
+        //    if (interType == "CONST") InteractionType = InteractionType.CONST;
+        //    else if (interType == "DIST") InteractionType = InteractionType.DIST;
+        //    else if (interType == "ADAPT") InteractionType = InteractionType.ADAPT;
+        //    else
+        //    {
+        //        Debug.LogError("Invalid interaction type name: " + interType);
+        //        return;
+        //    }
+
+        //    if (wEnabled == "N") EnableWallObj(false);
+        //    else if (wEnabled == "W") EnableWallObj(true);
+        //    else
+        //    {
+        //        Debug.LogError("Invalid wall enabled flag: " + wEnabled);
+        //        return;
+        //    }
+        //}
+
         private void SetInteractionMethod(string methodName)
         {
-            // methodName : CONST_N, DIST_N, ADAPT_N, CONST_W, DIST_W, ADAPT_W
-            string[] tokens = methodName.Split('_');
-            string interType= tokens[0];
-            string wEnabled = tokens[1];
-
-            if (interType == "CONST") InteractionType = InteractionType.CONST;
-            else if (interType == "DIST") InteractionType = InteractionType.DIST;
-            else if (interType == "ADAPT") InteractionType = InteractionType.ADAPT;
+            if (methodName == "WALL") EnableWallObj(true);
+            else if (methodName == "NO_WALL") EnableWallObj(false);
             else
             {
-                Debug.LogError("Invalid interaction type name: " + interType);
-                return;
-            }
-
-            if (wEnabled == "N") EnableWallObj(false);
-            else if (wEnabled == "W") EnableWallObj(true);
-            else
-            {
-                Debug.LogError("Invalid wall enabled flag: " + wEnabled);
+                Debug.LogError("Invalid wall enabled flag: " + methodName);
                 return;
             }
         }
@@ -385,10 +390,13 @@ namespace ManipulateWalls
             SetStartPos(trial.startPos);
             SetTargetPos(trial.targetPos);
 
+            SetItemScale(trial.size);
+            SetTargetScale(trial.size);
+
             currXYType = trial.xy_type;
             currZType = trial.z_type;
 
-            DebugTextController.Instance.SetMessage("ID: " + UserId);
+            DebugTextController.Instance.SetMessage("ID: " + userId);
             DebugTextController.Instance.AddMessage("Method: " + method);
             DebugTextController.Instance.AddMessage("Trial: " + trialIdx + "/" + trials.Count);
 
@@ -427,9 +435,9 @@ namespace ManipulateWalls
 
         public void SetTrialList(SequenceData sd)
         {
-            UserId = int.Parse(sd.id);
             trials.Clear();
             trialIdx = 0;
+            userId = int.Parse(sd.id);
             method = sd.method;
             if(sd.mode == "p")
             {
@@ -445,7 +453,7 @@ namespace ManipulateWalls
             {
                 Vector3 startPos = new Vector3(float.Parse(trial.start[0]), float.Parse(trial.start[1]), float.Parse(trial.start[2]));
                 Vector3 targetPos = new Vector3(float.Parse(trial.target[0]), float.Parse(trial.target[1]), float.Parse(trial.target[2]));
-                trials.Add(new Trial(trial.xy_type, trial.z_type, startPos, targetPos));
+                trials.Add(new Trial(trial.xy_type, trial.z_type, trial.size, startPos, targetPos));
             }
 
             TRIALS_READY = true;

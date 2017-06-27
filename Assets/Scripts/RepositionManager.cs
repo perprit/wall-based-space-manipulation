@@ -22,7 +22,7 @@ namespace HoloToolkit.Unity.InputModule
         // the range of the hand position that is recognizable
         public float MinimumArmLength = 0.3f;
         public float MaximumArmLength = 0.55f;   // MaximumArmLength must be bigger than MinimumArmLength
-        public float MinimumDistanceToWall = 2.5f;
+        public float MinimumDistanceToWall = 2f;
         public float DefaultMovementScale = 5f;
         public float SmoothingRatio = 0.8f;
         public float NearClippingPlaneDist = 0.85f;
@@ -281,7 +281,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.DRAGGING;
-                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.1f, 1.0f, 0.7f);
+                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.8f, 0.8f, 1.0f);
 
                 // assign updated wallStatus
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
@@ -292,7 +292,7 @@ namespace HoloToolkit.Unity.InputModule
                 WallStatus wallStatus = wallStatusDic[obj.GetInstanceID()];
 
                 wallStatus.mode = WallStatusModes.LOCKED;
-                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.3f, 1.0f, 0.3f);
+                wallStatus.obj.GetComponent<Renderer>().material.color = new Color(0.6f, 0.6f, 1.0f);
                 wallStatus.cameraFrontWhenLocked = GetCameraFrontPosition();
 
                 wallStatusDic[obj.GetInstanceID()] = wallStatus;
